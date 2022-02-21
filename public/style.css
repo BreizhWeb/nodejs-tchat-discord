@@ -16,14 +16,16 @@ body{
     display: none;
 }
 .chatWrapper{
-    float:left;
+    display: inline-block;
+    width: calc(90% - 170px);
+    min-width: 300px;
     border: 1px #ccc solid;
     border-radius: 10px;
     background: #f4f4f4;
     padding: 10px;
 }
 .userWrapper{
-    float:left;
+    display: inline-block;
     border: 1px #ccc solid;
     border-radius: 10px;
     background: #f4f4f4;

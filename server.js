@@ -84,7 +84,6 @@ io.sockets.on("connection", (socket) => {
             let theChan = servers.find(s => s.id == chan.id);
             if (theChan.users.indexOf(user.name) == -1)
                 theChan.users.push(user.name)
-            console.log(theChan,user.name);
             io.sockets.emit(`usernames${theChan.id}`, theChan.users);
         })
     }
@@ -93,7 +92,6 @@ io.sockets.on("connection", (socket) => {
             let theChan = servers.find(s => s.name == chan.name);
             if (theChan.users.indexOf(user.name) != -1)
                 theChan.users.splice(theChan.users.indexOf(user.name),1);
-            console.log(theChan,user.name);
             io.sockets.emit(`usernames${theChan.id}`, theChan.users);
         })
     }

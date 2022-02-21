@@ -75,19 +75,17 @@
 
         //round 2 add the username
         socket.on("new message", function (data) {
-            $chans.find(`#${data.chan}`).append("<div class='message'><strong>" + convertToPlain(data.user) +
+            $chans.find(`#${data.chan} .chatWindow`).append("<div class='message'><strong>" + convertToPlain(data.user) +
                 "</strong>: " + convertToPlain(data.msg) + "</div>");
         });
 
         socket.on("connection", function (data) {
-            console.log(`connection : ${data}`);
         });
 
         //round 2
         $usernameForm.submit(function (e) {
             e.preventDefault();
             socket.emit("new user", $username.val(), function (data) {
-                console.log(data);
                 if (data) {
                     data.chans.forEach(chan => {
                         let id = newChan(chan);
@@ -101,9 +99,6 @@
                             htmlChan.find('.message').val('');
                         });
                         socket.on(`usernames${chan.id}`, function (usersdata) {
-                            //TESTS 
-                            console.log(usersdata);
-
                             let html = "";
                             for (i = 0; i < usersdata.length; i++) {
                                 html += "<div>" + convertToPlain(usersdata[i]) + "</div>";
