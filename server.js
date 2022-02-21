@@ -3,6 +3,35 @@ const app = express();
 server= require("http").createServer(app);
 const io = require('socket.io')(server);
 let usernames = [];
+let servers = [
+    {
+        id: 0,
+        private: false,
+        name: 'MDS',
+        img: 'https://www.mydigitalschool.com/themes/custom/mds/img/logo.png'
+    },
+    {
+        id: 1,
+        private: true,
+        name: 'Privé',
+        img: 'https://www.psdstamps.com/wp-content/uploads/2020/04/private-stamp-png.png'
+    },
+];
+let users = [
+    {
+        id: 0,
+        name: 'Ronan',
+        chans: [0, 1]
+    }, {
+        id: 1,
+        name: 'Thomas',
+        chans: [0]
+    }, {
+        id: 2,
+        name: 'Nicolas',
+        chans: [1]
+    },
+];
 
 app.use(express.static('public'))
 
@@ -25,12 +54,17 @@ io.sockets.on("connection",(socket)=>{
     });
 
     //round 2
-    socket.on("new user",function (data,callback){
-        if(usernames.indexOf(data) != -1){
+    socket.on("new user", function (data, callback) {
+        if (usernames.indexOf(data) != -1) {
             callback(false);
-        }else{
-            callback(true);
+        } else {
             socket.username = data;
+            let chans = users.find(v => v.name == data).chans.
+                map(id => servers.find(v => v.id == id));
+            callback({
+                user: socket.username,
+                chans: chans
+            });
             usernames.push(socket.username);
             updateUsernames();
         }
