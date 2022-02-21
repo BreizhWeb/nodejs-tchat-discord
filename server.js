@@ -82,20 +82,18 @@ io.sockets.on("connection", (socket) => {
     function updateUsernames(user) {
         user.chans.forEach(chan => {
             let theChan = servers.find(s => s.id == chan.id);
-            console.log(theChan.users,user.name);
             if (theChan.users.indexOf(user.name) == -1)
                 theChan.users.push(user.name)
-            console.log(theChan.users,user.name);
+            console.log(theChan,user.name);
             io.sockets.emit(`usernames${theChan.id}`, theChan.users);
         })
     }
     function disconnect(user) {
         user.chans.forEach(chan => {
             let theChan = servers.find(s => s.name == chan.name);
-            console.log(theChan.users,user.name);
             if (theChan.users.indexOf(user.name) != -1)
-                theChan.users.splice(theChan.users.indexOf(user.name));
-            console.log(theChan.users,user.name);
+                theChan.users.splice(theChan.users.indexOf(user.name),1);
+            console.log(theChan,user.name);
             io.sockets.emit(`usernames${theChan.id}`, theChan.users);
         })
     }
