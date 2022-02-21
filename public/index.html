@@ -37,7 +37,6 @@
     $(function () {
         var socket = io.connect();
         socket.emit("userlist", 1, function (data) {
-            console.log(data);
             $('.utilisateurs').append(JSON.stringify(data));
         });
         let mainWrapper = $('#mainWrapper');

@@ -86,6 +86,7 @@ io.sockets.on("connection", (socket) => {
         if (!users.find(v => v.name == data)) {
             callback(false);
         } else {
+            console.log(`${data} connected`);
             let userchans = users.find(v => v.name == data)?.chans.
                 map(id => {
                     return servers.find(v => v.id == id)
@@ -136,7 +137,7 @@ io.sockets.on("connection", (socket) => {
         if (!socket.user?.name) {
             return;
         }
-        console.log("disconnect event");
+        console.log(`${socket.user?.name} disconnected`);
         disconnect(socket.user);
     });
 
