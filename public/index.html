@@ -17,6 +17,7 @@
             <input type="text" size="35" id="username">
             <input type="submit" value="Submit">
         </form>
+        <div class="utilisateurs"></div>
     </div>
 
     <div id="mainWrapper">
@@ -35,6 +36,10 @@
 <script>
     $(function () {
         var socket = io.connect();
+        socket.emit("userlist", 1, function (data) {
+            console.log(data);
+            $('.utilisateurs').append(JSON.stringify(data));
+        });
         let mainWrapper = $('#mainWrapper');
         let $chans = $('#chans');
 

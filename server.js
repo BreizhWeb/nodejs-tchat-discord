@@ -32,7 +32,35 @@ let users = [
         id: 2,
         name: 'Nicolas',
         chans: [1]
-    },
+    }, {
+        id: 3,
+        name: 'Agénor',
+        chans: [0, 1]
+    }, {
+        id: 4,
+        name: 'Julien',
+        chans: [0, 1]
+    }, {
+        id: 5,
+        name: 'Annaeg',
+        chans: [0, 1]
+    }, {
+        id: 6,
+        name: 'Gwen',
+        chans: [0, 1]
+    }, {
+        id: 7,
+        name: 'Artur',
+        chans: [0, 1]
+    }, {
+        id: 8,
+        name: 'Dorian',
+        chans: [0, 1]
+    }, {
+        id: 9,
+        name: 'Elouan',
+        chans: [0, 1]
+    }
 ];
 
 app.use(express.static('public'))
@@ -48,15 +76,8 @@ server.listen(PORT, () => {
 
 io.sockets.on("connection", (socket) => {
     console.log("Socket connected...");
-    // Send Message
-    socket.on("send message", (data) => {
-        //round 2 add username
-        io.sockets.emit('new message', {
-            msg: data.msg,
-            chan: data.chan,
-            user: socket.user.name
-        });
-        console.log(data);
+    socket.on("userlist", (data, callback) => {
+        callback(users.map(u=>u.name));
     });
 
     //round 2
@@ -77,6 +98,20 @@ io.sockets.on("connection", (socket) => {
             updateUsernames(socket.user);
         }
     });
+    // Send Message
+    socket.on("send message", (data) => {
+        //round 2 add username
+        io.sockets.emit('new message', {
+            msg: data.msg,
+            chan: data.chan,
+            user: socket.user.name
+        });
+        console.log({
+            msg: data.msg,
+            chan: data.chan,
+            user: socket.user.name
+        });
+    });
 
     //Update Usernames
     function updateUsernames(user) {
@@ -91,7 +126,7 @@ io.sockets.on("connection", (socket) => {
         user.chans.forEach(chan => {
             let theChan = servers.find(s => s.name == chan.name);
             if (theChan.users.indexOf(user.name) != -1)
-                theChan.users.splice(theChan.users.indexOf(user.name),1);
+                theChan.users.splice(theChan.users.indexOf(user.name), 1);
             io.sockets.emit(`usernames${theChan.id}`, theChan.users);
         })
     }
