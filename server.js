@@ -1,7 +1,8 @@
 const express = require("express");
 const app = express();
-server= require("http").createServer(app);
+server = require("http").createServer(app);
 const io = require('socket.io')(server);
+//const fs = require('fs');
 let usernames = [];
 let servers = [
     {
@@ -35,7 +36,7 @@ let users = [
 
 app.use(express.static('public'))
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
     res.sendFile(__dirname + "/public/index.html");
 })
 
@@ -44,12 +45,16 @@ server.listen(PORT, () => {
     console.log('le serveur ecoute sur le port %d', PORT);
 });
 
-io.sockets.on("connection",(socket)=>{
+io.sockets.on("connection", (socket) => {
     console.log("Socket connected...");
     // Send Message
-    socket.on("send message",(data)=>{
+    socket.on("send message", (data) => {
         //round 2 add username
-        io.sockets.emit('new message',{msg:data,user:socket.username});
+        io.sockets.emit('new message', {
+            msg: data.msg,
+            chan: data.chan,
+            user: socket.username
+        });
         console.log(data);
     });
 
@@ -71,18 +76,18 @@ io.sockets.on("connection",(socket)=>{
     });
 
     //Update Usernames
-    function updateUsernames(){
-        io.sockets.emit("usernames",usernames);
+    function updateUsernames() {
+        io.sockets.emit("usernames", usernames);
     }
 
     //Disconnect
-    socket.on("disconnect",function(data){
+    socket.on("disconnect", function (data) {
         console.log("disconnect event");
-       if (!socket.username){
-           return;
-       }
-       usernames.splice(usernames.indexOf(socket.username),1);
-       updateUsernames();
+        if (!socket.username) {
+            return;
+        }
+        usernames.splice(usernames.indexOf(socket.username), 1);
+        updateUsernames();
     });
 
 
