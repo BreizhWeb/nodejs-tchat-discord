@@ -3,18 +3,19 @@ const app = express();
 server = require("http").createServer(app);
 const io = require('socket.io')(server);
 //const fs = require('fs');
-let usernames = [];
 let servers = [
     {
         id: 0,
         private: false,
         name: 'MDS',
+        users: [],
         img: 'https://www.mydigitalschool.com/themes/custom/mds/img/logo.png'
     },
     {
         id: 1,
         private: true,
         name: 'Privé',
+        users: [],
         img: 'https://www.psdstamps.com/wp-content/uploads/2020/04/private-stamp-png.png'
     },
 ];
@@ -53,41 +54,59 @@ io.sockets.on("connection", (socket) => {
         io.sockets.emit('new message', {
             msg: data.msg,
             chan: data.chan,
-            user: socket.username
+            user: socket.user.name
         });
         console.log(data);
     });
 
     //round 2
     socket.on("new user", function (data, callback) {
-        if (usernames.indexOf(data) != -1) {
+        // If user dont exist
+        if (!users.find(v => v.name == data)) {
             callback(false);
         } else {
-            socket.username = data;
-            let chans = users.find(v => v.name == data).chans.
-                map(id => servers.find(v => v.id == id));
-            callback({
-                user: socket.username,
-                chans: chans
-            });
-            usernames.push(socket.username);
-            updateUsernames();
+            let userchans = users.find(v => v.name == data)?.chans.
+                map(id => {
+                    return servers.find(v => v.id == id)
+                });
+            socket.user = {
+                name: data,
+                chans: userchans
+            };
+            callback(socket.user);
+            updateUsernames(socket.user);
         }
     });
 
     //Update Usernames
-    function updateUsernames() {
-        io.sockets.emit("usernames", usernames);
+    function updateUsernames(user) {
+        user.chans.forEach(chan => {
+            let theChan = servers.find(s => s.id == chan.id);
+            console.log(theChan.users,user.name);
+            if (theChan.users.indexOf(user.name) == -1)
+                theChan.users.push(user.name)
+            console.log(theChan.users,user.name);
+            io.sockets.emit(`usernames${theChan.id}`, theChan.users);
+        })
+    }
+    function disconnect(user) {
+        user.chans.forEach(chan => {
+            let theChan = servers.find(s => s.name == chan.name);
+            console.log(theChan.users,user.name);
+            if (theChan.users.indexOf(user.name) != -1)
+                theChan.users.splice(theChan.users.indexOf(user.name));
+            console.log(theChan.users,user.name);
+            io.sockets.emit(`usernames${theChan.id}`, theChan.users);
+        })
     }
 
     //Disconnect
     socket.on("disconnect", function (data) {
-        console.log("disconnect event");
-        if (!socket.username) {
+        if (!socket.user?.name) {
             return;
         }
-        usernames.splice(usernames.indexOf(socket.username), 1);
-        updateUsernames();
+        console.log("disconnect event");
+        disconnect(socket.user);
     });
 
 

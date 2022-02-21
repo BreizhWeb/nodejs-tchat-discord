@@ -82,20 +82,16 @@
 
 </div>
 
-<script src="http://code.jquery.com/jquery-latest.min.js"></script>
-<script src="https://cdn.socket.io/socket.io-3.0.1.min.js"></script>
+<script src="./jquery-latest.min.js"></script>
+<script src="./socket.io-3.0.1.min.js"></script>
 <script>
     $(function () {
         var socket = io.connect();
         let mainWrapper = $('#mainWrapper');
         let $chans = $('#chans');
-        var $messageForm = $("#messageForm");
-        var $message = $("#message");
-        var $chat = $("#chatWindow");
 
         //round 2
         var $usernameForm = $("#usernameForm");
-        var $users = $("#users");
         var $username = $("#username");
         var $error = $("#error");
 
@@ -129,17 +125,6 @@
             return chan.id;
         }
 
-
-        $messageForm.submit(function (e) {
-            e.preventDefault();
-            console.log("Submittted..");
-            socket.emit("send message", {
-                msg: $message.val(),
-                chan: $message.attr('chan')
-            });
-            $message.val("");
-        });
-
         //round 2 add the username
         socket.on("new message", function (data) {
             $chans.find(`#${data.chan}`).append("<div class='message'><strong>" + convertToPlain(data.user) +
@@ -154,24 +139,30 @@
         $usernameForm.submit(function (e) {
             e.preventDefault();
             socket.emit("new user", $username.val(), function (data) {
-                data.chans.forEach(chan => {
-                    let id = newChan(chan);
-                    let htmlChan = $(`#${id}`);
-                    htmlChan.submit(function (e) {
-                        e.preventDefault();
-                        console.log("Submittted..",{
-                            msg: htmlChan.find('.message').val(),
-                            chan: htmlChan.attr('id')
-                        });
-                        socket.emit("send message", {
-                            msg: htmlChan.find('.message').val(),
-                            chan: htmlChan.attr('id')
-                        });
-                        htmlChan.find('.message').val('');
-                    });
-                });
                 console.log(data);
                 if (data) {
+                    data.chans.forEach(chan => {
+                        let id = newChan(chan);
+                        let htmlChan = $(`#${id}`);
+                        htmlChan.submit(function (e) {
+                            e.preventDefault();
+                            socket.emit("send message", {
+                                msg: htmlChan.find('.message').val(),
+                                chan: htmlChan.attr('id')
+                            });
+                            htmlChan.find('.message').val('');
+                        });
+                        socket.on(`usernames${chan.id}`, function (usersdata) {
+                            //TESTS 
+                            console.log(usersdata);
+
+                            let html = "";
+                            for (i = 0; i < usersdata.length; i++) {
+                                html += "<div>" + convertToPlain(usersdata[i]) + "</div>";
+                            }
+                            htmlChan.find('.users').html(html);
+                        });
+                    });
                     $("#namesWrapper").hide();
                     $("#mainWrapper").show();
                     $("#userWrapper").show();
@@ -180,17 +171,6 @@
                 }
             });
             $username.val("");
-        });
-
-        socket.on("usernames", function (data) {
-            //TESTS 
-            console.log(data);
-
-            let html = "";
-            for (i = 0; i < data.length; i++) {
-                html += "<div>" + convertToPlain(data[i]) + "</div>";
-            }
-            $users.html(html);
         });
 
     });
