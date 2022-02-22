@@ -32,6 +32,7 @@ server.listen(PORT, () => {
 con.connect(function (err) {
     if (err) throw err;
     console.log("Connecté à la base de données MySQL!");
+    require("./routes")({ app, con });
 });
 
 io.sockets.on("connection",(socket)=>{
