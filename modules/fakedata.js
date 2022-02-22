@@ -18,46 +18,141 @@ let users = [
   {
       id: 0,
       name: 'Ronan',
-      chans: [0, 1]
   }, {
       id: 1,
       name: 'Thomas',
-      chans: [0]
   }, {
       id: 2,
       name: 'Nicolas',
-      chans: [1]
   }, {
       id: 3,
       name: 'Agénor',
-      chans: [0, 1]
   }, {
       id: 4,
       name: 'Julien',
-      chans: [0, 1]
   }, {
       id: 5,
       name: 'Annaeg',
-      chans: [0, 1]
   }, {
       id: 6,
       name: 'Gwen',
-      chans: [0, 1]
   }, {
       id: 7,
       name: 'Artur',
-      chans: [0, 1]
   }, {
       id: 8,
       name: 'Dorian',
-      chans: [0, 1]
   }, {
       id: 9,
       name: 'Elouan',
-      chans: [0, 1]
   }
 ];
+let roles = [
+  {
+      id: 0,
+      name: 'Admin',
+  },{
+      id: 1,
+      name: 'User',
+  },
+
+];
+let access= [
+  {
+    id_user: 0,
+    id_room: 0,
+    id_role: 0,
+  },
+  {
+    id_user: 0,
+    id_room: 1,
+    id_role: 1,
+  },
+  {
+    id_user: 1,
+    id_room: 0,
+    id_role: 1,
+  },
+  {
+    id_user: 2,
+    id_room: 1,
+    id_role: 1,
+  },
+  {
+    id_user: 3,
+    id_room: 1,
+    id_role: 0,
+  },
+  {
+    id_user: 3,
+    id_room: 0,
+    id_role: 1,
+  },
+  {
+    id_user: 4,
+    id_room: 0,
+    id_role: 1,
+  },
+  {
+    id_user: 4,
+    id_room: 1,
+    id_role: 1,
+  },
+  {
+    id_user: 5,
+    id_room: 0,
+    id_role: 1,
+  },
+  {
+    id_user: 5,
+    id_room: 1,
+    id_role: 1,
+  },
+  {
+    id_user: 6,
+    id_room: 0,
+    id_role: 1,
+  },
+  {
+    id_user: 6,
+    id_room: 1,
+    id_role: 1,
+  },
+  {
+    id_user: 7,
+    id_room: 0,
+    id_role: 1,
+  },
+  {
+    id_user: 7,
+    id_room: 1,
+    id_role: 1,
+  },
+  {
+    id_user: 8,
+    id_room: 0,
+    id_role: 1,
+  },
+  {
+    id_user: 8,
+    id_room: 1,
+    id_role: 1,
+  },
+  {
+    id_user: 9,
+    id_room: 0,
+    id_role: 1,
+  },
+  {
+    id_user: 9,
+    id_room: 1,
+    id_role: 1,
+  },
+]
 module.exports = {
   servers: servers,
-  users: users
+  users: users,
+  roles:roles,
+  access:access
+
 }
