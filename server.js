@@ -20,30 +20,35 @@ server.listen(PORT, () => {
 
 io.sockets.on("connection", (socket) => {
   console.log("Socket connected...");
+
   socket.on("userlist", (data, callback) => {
+    console.log("userlist");
     callback(fakedata.users.map(u => u.name));
   });
 
-  //round 2
   socket.on("new user", function (name, callback) {
     // If user dont exist
     if (!fakedata.users.find(v => v.name == name)) {
       callback(false);
     } else {
-      console.log(`${name} connected`);
+      console.log(`connected : ${name}`);
+      
       socket.user = {
         name: name,
         chans: multirooms.getUserRooms(name)
-      };
-      callback(socket.user);
+      }
+
+      multirooms.joinRooms(socket.user, socket)
       multirooms.updateUsernames(socket.user, io.sockets)
+      callback(socket.user);
 
     }
   });
   // Send Message
   socket.on("send message", (data, callback) => {
-    //round 2 add username
-    io.sockets.emit('new message', {
+    console.log(`[${data.chan}]${socket.user.name} : ${data.msg}`);
+    
+    io.sockets.to(`chan-${data.chan}`).emit('new message', {
       msg: data.msg,
       chan: data.chan,
       user: socket.user.name
@@ -55,7 +60,7 @@ io.sockets.on("connection", (socket) => {
     if (!socket.user?.name) {
       return;
     }
-    console.log(`${socket.user?.name} disconnected`);
+    console.log(`disconnected : ${socket.user?.name}`);
     multirooms.disconnect(socket.user, io.sockets)
   });
 

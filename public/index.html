@@ -71,7 +71,9 @@
                         </form>
                     </div>
                     <div class="userWrapper">
-                        <div class="users">${chan.users}</div>
+                        <div class="users">
+                          ${chan.users.map(u => "<div>" + convertToPlain(u) + "</div>").join('')}
+                        </div>
                     </div>
                 </div>
             `);
@@ -80,6 +82,7 @@
 
       //round 2 add the username
       socket.on("new message", function (data, callback) {
+        console.log("new message :",data);
         $(`#chan-${data.chan} .chatWindow`).append("<div class='message'><strong>" +
           convertToPlain(data.user) +
           "</strong>: " + convertToPlain(data.msg) + "</div>");
@@ -106,6 +109,7 @@
                 );
               });
               socket.on(`usernames${chan.id}`, function (usersdata) {
+                console.log(usersdata);
                 let html = "";
                 for (i = 0; i < usersdata.length; i++) {
                   html += "<div>" + convertToPlain(usersdata[
@@ -118,7 +122,7 @@
             $("#mainWrapper").show();
             $("#userWrapper").show();
           } else {
-            $error.html("Username is taken");
+            $error.html("Username is wrong");
           }
         });
         $username.val("");
