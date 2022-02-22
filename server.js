@@ -5,6 +5,7 @@ const app = express();
 server= require("http").createServer(app);
 const io = require('socket.io')(server);
 const fs = require('fs');
+var db = require('./db/db.js');
 let usernames = [];
 
 const mysql = require('mysql');

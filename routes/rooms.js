@@ -8,14 +8,14 @@ module.exports = function ({ app, con }) {
    */
   app.post("/rooms", (req, res) => {
     let data = {
-      name: req.body.name,
-      image: req.body.image,
-      private: req.body.private,
+      name: req.query.name,
+      image: req.query.image,
+      private: req.query.private,
     };
 
     let sqlQuery = "INSERT INTO rooms SET ?";
 
-    let query = conn.query(sqlQuery, data, (err, results) => {
+    let query = con.query(sqlQuery, data, (err, results) => {
       if (err) throw err;
       res.send(apiResponse(results));
     });
@@ -78,15 +78,15 @@ module.exports = function ({ app, con }) {
   app.put("/rooms/:id", (req, res) => {
     let sqlQuery =
       "UPDATE rooms SET name='" +
-      req.body.name +
+      req.query.name +
       "', image='" +
-      req.body.image +
+      req.query.image +
       "', private='" +
-      req.body.private +
+      req.query.private +
       "' WHERE room_id=" +
       req.params.id;
 
-    let query = conn.query(sqlQuery, (err, results) => {
+    let query = con.query(sqlQuery, (err, results) => {
       if (err) throw err;
       res.send(apiResponse(results));
     });
@@ -102,7 +102,7 @@ module.exports = function ({ app, con }) {
   app.delete("/rooms/:id", (req, res) => {
     let sqlQuery = "DELETE FROM rooms WHERE room_id=" + req.params.id + "";
 
-    let query = conn.query(sqlQuery, (err, results) => {
+    let query = con.query(sqlQuery, (err, results) => {
       if (err) throw err;
       res.send(apiResponse(results));
     });

@@ -65,7 +65,7 @@ app.get("/users/:id", (req, res) => {
  app.put('/api/users/:id',(req, res) => {
     let sqlQuery = "UPDATE users SET pseudo='"+req.body.pseudo+"', password='"+req.body.password+"' WHERE id="+req.params.id;
     
-    let query = conn.query(sqlQuery, (err, results) => {
+    let query = con.query(sqlQuery, (err, results) => {
       if(err) throw err;
       res.send(apiResponse(results));
     });
@@ -83,7 +83,7 @@ app.get("/users/:id", (req, res) => {
  app.delete('/api/users/:id',(req, res) => {
     let sqlQuery = "DELETE FROM users WHERE id="+req.params.id+"";
       
-    let query = conn.query(sqlQuery, (err, results) => {
+    let query = con.query(sqlQuery, (err, results) => {
       if(err) throw err;
         res.send(apiResponse(results));
     });
