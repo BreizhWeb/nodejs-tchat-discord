@@ -22,7 +22,6 @@ io.sockets.on("connection",(socket)=>{
     socket.on("send message",(data)=>{
         //round 2 add username
         io.sockets.emit('new message',{msg:data,user:socket.username});
-        console.log(data);
     });
 
     //round 2
@@ -30,11 +29,8 @@ io.sockets.on("connection",(socket)=>{
         if (!users.find(v => v.name == data)) {
             callback(false);
         }else{
-            callback(true);
-            socket.user = {
-                name: name,
-                rooms: rooms
-              };
+            callback(rooms);
+            socket.username = data;
             usernames.push(socket.username);
             updateUsernames();
         }

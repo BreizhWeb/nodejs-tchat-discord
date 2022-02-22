@@ -48,7 +48,7 @@ module.exports = {
     },
     {
       id: 1,
-      name: 'Privé',
+      name: 'PRIVATE',
     },
   ],
   roles: [

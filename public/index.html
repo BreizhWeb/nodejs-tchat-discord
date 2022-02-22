@@ -6,8 +6,8 @@
     <link href="./style.css" rel="stylesheet">
 </head>
 <body>
-    <div id="container">
-        <div id="namesWrapper">
+    <div class="container">
+        <div class="namesWrapper">
             <h2>Discord</h2>
             <p>Entrez votre prénom :</p>
             <div id="error"></div>
@@ -49,23 +49,21 @@
             });
 
             //round 2 add the username
-            socket.on("new message",function(data){
-                $chat.append("<strong>" + data.user + "</strong>: " + data.msg + "<br/>");
-            });
+            
             
             function newRoom(room){
             $rooms.append(`
                 <div class="room" id="${room.id}">
                     <h2>${room.name}</h2>
+                    <div class="userWrapper">
+                        <div id="users"></div>
+                    </div>
                     <div class="chatWrapper">
                         <div class="chatWindow"></div>
                         <form class="messageForm">
-                            <input type="text" size="35" class="message" placeholder="Say something...">
+                            <input type="text" size="35" class="message" placeholder="Ecrivez ici">
                             <input type="submit" value="Envoyer">
                         </form>
-                    </div>
-                    <div id="userWrapper">
-                        <div id="users"></div>
                     </div>
                 </div>
             `);
@@ -77,12 +75,23 @@
                 e.preventDefault();
                 socket.emit("new user",$username.val(),function(data){
                     if(data){
-                        data.rooms.forEach(room => {
-                        let id = newRoom(room);
+                        console.log(data);
+                        data.forEach(room => {
+                            let id = newRoom(room);
+                            roomid = $('#' + room.id);
+                            roomid.submit(function (e) {
+                                e.preventDefault();
+                                console.log(roomid.find('.chatWindow'));
+                                socket.on("new message",function(data){
+                                    roomid.find('.chatWindow')
+                                    .append(" test <br/>");
+                                });
+                            });
                         });
                         $("#namesWrapper").hide();
                         $("#mainWrapper").show();
                         $("#userWrapper").show();
+
                     }else{
                         $error.html("Vous n'êtes pas autorisé, cassez vous !");
                     }
