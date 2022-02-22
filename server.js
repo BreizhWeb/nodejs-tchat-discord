@@ -1,55 +1,66 @@
 const express = require("express");
 const app = express();
-server= require("http").createServer(app);
+server = require("http").createServer(app);
 const io = require('socket.io')(server);
-const { users, rooms } = require('./data/data');
-let usernames = [];
+const fakedata = require('./modules/fakedata.js')
+const multirooms = require('./modules/multirooms.js')
+//const fs = require('fs');
 
 app.use(express.static('public'))
 
-app.get("/",(req,res)=>{
-    res.sendFile(__dirname + "/public/index.html");
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
 })
 
 const PORT = 3000;
 server.listen(PORT, () => {
-    console.log('le serveur ecoute sur le port %d', PORT);
+  console.log('le serveur ecoute sur le port %d', PORT);
 });
 
-io.sockets.on("connection",(socket)=>{
-    console.log("Socket connected...");
-    // Send Message
-    socket.on("send message",(data)=>{
-        //round 2 add username
-        io.sockets.emit('new message',{msg:data,user:socket.username});
-    });
+io.sockets.on("connection", (socket) => {
+  console.log("Socket connected...");
 
-    //round 2
-    socket.on("new user",function (data,callback){
-        if (!users.find(v => v.name == data)) {
-            callback(false);
-        }else{
-            callback(rooms);
-            socket.username = data;
-            usernames.push(socket.username);
-            updateUsernames();
-        }
-    }); 
+  socket.on("userlist", (data, callback) => {
+    console.log("userlist");
+    callback(fakedata.users.map(u => u.name));
+  });
 
-    //Update Usernames
-    function updateUsernames(){
-        io.sockets.emit("usernames",usernames);
+  socket.on("new user", function (name, callback) {
+    // If user dont exist
+    if (!fakedata.users.find(v => v.name == name)) {
+      callback(false);
+    } else {
+      console.log(`connected : ${name}`);
+      
+      socket.user = {
+        name: name,
+        chans: multirooms.getUserRooms(name)
+      }
+
+      multirooms.joinRooms(socket.user, socket)
+      multirooms.updateUsernames(socket.user, io.sockets)
+      callback(socket.user);
     }
+  });
+  // Send Message
+  socket.on("send message", (data, callback) => {
+    console.log(`[${data.chan}]${socket.user.name} : ${data.msg}`);
+    
+    io.sockets.to(`chan-${data.chan}`).emit('new message', {
+      msg: data.msg,
+      chan: data.chan,
+      user: socket.user.name
+    }, callback())
+  });
 
-    //Disconnect
-    socket.on("disconnect",function(data){
-        console.log("disconnect event");
-       if (!socket.username){
-           return;
-       }
-       usernames.splice(usernames.indexOf(socket.username),1);
-       updateUsernames();
-    });
+  //Disconnect
+  socket.on("disconnect", function (data) {
+    if (!socket.user?.name) {
+      return;
+    }
+    console.log(`disconnected : ${socket.user?.name}`);
+    multirooms.disconnect(socket.user, io.sockets)
+  });
 
 
 })

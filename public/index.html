@@ -1,114 +1,134 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Client CHAT</title>
-    <link href="./style.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Client CHAT</title>
+  <link rel="stylesheet" href="./style.css">
 </head>
+
 <body>
-    <div class="container">
-        <div class="namesWrapper">
-            <h2>Discord</h2>
-            <p>Entrez votre prénom :</p>
-            <div id="error"></div>
-            <form id="usernameForm">
-                <input type="text" size="35" id="username">
-                <input type="submit" value="Envoyer">
-            </form>
-        </div>
-
-        <div id="rooms">
-
-        </div>
-
-
+  <div id="container">
+    <div id="namesWrapper">
+      <h2>Chat IO</h2>
+      <p>Create username:</p>
+      <div id="error"></div>
+      <form id="usernameForm">
+        <input type="text" size="35" id="username">
+        <input type="submit" value="Submit">
+      </form>
+      <div class="utilisateurs"></div>
     </div>
 
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
-    <script>
-        $(function (){
-            var socket =io.connect();
-            var $messageForm = $("#messageForm");
-            var $message = $("#message");
-            var $chat = $("#chatWindow");
-            let $rooms = $('#rooms');
+    <div id="mainWrapper">
+      <div id="chatRooms">
+        <h3>Room</h3>
+      </div>
+      <div id="chans">
+      </div>
+    </div>
 
-            //round 2
-            var $usernameForm = $("#usernameForm");
-            var $users = $("#users");
-            var $username = $("#username");
-            var $error = $("#error");
+  </div>
 
+  <script src="./jquery-latest.min.js"></script>
+  <script src="./socket.io-3.0.1.min.js"></script>
+  <script>
+    $(function () {
+      var socket = io.connect();
+      socket.emit("userlist", 1, function (data) {
+        $('.utilisateurs').append(JSON.stringify(data));
+      });
+      let mainWrapper = $('#mainWrapper');
+      let $chans = $('#chans');
 
-            $messageForm.submit(function(e){
-                e.preventDefault();
-                console.log("Submittted..");
-                socket.emit("send message",$message.val());
-                $message.val("");
-            });
+      //round 2
+      var $usernameForm = $("#usernameForm");
+      var $username = $("#username");
+      var $error = $("#error");
 
-            //round 2 add the username
-            
-            
-            function newRoom(room){
-            $rooms.append(`
-                <div class="room" id="${room.id}">
-                    <h2>${room.name}</h2>
-                    <div class="userWrapper">
-                        <div id="users"></div>
-                    </div>
+      function convertToPlain(html) {
+
+        // Create a new div element
+        var tempDivElement = document.createElement("div");
+
+        // Set the HTML content with the given value
+        tempDivElement.innerHTML = html;
+
+        // Retrieve the text property of the element 
+        return tempDivElement.textContent || tempDivElement.innerText || "";
+      }
+
+      function newChan(chan) {
+        $chans.append(`
+                <div class="chan" id="chan-${chan.id}">
+                    <h2>${chan.name}</h2>
                     <div class="chatWrapper">
                         <div class="chatWindow"></div>
                         <form class="messageForm">
-                            <input type="text" size="35" class="message" placeholder="Ecrivez ici">
-                            <input type="submit" value="Envoyer">
+                            <input type="text" size="35" class="message" placeholder="Say something...">
+                            <input type="submit" value="Submit">
                         </form>
+                    </div>
+                    <div class="userWrapper">
+                        <div class="users">
+                          ${chan.users.map(u => "<div>" + convertToPlain(u) + "</div>").join('')}
+                        </div>
                     </div>
                 </div>
             `);
-            return room.id;
-        }
+        return chan.id;
+      }
 
-            //round 2
-            $usernameForm.submit(function(e){
+      //round 2 add the username
+      socket.on("new message", function (data, callback) {
+        console.log("new message :",data);
+        $(`#chan-${data.chan} .chatWindow`).append("<div class='message'><strong>" +
+          convertToPlain(data.user) +
+          "</strong>: " + convertToPlain(data.msg) + "</div>");
+      });
+
+      socket.on("connection", function (data) {});
+
+      //round 2
+      $usernameForm.submit(function (e) {
+        e.preventDefault();
+        socket.emit("new user", $username.val(), function (data) {
+          if (data) {
+            data.chans.forEach(chan => {
+              let id = newChan(chan);
+              let htmlChan = $(`#chan-${id}`);
+              let input = $(`#chan-${id} .message`);
+              htmlChan.submit(function (e) {
                 e.preventDefault();
-                socket.emit("new user",$username.val(),function(data){
-                    if(data){
-                        console.log(data);
-                        data.forEach(room => {
-                            let id = newRoom(room);
-                            roomid = $('#' + room.id);
-                            roomid.submit(function (e) {
-                                e.preventDefault();
-                                console.log(roomid.find('.chatWindow'));
-                                socket.on("new message",function(data){
-                                    roomid.find('.chatWindow')
-                                    .append(" test <br/>");
-                                });
-                            });
-                        });
-                        $("#namesWrapper").hide();
-                        $("#mainWrapper").show();
-                        $("#userWrapper").show();
-
-                    }else{
-                        $error.html("Vous n'êtes pas autorisé, cassez vous !");
-                    }
-                });
-                $username.val("");
-            });
-
-            socket.on("usernames",function(data){
+                socket.emit("send message", {
+                    msg: input.val(),
+                    chan: id
+                  },
+                  () => input.val('')
+                );
+              });
+              socket.on(`usernames${chan.id}`, function (usersdata) {
+                console.log(usersdata);
                 let html = "";
-                for (i=0;i<data.length;i++){
-                    html += data[i] + "<br>";
+                for (i = 0; i < usersdata.length; i++) {
+                  html += "<div>" + convertToPlain(usersdata[
+                    i]) + "</div>";
                 }
-                $users.html(html);
+                htmlChan.find('.users').html(html);
+              });
             });
-
+            $("#namesWrapper").hide();
+            $("#mainWrapper").show();
+            $("#userWrapper").show();
+          } else {
+            $error.html("Username is wrong");
+          }
         });
+        $username.val("");
+      });
 
-    </script>
+    });
+  </script>
 </body>
+
 </html>
