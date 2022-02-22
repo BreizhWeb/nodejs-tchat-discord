@@ -51,7 +51,7 @@ module.exports = {
       chans: [0, 1]
     }
   ],
-  Rooms: [
+  rooms: [
     {
       id: 0,
       name: 'MDS',
