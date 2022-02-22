@@ -34,7 +34,7 @@ io.sockets.on("connection",(socket)=>{
             usernames.push(socket.username);
             updateUsernames();
         }
-    });
+    }); 
 
     //Update Usernames
     function updateUsernames(){
