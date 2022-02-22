@@ -6,7 +6,6 @@ const fakedata = require('./modules/fakedata.js')
 const multirooms = require('./modules/multirooms.js')
 //const fs = require('fs');
 
-
 app.use(express.static('public'))
 
 app.get("/", (req, res) => {
@@ -41,7 +40,6 @@ io.sockets.on("connection", (socket) => {
       multirooms.joinRooms(socket.user, socket)
       multirooms.updateUsernames(socket.user, io.sockets)
       callback(socket.user);
-
     }
   });
   // Send Message
