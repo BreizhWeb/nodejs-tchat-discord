@@ -11,10 +11,16 @@
             <h2>Chat IO</h2>
             <p>Register :</p>
             <div id="error"></div>
-            <form id="registerForm">
-                <input type="text" size="35" id="username">
-                <input type="password" size="35" id="password">
+            <form id="registerForm" method="POST" action="./register">
+                <input type="text" size="35" id="username" name="username">
+                <input type="password" size="35" id="password" name="password">
                 <input type="submit" value="Register">
+            </form>
+            <p>Login : </p>
+            <form id="loginForm" method="POST" action="./login">
+                <input type="text" size="35" id="username" name="username">
+                <input type="password" size="35" id="password" name="password">
+                <input type="submit" value="Login">
             </form>
         </div>
 
@@ -51,12 +57,12 @@
             var $error = $("#error");
 
 
-            $messageForm.submit(function(e){
+            /*$messageForm.submit(function(e){
                 e.preventDefault();
                 console.log("Submittted..");
                 socket.emit("send message",$message.val());
                 $message.val("");
-            });
+            });*/
 
             //round 2 add the username
             socket.on("new message",function(data){
@@ -64,7 +70,7 @@
             });
 
             //round 2
-            $registerForm.submit(function(e){
+            /*$registerForm.submit(function(e){
                 e.preventDefault();
                 socket.emit("registration",[$username.val(),$password.val()],function(data){
                     if(data){
@@ -76,7 +82,7 @@
                     }
                 });
                 //$username.val("");
-            });
+            });*/
 
             socket.on("usernames",function(data){
                 let html = "";

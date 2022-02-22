@@ -2,13 +2,30 @@ const express = require("express");
 const app = express();
 server= require("http").createServer(app);
 const io = require('socket.io')(server);
+const crypto = require('crypto');
 let usernames = [];
+
+app.use(express.urlencoded({ extended:false }));
 
 app.use(express.static('public'))
 
 app.get("/",(req,res)=>{
     res.sendFile(__dirname + "/public/index.html");
 })
+
+app.post("/register",(req,res)=>{
+    res.send(req.body);
+    //res.sendFile(__dirname + "/public/index.html");
+})
+
+app.post("/login",(req,res)=>{
+    const md5sum = crypto.createHash('md5');
+    var password = md5sum.update(req.body.password).digest('hex');
+    res.send(password);
+    //res.sendFile(__dirname + "/public/index.html");
+})
+
+
 
 const PORT = 3000;
 server.listen(PORT, () => {
