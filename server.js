@@ -25,15 +25,16 @@ io.sockets.on("connection",(socket)=>{
     });
 
     //round 2
-    socket.on("new user",function (data,callback){
-        if(usernames.indexOf(data) != -1){
+    socket.on("registration",function (data,callback){
+        console.log(data);
+        /*if(usernames.indexOf(data) != -1){
             callback(false);
         }else{
             callback(true);
             socket.username = data;
             usernames.push(socket.username);
             updateUsernames();
-        }
+        }*/
     });
 
     //Update Usernames

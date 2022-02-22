@@ -7,13 +7,14 @@
 </head>
 <body>
     <div id="container">
-        <div id="namesWrapper">
+        <div id="register">
             <h2>Chat IO</h2>
-            <p>Create username:</p>
+            <p>Register :</p>
             <div id="error"></div>
-            <form id="usernameForm">
+            <form id="registerForm">
                 <input type="text" size="35" id="username">
-                <input type="submit" value="Submit">
+                <input type="password" size="35" id="password">
+                <input type="submit" value="Register">
             </form>
         </div>
 
@@ -43,9 +44,10 @@
             var $chat = $("#chatWindow");
 
             //round 2
-            var $usernameForm = $("#usernameForm");
+            var $registerForm = $("#registerForm");
             var $users = $("#users");
             var $username = $("#username");
+            var $password = $("#password");
             var $error = $("#error");
 
 
@@ -62,9 +64,9 @@
             });
 
             //round 2
-            $usernameForm.submit(function(e){
+            $registerForm.submit(function(e){
                 e.preventDefault();
-                socket.emit("new user",$username.val(),function(data){
+                socket.emit("registration",[$username.val(),$password.val()],function(data){
                     if(data){
                         $("#namesWrapper").hide();
                         $("#mainWrapper").show();
@@ -73,7 +75,7 @@
                         $error.html("Username is taken");
                     }
                 });
-                $username.val("");
+                //$username.val("");
             });
 
             socket.on("usernames",function(data){

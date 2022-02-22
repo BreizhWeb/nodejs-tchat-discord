@@ -1,20 +1,30 @@
 {
-  "name": "tp",
+  "name": "auth",
   "version": "1.0.0",
-  "description": "",
+  "description": "packages necessaire a lauthentification",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node server.js"
   },
   "keywords": [],
-  "author": "",
+  "author": "Elouan",
   "license": "ISC",
   "dependencies": {
+    "body-parser": "^1.19.2",
     "express": "^4.17.3",
+    "express-rate-limit": "^6.3.0",
     "socket.io": "^4.4.1"
   },
   "devDependencies": {
     "nodemon": "^2.0.15"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BreizhWeb/NodeJs-Tchat.git"
+  },
+  "bugs": {
+    "url": "https://github.com/BreizhWeb/NodeJs-Tchat/issues"
+  },
+  "homepage": "https://github.com/BreizhWeb/NodeJs-Tchat#readme"
 }
