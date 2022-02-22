@@ -1,14 +1,14 @@
-const { ROLE } = require('../data')
+const { roles } = require('../data/data')
 
 function canViewProject(user, project) {
   return (
-    user.role === ROLE.ADMIN ||
+    user.role === roles.ADMIN ||
     project.userId === user.id
   )
 }
 
 function scopedProjects(user, projects) {
-  if (user.role === ROLE.ADMIN) return projects
+  if (user.role === roles.ADMIN) return projects
   return projects.filter(project => project.userId === user.id)
 }
 

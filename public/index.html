@@ -8,29 +8,20 @@
 <body>
     <div id="container">
         <div id="namesWrapper">
-            <h2>Chat IO</h2>
-            <p>Create username:</p>
+            <h2>Discord</h2>
+            <p>Entrez votre prénom :</p>
             <div id="error"></div>
             <form id="usernameForm">
                 <input type="text" size="35" id="username">
-                <input type="submit" value="Submit">
+                <input type="submit" value="Envoyer">
             </form>
         </div>
 
-        <div id="mainWrapper">
-            <h2>ChatIO</h2>
-            <div id="chatWrapper">
-                <div id="chatWindow"></div>
-                <form id="messageForm">
-                    <input type="text" size="35" id="message" placeholder="Say something...">
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
+        <div id="rooms">
+
         </div>
 
-        <div id="userWrapper">
-            <div id="users"></div>
-        </div>
+
     </div>
 
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
@@ -41,6 +32,7 @@
             var $messageForm = $("#messageForm");
             var $message = $("#message");
             var $chat = $("#chatWindow");
+            let $rooms = $('#rooms');
 
             //round 2
             var $usernameForm = $("#usernameForm");
@@ -60,17 +52,39 @@
             socket.on("new message",function(data){
                 $chat.append("<strong>" + data.user + "</strong>: " + data.msg + "<br/>");
             });
+            
+            function newRoom(room){
+            $rooms.append(`
+                <div class="room" id="${room.id}">
+                    <h2>${room.name}</h2>
+                    <div class="chatWrapper">
+                        <div class="chatWindow"></div>
+                        <form class="messageForm">
+                            <input type="text" size="35" class="message" placeholder="Say something...">
+                            <input type="submit" value="Envoyer">
+                        </form>
+                    </div>
+                    <div id="userWrapper">
+                        <div id="users"></div>
+                    </div>
+                </div>
+            `);
+            return room.id;
+        }
 
             //round 2
             $usernameForm.submit(function(e){
                 e.preventDefault();
                 socket.emit("new user",$username.val(),function(data){
                     if(data){
+                        data.rooms.forEach(room => {
+                        let id = newRoom(room);
+                        });
                         $("#namesWrapper").hide();
                         $("#mainWrapper").show();
                         $("#userWrapper").show();
                     }else{
-                        $error.html("Username is taken");
+                        $error.html("Vous n'êtes pas autorisé, cassez vous !");
                     }
                 });
                 $username.val("");
@@ -85,6 +99,7 @@
             });
 
         });
+
     </script>
 </body>
 </html>

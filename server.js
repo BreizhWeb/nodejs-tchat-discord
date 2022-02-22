@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 server= require("http").createServer(app);
 const io = require('socket.io')(server);
+const { users, rooms } = require('./data/data');
 let usernames = [];
 
 app.use(express.static('public'))
@@ -26,11 +27,14 @@ io.sockets.on("connection",(socket)=>{
 
     //round 2
     socket.on("new user",function (data,callback){
-        if(usernames.indexOf(data) != -1){
+        if (!users.find(v => v.name == data)) {
             callback(false);
         }else{
             callback(true);
-            socket.username = data;
+            socket.user = {
+                name: name,
+                rooms: rooms
+              };
             usernames.push(socket.username);
             updateUsernames();
         }
