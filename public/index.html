@@ -24,6 +24,7 @@
       <div id="chatRooms">
         <h3>Room</h3>
       </div>
+      <div id="btnRoomsList"></div>
       <div id="chans">
       </div>
     </div>
@@ -33,7 +34,7 @@
   <script src="./jquery-latest.min.js"></script>
   <script src="./socket.io-3.0.1.min.js"></script>
   <script>
-    $(function () {
+    $(document).ready(function() {
       var socket = io.connect();
       socket.emit("userlist", 1, function (data) {
         $('.utilisateurs').append(JSON.stringify(data));
@@ -94,7 +95,19 @@
         e.preventDefault();
         socket.emit("new user", $username.val(), function (data) {
           if (data) {
-            data.chans.forEach(chan => {
+            for (i=0; i<data.chans.length; i++) {
+                var btnRoom = document.createElement("button");
+                btnRoom.innerHTML = data.chans[i].name;
+                btnRoom.id = `btn-${data.chans[i].id}`;
+                btnRoom.classList = "btnRoom";
+                document.getElementById("btnRoomsList").appendChild(btnRoom);
+            }
+            $(".btnRoom").on("click", function(e) {
+              $(".chan").remove();
+              var btnClicked = e.target;
+              var reg = btnClicked.id.match(/[0-9]+/);
+              chan = data.chans[reg];
+              
               let id = newChan(chan);
               let htmlChan = $(`#chan-${id}`);
               let input = $(`#chan-${id} .message`);

@@ -1,0 +1,35 @@
+#btnRoomsList {
+    float:left;
+    border: 1px #ccc solid;
+    border-radius: 10px;
+    background: #f4f4f4;
+    padding: 10px;
+    margin-right: 20px;
+}
+
+#btnRoomsList button {
+    display: block;
+    margin: 10px 0;
+    cursor: pointer;
+}
+
+.btn-logo {
+    width: 64px;
+    margin-right: 4px;
+}
+
+.btn-name {
+    font-weight: 600;
+    margin-right: 32px;
+}
+
+.chan-logo {
+    width: 72px;
+    float: left;
+    margin-right: 8px;
+}
+
+.chatWindow {
+    overflow-y: scroll;
+    margin-bottom: 20px;
+}
