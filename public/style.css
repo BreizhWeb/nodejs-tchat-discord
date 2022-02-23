@@ -1,0 +1,45 @@
+body{
+    background: #f9f9f9;
+}
+#container{
+    width: 700px;
+    margin: 0 auto;
+}
+#chatWindow{
+    height: 250px;
+}
+#mainWrapper{
+    display: none;
+}
+#chatWrapper{
+    float:left;
+    border: 1px #ccc solid;
+    border-radius: 10px;
+    background: #f4f4f4;
+    padding: 10px;
+}
+#userWrapper{
+    display: none;
+    float:left;
+    border: 1px #ccc solid;
+    border-radius: 10px;
+    background: #f4f4f4;
+    padding: 10px;
+    margin-left: 20px;
+    width: 150px;
+    max-height: 200px;
+    width: 500px;
+    height: 500px;
+}
+#namesWrapper {
+    float:left;
+    border: 1px #ccc solid;
+    border-radius: 10px;
+}
+input{
+    height: 30px;
+    border:solid 1px #ccc;
+}
+.message{
+    width: 450px;
+} 

@@ -1,14 +1,17 @@
 const fakedata = require('./fakedata.js')
 
-const user = 10000
-const admin = 11111
+const user = 0b100000
+const admin = 0b111111
 const role = [admin,user];
 
-const seeChan = 10000
-const deleteMessage = 01000
-const inviteUser = 00100
-const deleteUser = 00010
-const deleteRoom = 00001
+const control = {
+ seeChan = 0b100000,
+ deleteMessage = 0b010000,
+ inviteUser = 0b001000,
+ deleteUser = 0b000100,
+ deleteRoom = 0b000010,
+ changeRole = 0b000001
+}
 
 // USER
  
@@ -26,10 +29,11 @@ var getUserRoomsId = function (user_id) {
 // get action
 function getActionRight(user, room, action) {  
     userRole =  getRightFromUser(user,room)
-    return (userRole && action == action)
+    return ((userRole & action ) == action)
   }
 
 module.exports = { 
     getActionRight,
-    getUserRoomsId
+    getUserRoomsId,
+    control
 }
