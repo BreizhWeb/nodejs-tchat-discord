@@ -5,6 +5,7 @@ const io = require('socket.io')(server);
 const crypto = require('crypto');
 var cookieParser = require('cookie-parser');
 app.use(cookieParser());
+const { encrypt, decrypt } = require('./crypto');
 let usernames = [];
 
 app.use(express.urlencoded({ extended:false }));
@@ -17,9 +18,9 @@ app.get("/",(req,res)=>{
 
 app.post("/register",(req,res)=>{
     if (req.body.username == "existe") {
-        res.json({message:"cestok",error:"true"});
+        res.json({error:"true"});
     } else {
-        res.json({message:"cestok",error:"false"});
+        res.json({username:req.body.username,error:"false"});
     }
     //res.send(req.body);
     //res.sendFile(__dirname + "/public/index.html");
@@ -27,9 +28,14 @@ app.post("/register",(req,res)=>{
 
 app.post("/login",(req,res)=>{
     if (req.body.username == "existe" && req.body.password == "azertyuiop") {
-        res.json({message:"cestok",error:"false"});
+        var token = req.body.username+"#####"+req.body.password+"#####"+Date.now().toString()+"#####17cm";
+        hToken = encrypt(token);
+        console.log(hToken.content);
+        res.cookie("tokenIv",hToken.iv,{maxAge: 600000});
+        res.cookie("tokenContent",hToken.content,{maxAge: 600000});
+        res.json({error:"false"});
     } else {
-        res.json({message:"cestok",error:"true"});
+        res.json({error:"true"});
     }
     const md5sum = crypto.createHash('md5');
     var password = md5sum.update(req.body.password).digest('hex');
@@ -39,6 +45,20 @@ app.post("/login",(req,res)=>{
     puis renvoyer la page
     */
     //res.sendFile(__dirname + "/public/index.html");
+})
+
+app.post("/verifToken",(req,res)=>{
+    if (req.body.tokenIv!=undefined && req.body.tokenContent!=undefined) {
+        var hash = {iv:req.body.tokenIv,content:req.body.tokenContent};
+        var tokenSplit = decrypt(hash).split("#####");
+        if (tokenSplit[0]=="existe" && tokenSplit[1]=="azertyuiop" && parseInt(tokenSplit[2])+600000>=Date.now() && tokenSplit[3]=="17cm") {
+            res.json({error:"false"});
+        } else {
+            res.json({error:"true"});
+        }
+    } else {
+        res.json({error:"true"});
+    }
 })
 
 

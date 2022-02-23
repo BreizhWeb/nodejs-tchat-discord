@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Client CHAT</title>
+    <link href="./style.css" rel="stylesheet">
+</head>
+<body>
+	<p>Alors?</p>
+	<input type="button" name="VALERIE" id="deco" value="deco">
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <script>
+
+        $(function (){
+
+            function getCookie(name) {
+              const value = `; ${document.cookie}`;
+              const parts = value.split(`; ${name}=`);
+              if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            console.log(getCookie("token"));
+            if (getCookie("tokenIv") != undefined && getCookie("tokenContent") != undefined) {
+                hTokenIv = getCookie("tokenIv");
+                hTokenContent = getCookie("tokenContent");
+                $.post("./verifToken",
+                {
+                  tokenIv: hTokenIv,
+                  tokenContent: hTokenContent
+                },
+                function(data,status){
+                    if (status=="success") {
+                        if (data.error == "true") {
+                            window.location.href="./";
+                        }
+                    }
+                });
+            } else {
+            	window.location.href="./";
+            }
+
+          	$("#deco").click(function() {
+          		document.cookie = "tokenIv=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          		document.cookie = "tokenContent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+          		window.location.href="./";
+          	});
+
+        });
+    </script>
+</body>
+</html>
