@@ -6,9 +6,17 @@ const fakedata = require('./fakedata.js')
  * @param {object} socket objet du socket utilisateur
  */
 var joinRooms = function (user, socket) {
-  user.chans.forEach(chan => {
+  getUserRoomsId(user.id).forEach(chan => {
     socket.join(`chan-${chan.id}`)
   })
+}
+/**
+ * Trouve l'id des chans d'un utilisateur
+ * @param {int} id Id de l'utilisateur
+ * @returns array des id chans de l'utilisateurs
+ */
+var getUserRoomsId = function (id) {
+  return fakedata.access.filter(acc => acc.id_user==id)?.map(elt => elt.id_room)
 }
 /**
  * Trouve l'utilisateur en bdd
@@ -17,10 +25,7 @@ var joinRooms = function (user, socket) {
  * @returns array des chans de l'utilisateurs
  */
 var getUserRooms = function (name) {
-  return fakedata.users.find(v => v.name == name)?.chans.
-    map(id => {
-      return fakedata.servers.find(v => v.id == id)
-    });
+  return getUserRoomsId(fakedata.users.find(v => v.name == name)?.id)?.map(r=> fakedata.servers.find(s=>s.id==r))
 }
 /**
  * Boucle sur tous les chans de l'utilisateur
@@ -29,7 +34,7 @@ var getUserRooms = function (name) {
  * @param {object} sockets objet des sockets
  */
 var updateUsernames = function (user, sockets) {
-  user.chans.forEach(chan => {
+  getUserRoomsId(user.id).forEach(chan => {
     var theChan = fakedata.servers.find(s => s.id == chan.id);
     if (theChan.users.indexOf(user.name) == -1)
       theChan.users.push(user.name)
@@ -43,7 +48,7 @@ var updateUsernames = function (user, sockets) {
  * @param {object} sockets objet des sockets
  */
 var disconnect = function (user, sockets) {
-  user.chans.forEach(chan => {
+  getUserRoomsId(user.id).forEach(chan => {
     let theChan = fakedata.servers.find(s => s.name == chan.name);
     if (theChan.users.indexOf(user.name) != -1)
       theChan.users.splice(theChan.users.indexOf(user.name), 1);
