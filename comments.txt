@@ -6,3 +6,4 @@ npm install nodemon --save-dev
 npm install mysql
 npm install dotenv --save
 npm install body-parser
+npm install winston

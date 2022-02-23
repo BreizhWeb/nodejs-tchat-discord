@@ -1,3 +1,5 @@
+
+const roles = require("./db_roles");
 module.exports = {
   //--------------------------------------------------CREATE---------------------------------------------//
 
@@ -19,6 +21,7 @@ module.exports = {
       if (err) throw err;
       console.log(results);
     });
+
   },
 
   //--------------------------------------------------READ---------------------------------------------//
@@ -99,13 +102,14 @@ module.exports = {
    *
    * @return response()
    */
-   deleteRoom: function (id){
+   delete: function (id){
     let sqlQuery = "DELETE FROM rooms WHERE room_id=" + id + "";
 
       con.query(sqlQuery, (err, results) => {
       if (err) throw err;
       console.log(results);
     });
-  }
 
+    roles.deleteByRoom(id);
+  }
 }

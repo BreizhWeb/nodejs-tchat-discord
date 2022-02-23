@@ -1,3 +1,13 @@
+const mysql = require("mysql");
+
+//création d'une connection a la bdd
+const con = mysql.createConnection({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER_NAME,
+  password: process.env.DB_USER_PASSWORD,
+  database: process.env.DB_NAME,
+});
+const io = require("socket.io")(server);
 module.exports = {
 //--------------------------------------------------CREATE---------------------------------------------//
 
@@ -9,7 +19,7 @@ module.exports = {
  create: function (aut, contenu) {
   var ladate= new Date();
   var strDate = ladate.getFullYear()+"-"+(ladate.getMonth()+1)+"-"+ladate.getDate();
-  getIdByPseudo(auteur);
+  var i = getIdByPseudo(aut);
   con.query("INSERT INTO messages(date, content, id_user, id_room) VALUES ('" + strDate + "','" + contenu + "', " + i + ", 1)", function (err, result) {
       if (err) throw err;
       console.log(result);
