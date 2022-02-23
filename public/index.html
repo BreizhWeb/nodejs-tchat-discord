@@ -102,12 +102,7 @@
               btnRoom.classList = "btnRoom";
               document.getElementById("btnRoomsList").appendChild(btnRoom);
             }
-            $(".btnRoom").on("click", function (e) {
-              $(".chan").remove();
-              var btnClicked = e.target;
-              var reg = btnClicked.id.match(/[0-9]+/);
-              chan = data.chans[reg];
-
+            data.chans.forEach(chan => {
               let id = newChan(chan);
               let htmlChan = $(`#chan-${id}`);
               let input = $(`#chan-${id} .message`);
@@ -133,6 +128,15 @@
             $("#namesWrapper").hide();
             $("#mainWrapper").show();
             $("#userWrapper").show();
+            $('.chan').hide();
+
+            $(".btnRoom").on("click", function (e) {
+              var btnClicked = e.target;
+              var reg = btnClicked.id.match(/[0-9]+/);
+              $('.chan').hide();
+              $('#chan-'+reg).show();
+            });
+
           } else {
             $error.html("Username is wrong");
           }
