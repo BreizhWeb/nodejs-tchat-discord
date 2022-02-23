@@ -50,10 +50,10 @@ let users = [
 let roles = [
   {
       id: 0,
-      name: 'Admin',
+      name: 'admin',
   },{
       id: 1,
-      name: 'User',
+      name: 'user',
   },
 
 ];
