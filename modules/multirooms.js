@@ -6,7 +6,7 @@ const fakedata = require('./fakedata.js')
  * @param {object} socket objet du socket utilisateur
  */
 var joinRooms = function (user, socket) {
-  getUserRoomsId(user.id).forEach(chan => {
+  getUserRooms(user.name).forEach(chan => {
     socket.join(`chan-${chan.id}`)
   })
 }
@@ -35,9 +35,9 @@ var getUserRooms = function (name) {
  */
 var updateUsernames = function (user, sockets) {
   getUserRoomsId(user.id).forEach(chan => {
-    var theChan = fakedata.servers.find(s => s.id == chan.id);
-    if (theChan.users.indexOf(user.name) == -1)
-      theChan.users.push(user.name)
+    var theChan = fakedata.servers.find(s => s.id == chan);
+    if (theChan.users?.indexOf(user.name) == -1)
+      theChan.users.push(user)
     sockets.to(`chan-${chan.id}`).emit(`usernames${theChan.id}`, theChan.users);
   })
 }
@@ -50,7 +50,8 @@ var updateUsernames = function (user, sockets) {
 var disconnect = function (user, sockets) {
   getUserRoomsId(user.id).forEach(chan => {
     let theChan = fakedata.servers.find(s => s.name == chan.name);
-    if (theChan.users.indexOf(user.name) != -1)
+    console.log(user,theChan.users);
+    if (theChan.users.indexOf(user) != -1)
       theChan.users.splice(theChan.users.indexOf(user.name), 1);
     sockets.to(`chan-${chan.id}`).emit(`usernames${theChan.id}`, theChan.users);
   })

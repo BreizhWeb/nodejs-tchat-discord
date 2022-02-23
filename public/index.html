@@ -73,7 +73,7 @@
             </div>
             <div class="userWrapper">
               <div class="users">
-                ${chan.users.map(u => `<div id="user-${u.id}">${convertToPlain(u)}</div>`).join('')}
+                ${chan.users.map(u => `<div id="user-${u.id}">${convertToPlain(u.name)}</div>`).join('')}
               </div>
             </div>
           </div>
@@ -93,8 +93,10 @@
 
       //round 2
       $usernameForm.submit(function (e) {
+        console.log($username.val());
         e.preventDefault();
         socket.emit("new user", $username.val(), function (data) {
+          console.log(data);
           if (data) {
             for (i = 0; i < data.chans.length; i++) {
               var btnRoom = document.createElement("button");
@@ -118,12 +120,7 @@
               });
               socket.on(`usernames${chan.id}`, function (usersdata) {
                 console.log(usersdata);
-                let html = "";
-                for (i = 0; i < usersdata.length; i++) {
-                  html += "<div>" + convertToPlain(usersdata[
-                    i]) + "</div>";
-                }
-                htmlChan.find('.users').html(html);
+                htmlChan.find('.users').html(usersdata.map(u => `<div id="user-${u.id}">${convertToPlain(u.name)}</div>`).join(''));
               });
             });
             $("#namesWrapper").hide();
