@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <title>Client CHAT</title>
     <link href="./style.css" rel="stylesheet">
+    <style type="text/css">
+        input {
+            outline: none;
+        }
+    </style>
 </head>
 <body>
     <div id="container">
@@ -11,19 +16,22 @@
             <h2>Chat IO</h2>
             <p>Register :</p>
             <div id="error"></div>
-            <form id="registerForm" method="POST" action="./register">
-                <input type="text" size="35" id="username" name="username">
-                <input type="password" size="35" id="password" name="password">
-                <input type="submit" value="Register">
+            <form id="rForm">
+                <input type="text" size="35" id="rUsername" name="rUsername">
+                mdp :
+                <input type="password" size="35" id="rPassword" name="rPassword" style="outline:none;">
+                confimer mdp :
+                <input type="password" size="35" id="rPassword2" name="rPassword2" style="outline:none;">
+                <input type="button" value="Register" id="rSubmit" disabled="true">
             </form>
             <p>Login : </p>
-            <form id="loginForm" method="POST" action="./login">
-                <input type="text" size="35" id="username" name="username">
-                <input type="password" size="35" id="password" name="password">
-                <input type="submit" value="Login">
+            <form id="lForm">
+                <input type="text" size="35" id="lUsername" name="lUsername">
+                <input type="password" size="35" id="lPassword" name="lPassword">
+                <input type="button" value="Login" id="lSubmit" disabled="true">
             </form>
         </div>
-
+n
         <div id="mainWrapper">
             <h2>ChatIO</h2>
             <div id="chatWrapper">
@@ -43,6 +51,7 @@
     <script src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="http://localhost:3000/socket.io/socket.io.js"></script>
     <script>
+
         $(function (){
             var socket =io.connect();
             var $messageForm = $("#messageForm");
@@ -56,6 +65,116 @@
             var $password = $("#password");
             var $error = $("#error");
 
+            var rPassword = document.getElementById("rPassword");
+            var rPassword2 = document.getElementById("rPassword2");
+            var rUsername = document.getElementById("rUsername");
+            var rSubmit = document.getElementById("rSubmit");
+
+            var lPassword = document.getElementById("lPassword");
+            var lUsername = document.getElementById("lUsername");
+            var lSubmit = document.getElementById("lSubmit");
+
+            $("#rSubmit").click(function() {
+                $.post("./register",
+                {
+                  username: rUsername.value,
+                  password: rPassword.value
+                },
+                function(data,status){
+                    if (status=="success") {
+                        if (data.error == "true") {
+                            alert("Votre username est déjà utilisé");
+                        } else {
+                            alert("pas erreur");
+                        }
+                    }
+                });
+            });
+
+            $("#lSubmit").click(function() {
+                $.post("./login",
+                {
+                  username: lUsername.value,
+                  password: lPassword.value
+                },
+                function(data,status){
+                    if (status=="success") {
+                        if (data.error == "true") {
+                            alert("Vos identifiants ne correspondent pas");
+                        } else {
+                            alert("pas erreur");
+                        }
+                    }
+                });
+            });
+
+            function rCheck () {
+                if (rPassword.value.length >= 8 && rPassword.value == rPassword2.value && rUsername.value.length >= 2) {
+                    rSubmit.disabled = false;
+                }
+            }
+
+            $("#rPassword2").keyup(function() {
+                if (this.value != rPassword.value) {
+                    rSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                rCheck();
+            });
+
+            $("#rPassword").keyup(function() {
+                if (this.value.length < 8) {
+                    rSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                if (rPassword2.value != rPassword.value) {
+                    rSubmit.disabled = true;
+                    rPassword2.style.border = "1px solid red";
+                } else {
+                    rPassword2.style.border = "1px solid green";
+                }
+                rCheck();
+            });
+
+            $("#rUsername").keyup(function() {
+                if (this.value.length < 2) {
+                    rSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                rCheck();
+            });
+
+            function lCheck () {
+                if (lPassword.value.length >= 8 && lUsername.value.length >= 2) {
+                    lSubmit.disabled = false;
+                }
+            }
+
+            $("#lPassword").keyup(function() {
+                if (this.value.length < 8) {
+                    lSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                lCheck();
+            });
+
+            $("#lUsername").keyup(function() {
+                if (this.value.length < 2) {
+                    lSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                lCheck();
+            });
 
             /*$messageForm.submit(function(e){
                 e.preventDefault();
@@ -75,7 +194,7 @@
                 socket.emit("registration",[$username.val(),$password.val()],function(data){
                     if(data){
                         $("#namesWrapper").hide();
-                        $("#mainWrapper").show();
+                        $("#mainW;zrapper").show();
                         $("#userWrapper").show();
                     }else{
                         $error.html("Username is taken");
