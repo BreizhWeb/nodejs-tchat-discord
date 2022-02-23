@@ -34,7 +34,7 @@
   <script src="./jquery-latest.min.js"></script>
   <script src="./socket.io-3.0.1.min.js"></script>
   <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
       var socket = io.connect();
       socket.emit("userlist", 1, function (data) {
         $('.utilisateurs').append(JSON.stringify(data));
@@ -61,28 +61,28 @@
 
       function newChan(chan) {
         $chans.append(`
-                <div class="chan" id="chan-${chan.id}">
-                    <h2>${chan.name}</h2>
-                    <div class="chatWrapper">
-                        <div class="chatWindow"></div>
-                        <form class="messageForm">
-                            <input type="text" size="35" class="message" placeholder="Say something...">
-                            <input type="submit" value="Submit">
-                        </form>
-                    </div>
-                    <div class="userWrapper">
-                        <div class="users">
-                          ${chan.users.map(u => "<div>" + convertToPlain(u) + "</div>").join('')}
-                        </div>
-                    </div>
-                </div>
-            `);
+          <div class="chan" id="chan-${chan.id}">
+            <h2>${chan.name}</h2>
+            <div class="chatWrapper">
+              <div class="chatWindow"></div>
+              <form class="messageForm">
+                <input type="text" size="35" class="message" placeholder="Say something...">
+                <input type="submit" value="Submit">
+              </form>
+            </div>
+            <div class="userWrapper">
+              <div class="users">
+                ${chan.users.map(u => `<div id="user-${u.id}">${convertToPlain(u)}</div>`).join('')}
+              </div>
+            </div>
+          </div>
+        `);
         return chan.id;
       }
 
       //round 2 add the username
       socket.on("new message", function (data, callback) {
-        console.log("new message :",data);
+        console.log("new message :", data);
         $(`#chan-${data.chan} .chatWindow`).append("<div class='message'><strong>" +
           convertToPlain(data.user) +
           "</strong>: " + convertToPlain(data.msg) + "</div>");
@@ -95,19 +95,19 @@
         e.preventDefault();
         socket.emit("new user", $username.val(), function (data) {
           if (data) {
-            for (i=0; i<data.chans.length; i++) {
-                var btnRoom = document.createElement("button");
-                btnRoom.innerHTML = data.chans[i].name;
-                btnRoom.id = `btn-${data.chans[i].id}`;
-                btnRoom.classList = "btnRoom";
-                document.getElementById("btnRoomsList").appendChild(btnRoom);
+            for (i = 0; i < data.chans.length; i++) {
+              var btnRoom = document.createElement("button");
+              btnRoom.innerHTML = data.chans[i].name;
+              btnRoom.id = `btn-${data.chans[i].id}`;
+              btnRoom.classList = "btnRoom";
+              document.getElementById("btnRoomsList").appendChild(btnRoom);
             }
-            $(".btnRoom").on("click", function(e) {
+            $(".btnRoom").on("click", function (e) {
               $(".chan").remove();
               var btnClicked = e.target;
               var reg = btnClicked.id.match(/[0-9]+/);
               chan = data.chans[reg];
-              
+
               let id = newChan(chan);
               let htmlChan = $(`#chan-${id}`);
               let input = $(`#chan-${id} .message`);

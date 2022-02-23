@@ -1,5 +1,6 @@
 #btnRoomsList {
     float:left;
+    width:40px;
     border: 1px #ccc solid;
     border-radius: 10px;
     background: #f4f4f4;
@@ -12,7 +13,37 @@
     margin: 10px 0;
     cursor: pointer;
 }
-
+.chatWrapper{
+    display: inline-block;
+    width: calc(90% - 250px);
+    min-width: 300px;
+    border: 1px #ccc solid;
+    border-radius: 10px;
+    background: #f4f4f4;
+    padding: 10px;
+}
+.userWrapper{
+    display: inline-block;
+    border: 1px #ccc solid;
+    border-radius: 10px;
+    background: #f4f4f4;
+    padding: 10px;
+    margin-left: 20px;
+    width: 150px;
+    max-height: 200px;
+}
+.namesWrapper {
+    float:left;
+    border: 1px #ccc solid;
+    border-radius: 10px;
+    background: #f4f4f4;
+    padding: 10px;
+    margin-left: 20px;
+}
+input{
+    height: 30px;
+    border:solid 1px #ccc;
+}
 .btn-logo {
     width: 64px;
     margin-right: 4px;
