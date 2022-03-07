@@ -8,12 +8,12 @@ module.exports = { users: users , rooms: rooms, messages: messages, roles: roles
 /*
 {
   users: {
-    create: [Function: create], --> Créer un utilisateur
+    create: [Function: createUser], --> Créer un utilisateur
     getUsers: [Function: getUsers], --> Récupérer un utilisateur
     getUserById: [Function: getUserById], --> Récupérer un utilisateur par son ID
     getIdByPseudo: [Function: getIdByPseudo], --> Récupérer l'ID d'un utilisateur par son pseudo
-    update: [Function: update], --> modifier un utilisateur
-    delete: [Function: delete] --> supprimer un utilisateur
+    update: [Function: updateUser], --> modifier un utilisateur
+    delete: [Function: deleteUser] --> supprimer un utilisateur
   },
   rooms: {
     create: [Function: create], --> Créer une conversation
@@ -32,9 +32,11 @@ module.exports = { users: users , rooms: rooms, messages: messages, roles: roles
   },
   roles: {
     create: [Function: create], --> Créer un rôle
-    selectAllByRoom: [Function: selectAllByRoom], --> récupérer tous les rôles d'une conversation
+    selectAllByRoom: [Function: selectAllByRoom], --> récupérer tous les rôles d'une conversation filtré par une room
+    selectAllByUser: [Function: selectAllByUser], --> récupérer tous les rôles d'une conversation filtré par un user
+    selectAll: [Function: selectAll], --> récupérer tous les rôles d'une conversation
     update: [Function: update], --> modifier le rôle d'un utilisateur
-    delete: [Function: delete], --> supprimmer le rôle d'un utilisateur en BDD quand il est supprimer d'une conversation
+    delete: [Function: deleteUser], --> supprimmer le rôle d'un utilisateur en BDD quand il est supprimer d'une conversation
     deleteByRoom: [Function: deleteByRoom]  --> supprimer les rôles de tous les utilisateurs d'une conversation quand elle est supprimée
   }
 }
