@@ -41,7 +41,7 @@ io.sockets.on("connection", async (socket) => {
       callback(false);
     } else {
       console.log(`connected : ${name}`);
-      getIdByPseudo(name);
+      //db.getIdByPseudo(name);
       //socket.user.chans = multirooms.getUserRooms(name)
       //console.log(socket.user);
       //multirooms.joinRooms(socket.user, socket)

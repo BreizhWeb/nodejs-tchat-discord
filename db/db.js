@@ -6,7 +6,7 @@ const pool = mysql.createPool({
   database: process.env.DB_NAME,
 });
 
-pool.queryAsync = (sql, values) => {
+queryAsync = (sql, values) => {
   return new Promise((resolve, reject) => {
     pool.query(sql, values, (error, results, fields) => {
       if (error) {
@@ -18,7 +18,7 @@ pool.queryAsync = (sql, values) => {
 };
 
 getUsers = async function () {
-  return pool.queryAsync(`
+  return queryAsync(`
     SELECT * FROM users
   `);
 }
