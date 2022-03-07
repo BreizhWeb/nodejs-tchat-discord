@@ -3,10 +3,6 @@ $(document).ready(function () {
   socket.emit("userlist", 1, function (data) {
     $('.utilisateurs').append(JSON.stringify(data));
   });
-  //round 2
-  var $usernameForm = $("#usernameForm");
-  var $username = $("#username");
-  var $error = $("#error");
 
   function convertToPlain(html) {
     // Create a new div element
@@ -43,23 +39,26 @@ $(document).ready(function () {
     `);
     return chan.id;
   }
+
   function sendMsg(msg,chanid) {
     socket.emit("send message", {
       msg: msg,
       chan: chanid
     },
-      () => input.val('')
+      () => $(`#chan-${chanid} .message`).val('')
     );
   }
+
   function switchChan(chan) {
     $(".chan").hide();
-    let htmlChan = $(`#chan-${chan.id_room}`);
-    let input = $(`#chan-${chan.id_room} .message`);
-    htmlChan.show()
-    htmlChan.submit(function (e) {
+    $(`#chan-${chan.id_room}`).show().submit(function (e) {
       e.preventDefault();
-      sendMsg(input.val(),chan.id_room) 
-    });
+      sendMsg($(`#chan-${chan.id_room} .message`).val(),chan.id_room) 
+    })
+    /**
+     * Gestion des users connectés
+     *
+     * 
     socket.on(`usernames${chan.id_room}`, function (usersdata) {
       console.log(usersdata);
       let html = "";
@@ -67,10 +66,11 @@ $(document).ready(function () {
         html += "<div>" + convertToPlain(usersdata[i]) + "</div>";
       }
       htmlChan.find('.users').html(html);
-    });
+    })*/
     $("#login").remove()
     $("#mainWrapper").show()
   }
+
   function buildUI(data) {
     data.chans?.forEach(chan=>newChan(chan))
     $(".btnRoom").on("click", function (e) {
@@ -78,22 +78,26 @@ $(document).ready(function () {
     })
     switchChan(data.chans[0])
   }
-  //round 2 add the username
+  
   socket.on("new message", function (data, callback) {
-    console.log("new message :", data);
-    $(`#chan-${data.chan} .chatWindow`).append("<div class='message'><strong>" + convertToPlain(data.user) + "</strong>: " + convertToPlain(data.msg) + "</div>");
-  });
+    console.log("new message :", data)
+    $(`#chan-${data.chan} .chatWindow`).append(`
+      <div class='message'>
+        <strong>${convertToPlain(data.user)}</strong>: 
+        ${convertToPlain(data.msg)}
+      </div>
+    `)
+  })
 
   socket.on("connection", function (data) {
     //round 2
-    $usernameForm.submit(function (e) {
-      e.preventDefault();
-      console.log('event', e);
-      socket.emit("new user", $username.val(), function (data) {
-        console.log('data', data);
-        data ? buildUI(data):$error.html("Username is wrong");
+    $("#usernameForm").submit(function (e) {
+      e.preventDefault()
+      socket.emit("new user", $("#username").val(), function (data) {
+        console.log('data', data)
+        data ? buildUI(data):$("#error").html("Username is wrong")
       })
-      $username.val("");
+      $("#username").val("")
     })
   })
 })

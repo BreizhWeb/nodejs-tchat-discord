@@ -35,21 +35,16 @@ io.sockets.on("connection", async (socket) => {
   });
 
   socket.on("new user", async function (name, callback) {
-    let userid = await db.users.getIdByPseudo(name)
-    console.log(userid);
-    socket.user = await db.users.getUserById(userid)
-    console.log(socket.user);
+    socket.user = await db.users.getUserById(await db.users.getIdByPseudo(name))
     // If user dont exist
     if (!socket.user) {
       callback(false);
     } else {
-
-      const test = (await db.roles.selectAllByUser(1))
-      socket.user.chans = test;
-      console.log(`connected : ${name}`,socket.user)
-      callback(socket.user)
+      console.log(`connected : ${name}`, socket.user)
+      callback(await multirooms.joinRooms(socket.user,socket))
     }
-  });
+  })
+
   // Send Message
   socket.on("send message", (data, callback) => {
     console.log(`[${data.chan}]${socket.user.pseudo} : ${data.msg}`);

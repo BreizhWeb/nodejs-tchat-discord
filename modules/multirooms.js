@@ -6,10 +6,13 @@ const db = require('../db/db.js')
  * @param {object} user objet de l'utilisateur
  * @param {object} socket objet du socket utilisateur
  */
-var joinRooms = function (user, socket) {
-  getUserRooms(user.name).forEach(chan => {
-    socket.join(`chan-${chan.id}`)
+var joinRooms = async function (user, socket) {
+  let chans = await db.roles.selectAllByUser(socket.user.user_id)
+  chans.forEach(chan => {
+    socket.join(`chan-${chan.id_room}`)
   })
+  user.chans = chans
+  return user
 }
 /**
  * Trouve l'id des chans d'un utilisateur
