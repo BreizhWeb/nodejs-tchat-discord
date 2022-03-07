@@ -1,90 +1,40 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <title>Client CHAT</title>
-    <link href="./style.css" rel="stylesheet">
+  <meta charset="UTF-8">
+  <title>Client CHAT</title>
+  <link href="./style.css" rel="stylesheet">
 </head>
+
 <body>
-    <div id="container">
-        <div id="namesWrapper">
-            <h2>Chat IO</h2>
-            <p>Create username:</p>
-            <div id="error"></div>
-            <form id="usernameForm">
-                <input type="text" size="35" id="username">
-                <input type="submit" value="Submit">
-            </form>
-        </div>
-
-        <div id="mainWrapper">
-            <h2>ChatIO</h2>
-            <div id="chatWrapper">
-                <div id="chatWindow"></div>
-                <form id="messageForm">
-                    <input type="text" size="35" id="message" placeholder="Say something...">
-                    <input type="submit" value="Submit">
-                </form>
-            </div>
-        </div>
-
-        <div id="userWrapper">
-            <div id="users"></div>
-        </div>
+  <div id="container">
+    <div id="namesWrapper">
+      <h2>Chat IO</h2>
+      <p>Create username:</p>
+      <div id="error"></div>
+      <form id="usernameForm">
+        <input type="text" size="35" id="username">
+        <input type="submit" value="Submit">
+      </form>
+      <div class="utilisateurs"></div>
     </div>
 
-    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
-    <script src="http://localhost:3000/socket.io/socket.io.js"></script>
-    <script>
-        $(function (){
-            var socket =io.connect();
-            var $messageForm = $("#messageForm");
-            var $message = $("#message");
-            var $chat = $("#chatWindow");
+    <div id="mainWrapper">
+      <div id="chatRooms">
+        <h3>Room</h3>
+      </div>
+      <div id="btnRoomsList"></div>
+      <div id="chans">
 
-            //round 2
-            var $usernameForm = $("#usernameForm");
-            var $users = $("#users");
-            var $username = $("#username");
-            var $error = $("#error");
+      </div>
+    </div>
 
+  </div>
 
-            $messageForm.submit(function(e){
-                e.preventDefault();
-                console.log("Submittted..");
-                socket.emit("send message",$message.val());
-                $message.val("");
-            });
-
-            //round 2 add the username
-            socket.on("new message",function(data){
-                $chat.append("<strong>" + data.user + "</strong>: " + data.msg + "<br/>");
-            });
-
-            //round 2
-            $usernameForm.submit(function(e){
-                e.preventDefault();
-                socket.emit("new user",$username.val(),function(data){
-                    if(data){
-                        $("#namesWrapper").hide();
-                        $("#mainWrapper").show();
-                        $("#userWrapper").show();
-                    }else{
-                        $error.html("Username is taken");
-                    }
-                });
-                $username.val("");
-            });
-
-            socket.on("usernames",function(data){
-                let html = "";
-                for (i=0;i<data.length;i++){
-                    html += data[i] + "<br>";
-                }
-                $users.html(html);
-            });
-
-        });
-    </script>
+  <script src="./jquery-latest.min.js"></script>
+  <script src="./socket.io-3.0.1.min.js"></script>
+  <script src="./front.js"></script>
 </body>
+
 </html>

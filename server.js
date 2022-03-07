@@ -1,54 +1,66 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-server= require("http").createServer(app);
+server = require("http").createServer(app);
 const io = require('socket.io')(server);
-let usernames = [];
+const fakedata = require('./modules/fakedata.js')
+const multirooms = require('./modules/multirooms.js')
+const db = require('./db/db.js')
+
+
 
 app.use(express.static('public'))
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
     res.sendFile(__dirname + "/public/index.html");
 })
 
-const PORT = 3000;
+const PORT = process.env.PORT;
 server.listen(PORT, () => {
-    console.log('le serveur ecoute sur le port %d', PORT);
+    console.log(`le serveur écoute sur le port ${PORT}`);
 });
 
-io.sockets.on("connection",(socket)=>{
-    console.log("Socket connected...");
-    // Send Message
-    socket.on("send message",(data)=>{
-        //round 2 add username
-        io.sockets.emit('new message',{msg:data,user:socket.username});
-        console.log(data);
+io.sockets.on("connection", async (socket) => {
+    console.log("Socket connected...")
+    try {
+        socket.users = await db.getUsers()
+    } catch (e) {
+        console.log(e);
+    }
+    console.log(socket.users);
+
+    socket.on("userlist", (data, callback) => {
+        console.log("userlist");
+        callback(fakedata.users.map(u => u.name));
     });
 
-    //round 2
-    socket.on("new user",function (data,callback){
-        if(usernames.indexOf(data) != -1){
+    socket.on("new user", function (name, callback) {
+        socket.user = fakedata.users.find(v => v.name == name)
+        // If user dont exist
+        if (!socket.user) {
             callback(false);
-        }else{
-            callback(true);
-            socket.username = data;
-            usernames.push(socket.username);
-            updateUsernames();
+        } else {
+            console.log(`connected : ${name}`);
         }
     });
+    // Send Message
+    socket.on("send message", (data, callback) => {
+        console.log(`[${data.chan}]${socket.user.name} : ${data.msg}`);
 
-    //Update Usernames
-    function updateUsernames(){
-        io.sockets.emit("usernames",usernames);
-    }
+        io.to(`chan-${data.chan}`).emit('new message', {
+            msg: data.msg,
+            chan: data.chan,
+            user: socket.user.name
+        }, callback())
+    });
 
     //Disconnect
-    socket.on("disconnect",function(data){
-        console.log("disconnect event");
-       if (!socket.username){
-           return;
-       }
-       usernames.splice(usernames.indexOf(socket.username),1);
-       updateUsernames();
+    socket.on("disconnect", function (data) {
+        if (!socket.user?.name) {
+            return;
+        }
+        console.log(`disconnected : ${socket.user?.name}`);
+        multirooms.disconnect(socket.user, io.sockets)
     });
 
 
