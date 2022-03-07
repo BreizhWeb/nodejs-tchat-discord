@@ -15,20 +15,27 @@ const con = mysql.createConnection({
      * 
      * @return response()
      */
-     create = function(id_room, id_user, id_role){
-      let data = {
+     create = function (id_room, id_user, id_role) {
+
+      return new Promise(function(resolve, reject){
+        let data = {
           id_room: id_room,
           id_user: id_user,
           id_role: id_role,
-      };
+        };
+      
+        let sqlQuery = "INSERT INTO rooms_users SET ?";
     
-      let sqlQuery = "INSERT INTO rooms_users SET ?";
-    
-          con.query(sqlQuery, data, (err, results) => {
-          if (err) throw err;
-          return (results);
-      });
-  };
+        con.query(sqlQuery, data, (err, results) => {
+          if (err){
+            return reject(err);
+          }
+          return resolve(results); 
+        });
+    });
+  }
+  
+  
 
   //--------------------------------------------------READ---------------------------------------------//
   

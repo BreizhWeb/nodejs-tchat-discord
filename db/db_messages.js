@@ -20,9 +20,9 @@ create = function (aut, contenu) {
   return new Promise(function(resolve, reject){
     var ladate= new Date();
     var strDate = ladate.getFullYear()+"-"+(ladate.getMonth()+1)+"-"+ladate.getDate();
-    //var i = getIdByPseudo;
-    var i =1;
-    let sqlQuery = "INSERT INTO messages(date, content, id_user, id_room) VALUES ('" + strDate + "','" + contenu + "', " + i + ", 1)";
+    var idUser = getIdByPseudo(aut);
+
+    let sqlQuery = "INSERT INTO messages(date, content, id_user, id_room) VALUES ('" + strDate + "','" + contenu + "', " + idUser + ", 1)";
     con.query(sqlQuery, (err, results) => {
       if (err){
         return reject(err);
@@ -46,11 +46,7 @@ select = function () {
       if (err){
         return reject(err);
       }
-      //const reversed = rows.reverse();
-      //reversed.forEach(function (row) {
-          //console.log("<strong>" + row.pseudo + "</strong>: " + row.content + "<br/>");
-          //io.sockets.emit('new message', { msg: row.content, user: row.pseudo });
-      //});
+
       return resolve(results);
     });
   })
@@ -69,12 +65,7 @@ selectByIdRoom = function (id) {
       if (err){
         return reject(err);
       }
-      /*const reversed = rows.reverse();
-      console.log(typeof rows);
-      reversed.forEach(function (row) {
-          console.log("<strong>" + row.pseudo + "</strong>: " + row.content + "<br/>");
-          //io.sockets.emit('new message', { msg: row.content, user: row.pseudo });
-      });*/
+ 
       return resolve(results);
     });
   })
@@ -97,7 +88,6 @@ updateMessageById = function (id, nouveauMessage)  {
         if (err){
           return reject(err);
         }
-        //res.send(apiResponse(results));
         return resolve(results);
       });
     })
@@ -117,7 +107,6 @@ updateMessageById = function (id, nouveauMessage)  {
         if (err){
           return reject(err);
         }
-        //await res.send(apiResponse(results));
         return resolve(results);
       });
     })
