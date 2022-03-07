@@ -84,9 +84,7 @@
       //round 2 add the username
       socket.on("new message", function (data, callback) {
         console.log("new message :", data);
-        $(`#chan-${data.chan} .chatWindow`).append("<div class='message'><strong>" +
-          convertToPlain(data.user) +
-          "</strong>: " + convertToPlain(data.msg) + "</div>");
+        $(`#chan-${data.chan} .chatWindow`).append("<div class='message'><strong>"+convertToPlain(data.user)+"</strong>: "+convertToPlain(data.msg)+"</div>");
       });
 
       socket.on("connection", function (data) {});

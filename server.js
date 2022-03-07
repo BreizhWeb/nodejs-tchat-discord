@@ -48,7 +48,7 @@ io.sockets.on("connection", (socket) => {
   socket.on("send message", (data, callback) => {
     console.log(`[${data.chan}]${socket.user.name} : ${data.msg}`);
     
-    io.sockets.to(`chan-${data.chan}`).emit('new message', {
+    socket.emit('new message', {
       msg: data.msg,
       chan: data.chan,
       user: socket.user.name
