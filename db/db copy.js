@@ -19,6 +19,11 @@ pool.queryAsync = (sql, values) => {
   });
 };
 
+getUsers = async function () {
+  return pool.queryAsync(`
+    SELECT * FROM users
+  `);
+}
 //--------------------------------------------------CREATE---------------------------------------------//
 
 /**
@@ -48,11 +53,6 @@ createUser = function (pseudo, password) {
  *
  * @return response()
  */
-getUsers = async function () {
-  return pool.queryAsync(`
-    SELECT * FROM users
-  `);
-}
 
 
 /**
