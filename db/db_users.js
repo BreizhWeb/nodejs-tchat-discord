@@ -34,7 +34,7 @@ createUser = function (pseudo, password) {
         if (err){
           return reject(err);
         }
-        return resolve(results); 
+        return resolve(results.map(row => Object.assign({}, row))); 
       });
   });
 }
@@ -49,13 +49,13 @@ createUser = function (pseudo, password) {
 
 getUsers = function () {
   return new Promise(function(resolve, reject){
-    let sqlQuery = "SELECT * FROM users";
+    let sqlQuery = "SELECT pseudo FROM users";
 
     con.query(sqlQuery, (err, results) => {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(results.map(row => Object.assign({}, row))); 
     });
   });
 }
@@ -76,7 +76,7 @@ getIdByPseudo = function (pseudo) {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(Object.assign({}, results[0])); 
     });
   });
 }
@@ -89,17 +89,38 @@ getIdByPseudo = function (pseudo) {
 getUserById = function (id) {
 
   return new Promise(function(resolve, reject){
-    let sqlQuery = "SELECT * FROM users WHERE user_id =" + id;
+    let sqlQuery = "SELECT pseudo FROM users WHERE user_id =" + id + "'";
 
     con.query(sqlQuery, id, (err, results) => {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(Object.assign({}, results[0]));
     });
   });
 
 }
+
+/**
+ * Get specific user by PSEUDO
+ *
+ * @return response()
+ */
+ getUserByPseudo = function (pseudo) {
+
+  return new Promise(function(resolve, reject){
+    let sqlQuery = "SELECT pseudo FROM users WHERE pseudo ='" + pseudo + "'";
+
+    con.query(sqlQuery, id, (err, results) => {
+      if (err){
+        return reject(err);
+      }
+      return resolve(Object.assign({}, results[0]));
+    });
+  });
+
+}
+
 
 //--------------------------------------------------UPDATE---------------------------------------------//
 
@@ -112,13 +133,13 @@ getUserById = function (id) {
 updateUser = function (pseudo, password, id) {
 
   return new Promise(function(resolve, reject){
-    let sqlQuery = "UPDATE users SET pseudo='" + pseudo + "', password='" + password + "' WHERE id=" + id;
+    let sqlQuery = "UPDATE users SET pseudo='" + pseudo + "', password='" + password + "' WHERE id=" + id + "'";
 
     con.query(sqlQuery, pseudo, password, id, (err, results) => {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(results.map(row => Object.assign({}, row))); 
     });
   });
 }
@@ -140,7 +161,7 @@ deleteUser = function (id) {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(results.map(row => Object.assign({}, row))); 
     });
   });
 
@@ -150,6 +171,7 @@ module.exports = {
     getUsers: getUsers,
     getIdByPseudo: getIdByPseudo,
     getUserById: getUserById,
+    getUserByPseudo: getUserByPseudo,
     update: updateUser,
     delete: deleteUser
 }

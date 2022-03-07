@@ -27,7 +27,7 @@ create = function (aut, contenu) {
       if (err){
         return reject(err);
       }
-      return resolve(results);
+      return resolve(results.map(row => Object.assign({}, row)));
     });
   })
 };
@@ -47,7 +47,7 @@ select = function () {
         return reject(err);
       }
 
-      return resolve(results);
+      return resolve(results.map(row => Object.assign({}, row)));
     });
   })
 };
@@ -66,7 +66,7 @@ selectByIdRoom = function (id) {
         return reject(err);
       }
  
-      return resolve(results);
+      return resolve(Object.assign({}, results[0]));
     });
   })
 },
@@ -88,7 +88,7 @@ updateMessageById = function (id, nouveauMessage)  {
         if (err){
           return reject(err);
         }
-        return resolve(results);
+        return resolve(results.map(row => Object.assign({}, row)));
       });
     })
   };
@@ -107,7 +107,7 @@ updateMessageById = function (id, nouveauMessage)  {
         if (err){
           return reject(err);
         }
-        return resolve(results);
+        return resolve(results.map(row => Object.assign({}, row)));
       });
     })
     

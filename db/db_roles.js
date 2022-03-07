@@ -15,27 +15,25 @@ const con = mysql.createConnection({
      * 
      * @return response()
      */
-     create = function (id_room, id_user, id_role) {
+  create = function (id_room, id_user, id_role) {
 
-      return new Promise(function(resolve, reject){
-        let data = {
-          id_room: id_room,
-          id_user: id_user,
-          id_role: id_role,
-        };
-      
-        let sqlQuery = "INSERT INTO rooms_users SET ?";
+    return new Promise(function(resolve, reject){
+      let data = {
+        id_room: id_room,
+        id_user: id_user,
+        id_role: id_role,
+      };
     
-        con.query(sqlQuery, data, (err, results) => {
-          if (err){
-            return reject(err);
-          }
-          return resolve(results); 
-        });
-    });
-  }
+      let sqlQuery = "INSERT INTO rooms_users SET ?";
   
-  
+      con.query(sqlQuery, data, (err, results) => {
+        if (err){
+          return reject(err);
+        }
+        return resolve(results.map(row => Object.assign({}, row))); 
+      });
+  });
+}
 
   //--------------------------------------------------READ---------------------------------------------//
   
@@ -53,7 +51,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results); 
+          return resolve(results.map(row => Object.assign({}, row))); 
         });
       })
     };
@@ -73,7 +71,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results); 
+          return resolve(results.map(row => Object.assign({}, row))); 
         });
       })
     };
@@ -91,7 +89,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results); 
+          return resolve(results.map(row => Object.assign({}, row))); 
         });
       })
     };
@@ -117,7 +115,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results);
+          return resolve(results.map(row => Object.assign({}, row)));
         });
       })
     },
@@ -137,7 +135,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results);
+          return resolve(results.map(row => Object.assign({}, row)));
         });
       })
     },
@@ -155,7 +153,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results);
+          return resolve(results.map(row => Object.assign({}, row)));
         });
       })
     }
