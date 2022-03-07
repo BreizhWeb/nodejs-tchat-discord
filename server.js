@@ -20,14 +20,14 @@ server.listen(PORT, () => {
     console.log(`le serveur écoute sur le port ${PORT}`);
 });
 
-io.sockets.on("connection", async (socket) => {
+io.sockets.on("connection", (socket) => {
     console.log("Socket connected...")
+    io.emit('connection');
     try {
-        socket.users = await db.getUsers()
+        socket.users = db.users.getUsers()
     } catch (e) {
         console.log(e);
     }
-    console.log(socket.users);
 
     socket.on("userlist", (data, callback) => {
         console.log("userlist");
@@ -41,6 +41,7 @@ io.sockets.on("connection", async (socket) => {
             callback(false);
         } else {
             console.log(`connected : ${name}`);
+            callback(socket.user)
         }
     });
     // Send Message

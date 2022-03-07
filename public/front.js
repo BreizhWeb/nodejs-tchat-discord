@@ -1,11 +1,9 @@
-
 $(document).ready(function () {
   var socket = io.connect();
   console.log(socket);
   socket.emit("userlist", 1, function (data) {
     $('.utilisateurs').append(JSON.stringify(data));
   });
-
   //round 2
   var $usernameForm = $("#usernameForm");
   var $username = $("#username");
@@ -25,40 +23,39 @@ $(document).ready(function () {
 
   function newChan(chan) {
     $('#chans').append(`
-            <div class="chan" id="chan-${chan.id}">
-              <h2>${chan.name}</h2>
-              <div class="chatWrapper">
-                <div class="chatWindow"></div>
-                <form class="messageForm">
-                  <input type="text" size="35" class="message" placeholder="Say something...">
-                  <input type="submit" value="Submit">
-                </form>
-              </div>
-              <div class="userWrapper">
-                <div class="users">
-                  ${chan.users.map(u => `<div id="user-${u.id}">${convertToPlain(u)}</div>`).join('')}
-                </div>
-              </div>
-            </div>
-          `);
+      <div class="chan" id="chan-${chan.id}">
+        <h2>${chan.name}</h2>
+        <div class="chatWrapper">
+          <div class="chatWindow"></div>
+          <form class="messageForm">
+            <input type="text" size="35" class="message" placeholder="Say something...">
+            <input type="submit" value="Submit">
+          </form>
+        </div>
+        <div class="userWrapper">
+          <div class="users">
+            ${chan.users.map(u => `<div id="user-${u.id}">${convertToPlain(u)}</div>`).join('')}
+          </div>
+        </div>
+      </div>
+    `);
     return chan.id;
   }
 
   //round 2 add the username
   socket.on("new message", function (data, callback) {
     console.log("new message :", data);
-    $(`#chan-${data.chan} .chatWindow`).append("<div class='message'><strong>" +
-      convertToPlain(data.user) +
-      "</strong>: " + convertToPlain(data.msg) + "</div>");
+    $(`#chan-${data.chan} .chatWindow`).append("<div class='message'><strong>"+convertToPlain(data.user)+"</strong>: "+convertToPlain(data.msg)+"</div>");
   });
 
   socket.on("connection", function (data) {
+    console.log(socket)
     //round 2
     $usernameForm.submit(function (e) {
       e.preventDefault();
-      console.log(e);
+      console.log('event',e);
       socket.emit("new user", $username.val(), function (data) {
-        console.log(data);
+        console.log('data',data);
         if (data) {
           for (i = 0; i < data.chans.length; i++) {
             var btnRoom = document.createElement("button");
@@ -89,8 +86,7 @@ $(document).ready(function () {
               console.log(usersdata);
               let html = "";
               for (i = 0; i < usersdata.length; i++) {
-                html += "<div>" + convertToPlain(usersdata[
-                  i]) + "</div>";
+                html += "<div>" + convertToPlain(usersdata[i]) + "</div>";
               }
               htmlChan.find('.users').html(html);
             });
