@@ -1,4 +1,5 @@
 const fakedata = require('./fakedata.js')
+const db = require('../db/db.js')
 /**
  * Boucle sur tous les chans de l'utilisateur
  * Rejoins les rooms de tous les chans
@@ -34,12 +35,13 @@ var getUserRooms = function (name) {
  * @param {object} sockets objet des sockets
  */
 var updateUsernames = function (user, sockets) {
-  getUserRoomsId(user.id).forEach(chan => {
+  /*getUserRoomsId(user.id).forEach(chan => {
+    
     var theChan = fakedata.servers.find(s => s.id == chan);
     if (theChan.users?.indexOf(user.name) == -1)
       theChan.users.push(user)
     sockets.to(`chan-${chan.id}`).emit(`usernames${theChan.id}`, theChan.users);
-  })
+  })*/
 }
 /**
  * Boucle sur tous les chans de l'utilisateur

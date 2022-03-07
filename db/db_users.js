@@ -34,7 +34,7 @@ createUser = function (pseudo, password) {
         if (err){
           return reject(err);
         }
-        return resolve(results); 
+        return resolve(results.map(row => Object.assign({}, row))); 
       });
   });
 }
@@ -55,7 +55,7 @@ getUsers = function () {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(results.map(row => Object.assign({}, row))); 
     });
   });
 }
@@ -76,7 +76,7 @@ getIdByPseudo = function (pseudo) {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(Object.assign({}, results[0]).user_id); 
     });
   });
 }
@@ -95,7 +95,7 @@ getUserById = function (id) {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(Object.assign({}, results[0])); 
     });
   });
 
@@ -118,7 +118,7 @@ updateUser = function (pseudo, password, id) {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(results.map(row => Object.assign({}, row))); 
     });
   });
 }
@@ -140,7 +140,7 @@ deleteUser = function (id) {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(results.map(row => Object.assign({}, row))); 
     });
   });
 
