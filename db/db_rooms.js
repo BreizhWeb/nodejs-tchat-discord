@@ -29,7 +29,7 @@ create = function (name, image, private) {
       if (err){
         return reject(err);
       }
-      return resolve(results);
+      return resolve(results.map(row => Object.assign({}, row)));
     });
   })
 };
@@ -49,7 +49,7 @@ selectAll = function () {
       if (err){
         return reject(err);
       }
-      return resolve(results); 
+      return resolve(results.map(row => Object.assign({}, row))); 
     });
   })
 };
@@ -66,7 +66,7 @@ select = function (room_id) {
       if (err){
         return reject(err);
       }
-      return resolve(results);
+      return resolve(results.map(row => Object.assign({}, row)));
     });
   })
   
@@ -85,7 +85,7 @@ selectPublic = function () {
       if (err){
         return reject(err);
       }
-      return resolve(results);
+      return resolve(results.map(row => Object.assign({}, row)));
     });
   })
 };
@@ -112,7 +112,7 @@ update = function (id, name, image, private) {
       if (err){
         return reject(err);
       }
-      return resolve(results);
+      return resolve(results.map(row => Object.assign({}, row)));
     });
   })
 };
@@ -132,7 +132,7 @@ deleteRoom = function (id) {
         return reject(err);
       }
       roles.deleteByRoom(id);
-      return resolve(results);
+      return resolve(results.map(row => Object.assign({}, row)));
     });
   })
 };

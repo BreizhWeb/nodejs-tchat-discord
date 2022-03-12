@@ -6,8 +6,9 @@ const fakedata = require('./fakedata.js')
  * @param {object} socket objet du socket utilisateur
  */
 var joinRooms = function (user, socket) {
-  getUserRooms(user.name).forEach(chan => {
-    socket.join(`chan-${chan.id}`)
+  user.chans?.forEach(chan => {
+    console.log(chan);
+    socket.join(`chan-${chan.room_id}`)
   })
 }
 /**

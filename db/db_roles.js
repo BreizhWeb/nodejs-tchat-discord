@@ -30,7 +30,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results); 
+          return resolve(results.map(row => Object.assign({}, row))); 
         });
     });
   }
@@ -53,7 +53,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results); 
+          return resolve(results.map(row => Object.assign({}, row))); 
         });
       })
     };
@@ -67,13 +67,12 @@ const con = mysql.createConnection({
   
     selectAllByUser = function (id_user) {
       return new Promise(function(resolve, reject){
-        let sqlQuery = "SELECT id_room, id_role FROM rooms_users WHERE id_user="+id_user;
-    
+        let sqlQuery = "SELECT rooms_users.id_room, rooms_users.id_role, rooms.name, rooms.name FROM rooms_users LEFT JOIN rooms ON rooms.room_id = rooms_users.id_room WHERE id_user="+id_user;
         con.query(sqlQuery, (err, results) => {
           if (err){
             return reject(err);
           }
-          return resolve(results); 
+          return resolve(results.map(row => Object.assign({}, row))); 
         });
       })
     };
@@ -91,7 +90,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results); 
+          return resolve(results.map(row => Object.assign({}, row))); 
         });
       })
     };
@@ -117,7 +116,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results);
+          return resolve(results.map(row => Object.assign({}, row)));
         });
       })
     },
@@ -137,7 +136,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results);
+          return resolve(results.map(row => Object.assign({}, row)));
         });
       })
     },
@@ -155,7 +154,7 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results);
+          return resolve(results.map(row => Object.assign({}, row)));
         });
       })
     }

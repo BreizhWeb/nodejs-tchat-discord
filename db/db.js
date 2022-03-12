@@ -11,6 +11,7 @@ module.exports = { users: users , rooms: rooms, messages: messages, roles: roles
     create: [Function: createUser], --> Créer un utilisateur
     getUsers: [Function: getUsers], --> Récupérer un utilisateur
     getUserById: [Function: getUserById], --> Récupérer un utilisateur par son ID
+    getUserData: [Function: getUserData], --> Récupérer les data d'un utilisateur par son ID
     getIdByPseudo: [Function: getIdByPseudo], --> Récupérer l'ID d'un utilisateur par son pseudo
     update: [Function: updateUser], --> modifier un utilisateur
     delete: [Function: deleteUser] --> supprimer un utilisateur
