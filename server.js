@@ -37,8 +37,9 @@ io.sockets.on("connection", async (socket) => {
     socket.user = await db.users.getUserData(name)
     // If user dont exist
     if (socket.user.user_id) {
-      logger.eventLogger.log('info', `connected : ${name}`, socket.user)
+      logger.eventLogger.log('info', `connected : ${socket.user.pseudo}`)
       multirooms.joinRooms(socket)
+      console.log(socket.user);
       callback(socket.user)
     } else {
       callback(false)

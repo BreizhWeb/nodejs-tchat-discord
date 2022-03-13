@@ -86,16 +86,16 @@ INSERT INTO `roles` (`role_id`, `name`) VALUES
 
 CREATE TABLE `rooms` (
   `room_id` int(12) NOT NULL,
-  `Name` varchar(64) NOT NULL,
-  `Image` varchar(64) NOT NULL,
-  `Private` tinyint(1) DEFAULT NULL
+  `name` varchar(64) NOT NULL,
+  `image` varchar(64) NOT NULL,
+  `private` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `rooms`
 --
 
-INSERT INTO `rooms` (`room_id`, `Name`, `Image`, `Private`) VALUES
+INSERT INTO `rooms` (`room_id`, `name`, `image`, `private`) VALUES
 (1, 'Test room', '', 0),
 (2, 'Team LoL', '', 0),
 (3, 'Room', '', 1),
