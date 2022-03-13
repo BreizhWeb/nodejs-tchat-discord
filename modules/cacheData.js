@@ -21,8 +21,13 @@ function updateCache (user_id, room_id, role_id){
 }
 
 
-function deleteFromCache (user_id, room_id, role_id){
+function deleteUserFromCache (user_id, room_id, role_id){
   let deleted = rooms_usersCache.filter(element => element.user_id != user_id || element.room_id != room_id || element.role_id != role_id);
+  rooms_usersCache =  deleted;
+}
+
+function deleteRoomFromCache (room_id){
+  let deleted = rooms_usersCache.filter(element => element.room_id);
   rooms_usersCache =  deleted;
 }
 
@@ -35,6 +40,7 @@ module.exports = {
     setCache:setCache,
     addToCache: addToCache,
     updateCache: updateCache,
-    deleteFromCache: deleteFromCache,
+    deleteUserFromCache: deleteUserFromCache,
+    deleteRoomFromCache: deleteRoomFromCache,
     listRoomUserFromCache: listRoomUserFromCache
 }
