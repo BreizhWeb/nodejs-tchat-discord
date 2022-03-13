@@ -30,10 +30,10 @@ const con = mysql.createConnection({
           if (err){
             return reject(err);
           }
-          return resolve(results.map(row => Object.assign({}, row))); 
+          return resolve(results.insertId); 
         });
     });
-  }
+  } 
   
   
 

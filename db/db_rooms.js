@@ -22,14 +22,16 @@ create = function (name, image, private) {
       image: image,
       private: private,
     };
+    console.log(data);
 
     let sqlQuery = "INSERT INTO rooms SET ?";
 
-    con.query(sqlQuery, data, (err, results) => {
+    con.query(sqlQuery, data, async (err, result) => {
       if (err){
         return reject(err);
       }
-      return resolve(results.map(row => Object.assign({}, row)));
+      console.log('insert',await selectRoom(result.insertId));
+      return resolve(await selectRoom(result.insertId));
     });
   })
 };
@@ -59,14 +61,14 @@ selectAll = function () {
  * @return response()s
  */
 
-select = function (room_id) {
+ selectRoom = function (room_id) {
   return new Promise(function(resolve, reject){
     let sqlQuery = "SELECT * FROM rooms WHERE room_id =" + room_id;
     con.query(sqlQuery, (err, results) => {
       if (err){
         return reject(err);
       }
-      return resolve(results.map(row => Object.assign({}, row)));
+      return resolve(results.map(row => Object.assign({}, row))[0]);
     });
   })
   
@@ -140,7 +142,7 @@ deleteRoom = function (id) {
 module.exports = {
   create: create,
   selectAll: selectAll,
-  select: select,
+  select: selectRoom,
   selectPublic: selectPublic,
   update: update,
   deleteRoom: deleteRoom,

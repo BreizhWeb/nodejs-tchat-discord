@@ -21,7 +21,7 @@ server.listen(PORT, () => {
 });
 
 io.sockets.on("connection", async (socket) => {
-  logger.eventLogger.log('info',"Socket connected...")
+  logger.eventLogger.log('info', "Socket connected...")
   io.emit('connection');
   try {
     socket.users = await db.users.getUsers()
@@ -30,16 +30,15 @@ io.sockets.on("connection", async (socket) => {
   }
 
   socket.on("userlist", (data, callback) => {
-    callback(socket.users.map(u => u.user_id+":"+u.pseudo));
+    callback(socket.users.map(u => u.user_id + ":" + u.pseudo));
   });
 
-  socket.on("new user", async function (name, callback) { 
+  socket.on("new user", async function (name, callback) {
     socket.user = await db.users.getUserData(name)
-    console.log(socket.user);
     // If user dont exist
     if (socket.user.user_id) {
-      logger.eventLogger.log('info',`connected : ${name}`, socket.user)
-      multirooms.joinRooms(socket.user, socket)
+      logger.eventLogger.log('info', `connected : ${name}`, socket.user)
+      multirooms.joinRooms(socket)
       callback(socket.user)
     } else {
       callback(false)
@@ -49,7 +48,7 @@ io.sockets.on("connection", async (socket) => {
   // Send Message
   socket.on("send message", (data, callback) => {
     console.log(data);
-    logger.eventLogger.log('info',`[${data.chan}]${socket.user.pseudo} : ${data.msg}`)
+    logger.eventLogger.log('info', `[${data.chan}]${socket.user.pseudo} : ${data.msg}`)
 
     io.to(`chan-${data.chan}`).emit('new message', {
       msg: data.msg,
@@ -58,12 +57,19 @@ io.sockets.on("connection", async (socket) => {
     }, callback(true))
   })
 
+  // Create room
+  socket.on("create room", async (data, callback) => {
+    let room = await multirooms.createRoom(socket, data)
+    logger.eventLogger.log('info', `${socket.user.pseudo} : Created room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
+    callback(socket.user, room.room_id)
+  })
+
   //Disconnect
   socket.on("disconnect", function (data) {
     if (!socket.user?.pseudo) {
       return;
     }
-    logger.eventLogger.log('info',`disconnected : ${socket.user?.pseudo}`);
+    logger.eventLogger.log('info', `disconnected : ${socket.user?.pseudo}`);
     multirooms.disconnect(socket.user, io.sockets)
   });
 })
