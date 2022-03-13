@@ -32,12 +32,6 @@ $(document).ready(function () {
               <input type="submit" value="Submit">
             </form>
           </div>
-          <div class="userWrapper">
-            <div class="users">
-              ${/*chan.users.map(u => `<div id="user-${u.room_id}">${convertToPlain(u)}</div>`).join('')*/
-          ''}
-            </div>
-          </div>
         </div>
       `)
       $(`#chan-${chan.room_id}`).submit(function (e) {
@@ -62,8 +56,6 @@ $(document).ready(function () {
   function switchChan(chan) {
     $(".chan").hide();
     $(`#chan-${chan.room_id}`).show()
-    $("#login").remove()
-    $("#mainWrapper").show()
   }
 
   function buildUI(user, chanid = 0) {
@@ -72,6 +64,8 @@ $(document).ready(function () {
       switchChan(user.chans.find(chan => chan.room_id == e.target.id.match(/[0-9]+/)))
     })
     switchChan(user.chans.find(chan => chan.room_id == chanid) || user.chans[0])
+    $("#login").remove()
+    $("#mainWrapper").show()
   }
 
   $("#createroom").on("click", function (e) {

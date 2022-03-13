@@ -1,9 +1,7 @@
 const db = require('../db/db.js')
-const fakedata = require('./fakedata.js')
 /**
  * Boucle sur tous les chans de l'utilisateur
  * Rejoins les rooms de tous les chans
- * @param {object} user objet de l'utilisateur
  * @param {object} socket objet du socket utilisateur
  */
 var joinRooms = function (socket) {
@@ -11,6 +9,12 @@ var joinRooms = function (socket) {
     socket.join(`chan-${chan.room_id}`)
   })
 }
+/**
+ * Create a room
+ * @param {object} socket socket
+ * @param {object} data name image and private bool
+ * @returns return the room object
+ */
 var createRoom = async function (socket, data) {
   let room = await db.rooms.create(data.name, data.image, data.private)
   db.roles.create(room.room_id, socket.user.user_id, 2)
