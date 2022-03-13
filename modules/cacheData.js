@@ -27,7 +27,7 @@ function deleteUserFromCache (user_id, room_id, role_id){
 }
 
 function deleteRoomFromCache (room_id){
-  let deleted = rooms_usersCache.filter(element => element.room_id);
+  let deleted = rooms_usersCache.filter(element => element.room_id != room_id);
   rooms_usersCache =  deleted;
 }
 
