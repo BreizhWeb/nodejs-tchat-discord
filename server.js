@@ -58,12 +58,20 @@ io.sockets.on("connection", async (socket) => {
     }, callback(true))
   })
 
+  // Delete message
+
   // Create room
   socket.on("create room", async (data, callback) => {
     let room = await multirooms.createRoom(socket, data)
     logger.eventLogger.log('info', `${socket.user.pseudo} : Created room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
     callback(socket.user, room.room_id)
   })
+
+  // Delete room
+
+  // Invite user
+
+  // Kick user
 
   //Disconnect
   socket.on("disconnect", function (data) {
