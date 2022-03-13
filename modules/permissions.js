@@ -1,4 +1,4 @@
-const fakedata = require('./fakedata.js')
+const cacheData = require('./cacheData.js')
 
 const user = 0b100000
 const admin = 0b111111
@@ -17,22 +17,22 @@ const control = {
 
 // récupére les droit
 function getRightFromUser(user_id, room_id) {
-  role_id = fakedata.access.filter(acc => acc.id_user == user_id && acc.id_room == room_id)[0].id_role
+  role_id = cacheData.rooms_usersCache.filter(acc => acc.user_id == user_id && acc.room_id == room_id)[0].role_id
   return (role[role_id])
 }
 
-// récupère les id des rooms d'un user via son id 
+// récupère les id des rooms d'un user via son id
 var getUserRoomsId = function (user_id) {
-  return fakedata.access.filter(acc => acc.id_user==user_id)?.map(elt => elt.id_room)
+  return cacheData.rooms_usersCache.filter(acc => acc.user_id==user_id)?.map(elt => elt.room_id)
 }
 
 // get action
-function getActionRight(user, room, action) {  
+function getActionRight(user, room, action) {
     userRole =  getRightFromUser(user,room)
     return ((userRole & action ) == action)
   }
 
-module.exports = { 
+module.exports = {
     getActionRight,
     getUserRoomsId,
     control
