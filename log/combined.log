@@ -41,3 +41,17 @@
 2022-03-13T17:59:07.990Z info: 	disconnected : Rico
 2022-03-13T17:59:08.105Z info: 	Socket connected...
 2022-03-13T17:59:09.928Z info: 	connected : Rico
+2022-03-13T17:59:50.345Z info: 	Socket connected...
+2022-03-13T17:59:51.431Z info: 	Socket connected...
+2022-03-13T17:59:53.246Z info: 	connected : Rico
+2022-03-13T18:02:14.911Z info: 	disconnected : Rico
+2022-03-13T18:02:15.056Z info: 	Socket connected...
+2022-03-13T18:02:16.826Z info: 	connected : Rico
+2022-03-13T18:03:07.883Z info: 	[2]Rico : test
+2022-03-13T18:03:10.501Z info: 	[1]Rico : test
+2022-03-13T18:03:16.622Z info: 	Rico : Created room id:60, name:merise, image:aze, private:1
+2022-03-13T18:03:19.207Z info: 	[60]Rico : azearzaee
+2022-03-13T18:03:21.050Z info: 	[60]Rico : qsdqasd
+2022-03-13T18:03:23.790Z info: 	[1]Rico : faz
+2022-03-13T18:03:28.004Z info: 	[1]Rico : aze
+2022-03-13T18:03:30.074Z info: 	[2]Rico : fqs

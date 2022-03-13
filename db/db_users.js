@@ -112,13 +112,11 @@ getUserData = function (id) {
     LEFT JOIN rooms_users ON rooms_users.user_id = users.user_id 
     LEFT JOIN rooms ON rooms.room_id = rooms_users.room_id
     WHERE users.user_id =` + id;
-    console.log(sqlQuery);
     con.query(sqlQuery, id, (err, results) => {
       if (err) {
         return reject(err);
       }
       let user = {}
-      console.log(results);
       if (results.length > 1) {
         user.chans = results.map(res => {
           let item = Object.assign({}, res)
@@ -140,7 +138,7 @@ getUserData = function (id) {
           user.pseudo = item.pseudo
         })
       }
-      
+
       return resolve(user);
     });
   });
