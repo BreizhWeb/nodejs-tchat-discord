@@ -40,39 +40,28 @@ $(document).ready(function () {
           </div>
         </div>
       `)
+      $(`#chan-${chan.room_id}`).submit(function (e) {
+        e.preventDefault();
+        sendMsg(chan.room_id)
+      })
     }
     return chan.id;
   }
 
   function sendMsg(chanid) {
     socket.emit("send message", {
-      msg: $(`.messageForm input.message`).val(),
+      msg: $(`#chan-${chanid} input.message`).val(),
       chan: chanid
     },
       () => {
-        $(`.messageForm input.message`).val('')
+        $(`#chan-${chanid} input.message`).val('')
       }
     );
   }
 
   function switchChan(chan) {
     $(".chan").hide();
-    $(`#chan-${chan.room_id}`).show().submit(function (e) {
-      e.preventDefault();
-      sendMsg(chan.room_id)
-    })
-    /**
-     * Gestion des users connectés
-     *
-     * 
-    socket.on(`usernames${chan.id_room}`, function (usersdata) {
-      console.log(usersdata);
-      let html = "";
-      for (i = 0; i < usersdata.length; i++) {
-        html += "<div>" + convertToPlain(usersdata[i]) + "</div>";
-      }
-      htmlChan.find('.users').html(html);
-    })*/
+    $(`#chan-${chan.room_id}`).show()
     $("#login").remove()
     $("#mainWrapper").show()
   }
