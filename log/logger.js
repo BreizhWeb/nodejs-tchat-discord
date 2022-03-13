@@ -16,6 +16,7 @@ const myformat = winston.format.combine(winston.format.timestamp(), winston.form
 //--------------------------------logging function-----------------------//
 
 const eventLogger = winston.createLogger({
+    level:'info',
     transports:[
         new winston.transports.File({
             
@@ -31,8 +32,21 @@ const eventLogger = winston.createLogger({
             level:'error',
             format: myformat
 
+        }),
+
+        new winston.transports.File({
+
+            filename:'log/combined.log',
+            format: myformat
+
         })
     ]
 })
+
+if(process.env.NODE_ENV !=='production'){
+    eventLogger.add(new winston.transports.Console({
+        format: myformat
+    }))
+}
 
 module.exports = { eventLogger }

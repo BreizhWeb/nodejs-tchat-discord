@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : lun. 07 mars 2022 à 14:00
+-- Généré le : dim. 13 mars 2022 à 16:18
 -- Version du serveur : 10.4.22-MariaDB
 -- Version de PHP : 7.4.26
 
@@ -15,7 +15,7 @@ SET time_zone = "+00:00";
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
 /*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET nameS utf8mb4 */;
+/*!40101 SET NAMES utf8mb4 */;
 
 --
 -- Base de données : `chat_mydi`
@@ -31,15 +31,15 @@ CREATE TABLE `messages` (
   `message_id` int(11) NOT NULL,
   `date` date NOT NULL,
   `content` varchar(255) NOT NULL,
-  `id_user` int(12) NOT NULL,
-  `id_room` int(12) NOT NULL
+  `user_id` int(12) NOT NULL,
+  `room_id` int(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `messages`
 --
 
-INSERT INTO `messages` (`message_id`, `date`, `content`, `id_user`, `id_room`) VALUES
+INSERT INTO `messages` (`message_id`, `date`, `content`, `user_id`, `room_id`) VALUES
 (1, '2022-02-22', 'test message', 1, 1),
 (2, '2022-02-22', 'Yo !', 3, 2),
 (3, '2022-02-22', 'Yo man la forme ?', 1, 2),
@@ -86,16 +86,16 @@ INSERT INTO `roles` (`role_id`, `name`) VALUES
 
 CREATE TABLE `rooms` (
   `room_id` int(12) NOT NULL,
-  `name` varchar(64) NOT NULL,
-  `image` varchar(64) NOT NULL,
-  `private` tinyint(1) DEFAULT NULL
+  `Name` varchar(64) NOT NULL,
+  `Image` varchar(64) NOT NULL,
+  `Private` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `rooms`
 --
 
-INSERT INTO `rooms` (`room_id`, `name`, `image`, `private`) VALUES
+INSERT INTO `rooms` (`room_id`, `Name`, `Image`, `Private`) VALUES
 (1, 'Test room', '', 0),
 (2, 'Team LoL', '', 0),
 (3, 'Room', '', 1),
@@ -109,16 +109,16 @@ INSERT INTO `rooms` (`room_id`, `name`, `image`, `private`) VALUES
 
 CREATE TABLE `rooms_users` (
   `rooms_users_id` int(12) NOT NULL,
-  `id_room` int(12) NOT NULL,
-  `id_user` int(12) NOT NULL,
-  `id_role` int(12) NOT NULL
+  `room_id` int(12) NOT NULL,
+  `user_id` int(12) NOT NULL,
+  `role_id` int(12) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `rooms_users`
 --
 
-INSERT INTO `rooms_users` (`rooms_users_id`, `id_room`, `id_user`, `id_role`) VALUES
+INSERT INTO `rooms_users` (`rooms_users_id`, `room_id`, `user_id`, `role_id`) VALUES
 (2, 2, 1, 1),
 (3, 2, 3, 2);
 
@@ -154,8 +154,8 @@ INSERT INTO `users` (`user_id`, `pseudo`, `password`) VALUES
 --
 ALTER TABLE `messages`
   ADD PRIMARY KEY (`message_id`),
-  ADD KEY `id_user` (`id_user`,`id_room`),
-  ADD KEY `id_room` (`id_room`);
+  ADD KEY `id_user` (`user_id`,`room_id`),
+  ADD KEY `id_room` (`room_id`);
 
 --
 -- Index pour la table `roles`
@@ -174,9 +174,9 @@ ALTER TABLE `rooms`
 --
 ALTER TABLE `rooms_users`
   ADD PRIMARY KEY (`rooms_users_id`),
-  ADD KEY `id_room` (`id_room`,`id_user`,`id_role`),
-  ADD KEY `id_role` (`id_role`),
-  ADD KEY `id_user` (`id_user`);
+  ADD KEY `id_room` (`room_id`,`user_id`,`role_id`),
+  ADD KEY `id_role` (`role_id`),
+  ADD KEY `id_user` (`user_id`);
 
 --
 -- Index pour la table `users`
@@ -226,16 +226,16 @@ ALTER TABLE `users`
 -- Contraintes pour la table `messages`
 --
 ALTER TABLE `messages`
-  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`id_room`) REFERENCES `rooms` (`room_id`),
-  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`user_id`);
+  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_id`),
+  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`);
 
 --
 -- Contraintes pour la table `rooms_users`
 --
 ALTER TABLE `rooms_users`
-  ADD CONSTRAINT `rooms_users_ibfk_1` FOREIGN KEY (`id_role`) REFERENCES `roles` (`role_id`),
-  ADD CONSTRAINT `rooms_users_ibfk_2` FOREIGN KEY (`id_user`) REFERENCES `users` (`user_id`),
-  ADD CONSTRAINT `rooms_users_ibfk_3` FOREIGN KEY (`id_room`) REFERENCES `rooms` (`room_id`);
+  ADD CONSTRAINT `rooms_users_ibfk_1` FOREIGN KEY (`role_id`) REFERENCES `roles` (`role_id`),
+  ADD CONSTRAINT `rooms_users_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`),
+  ADD CONSTRAINT `rooms_users_ibfk_3` FOREIGN KEY (`room_id`) REFERENCES `rooms` (`room_id`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
