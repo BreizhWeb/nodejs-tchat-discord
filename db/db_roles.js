@@ -15,22 +15,22 @@ const con = mysql.createConnection({
      * 
      * @return response()
      */
-     create = function (id_room, id_user, id_role) {
+     create = function (room_id, user_id, role_id) {
 
       return new Promise(function(resolve, reject){
         let data = {
-          id_room: id_room,
-          id_user: id_user,
-          id_role: id_role,
+          room_id: room_id,
+          user_id: user_id,
+          role_id: role_id,
         };
       
         let sqlQuery = "INSERT INTO rooms_users SET ?";
     
-        con.query(sqlQuery, data, (err, results) => {
+        con.query(sqlQuery, data, (err, result) => {
           if (err){
             return reject(err);
           }
-          return resolve(results.insertId); 
+          return resolve(result.insertId); 
         });
     });
   } 
@@ -40,14 +40,14 @@ const con = mysql.createConnection({
   //--------------------------------------------------READ---------------------------------------------//
   
     /**
-     * Get All Rooms_Users by id_room
+     * Get All Rooms_Users by room_id
      *
      * @return response()
      */
   
-     selectAllByRoom = function (id_room){
+     selectAllByRoom = function (room_id){
       return new Promise(function(resolve, reject){
-        let sqlQuery = "SELECT id_room, id_role FROM rooms_users WHERE id_room="+id_room;
+        let sqlQuery = "SELECT room_id, role_id FROM rooms_users WHERE room_id="+room_id;
     
         con.query(sqlQuery, (err, results) => {
           if (err){
@@ -60,14 +60,14 @@ const con = mysql.createConnection({
     
 
     /**
-     * Get All Rooms_Users by id_user
+     * Get All Rooms_Users by user_id
      *
      * @return response()
      */
   
-    selectAllByUser = function (id_user) {
+    selectAllByUser = function (user_id) {
       return new Promise(function(resolve, reject){
-        let sqlQuery = "SELECT rooms_users.id_room, rooms_users.id_role, rooms.name, rooms.name FROM rooms_users LEFT JOIN rooms ON rooms.room_id = rooms_users.id_room WHERE id_user="+id_user;
+        let sqlQuery = "SELECT rooms_users.room_id, rooms_users.role_id, rooms.name, rooms.name FROM rooms_users LEFT JOIN rooms ON rooms.room_id = rooms_users.room_id WHERE user_id="+user_id;
         con.query(sqlQuery, (err, results) => {
           if (err){
             return reject(err);
@@ -102,15 +102,15 @@ const con = mysql.createConnection({
      *
      * @return response()
      */
-     update = function (id_room, id_user, id_role){
+     update = function (room_id, user_id, role_id){
       return new Promise(function(resolve, reject){
         let sqlQuery =
-          "UPDATE rooms_users SET id_role=" +
-          id_role +
-          " WHERE id_room=" +
-          id_room+
-          " AND id_user="+
-          id_user;
+          "UPDATE rooms_users SET role_id=" +
+          role_id +
+          " WHERE room_id=" +
+          room_id+
+          " AND user_id="+
+          user_id;
     
           con.query(sqlQuery, (err, results) => {
           if (err){
@@ -142,13 +142,13 @@ const con = mysql.createConnection({
     },
 
     /**
-     * Delete Rooms_Users by id_room
+     * Delete Rooms_Users by room_id
      *
      * @return response()
      */
      deleteByRoom = function (id){
       return new Promise(function(resolve, reject){
-        let sqlQuery = "DELETE FROM rooms_users WHERE id_room=" + id + "";
+        let sqlQuery = "DELETE FROM rooms_users WHERE room_id=" + id + "";
     
           con.query(sqlQuery, (err, results) => {
           if (err){

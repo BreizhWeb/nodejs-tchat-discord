@@ -30,11 +30,11 @@ createUser = function (pseudo, password) {
 
     let sqlQuery = "INSERT INTO users SET ?";
 
-    con.query(sqlQuery, data, (err, results) => {
+    con.query(sqlQuery, data, async (err, result) => {
       if (err) {
         return reject(err);
       }
-      return resolve(results.map(row => Object.assign({}, row)));
+      return resolve(await getUserById(result.insertId));
     });
   });
 }
@@ -109,8 +109,8 @@ getUserData = function (id) {
 
   return new Promise(function (resolve, reject) {
     let sqlQuery = `SELECT * FROM users 
-    LEFT JOIN rooms_users ON rooms_users.id_user = users.user_id 
-    LEFT JOIN rooms ON rooms.room_id = rooms_users.id_room
+    LEFT JOIN rooms_users ON rooms_users.user_id = users.user_id 
+    LEFT JOIN rooms ON rooms.room_id = rooms_users.room_id
     WHERE users.user_id =` + id;
 
     con.query(sqlQuery, id, (err, results) => {

@@ -22,12 +22,12 @@ create = function (aut, contenu) {
     var strDate = ladate.getFullYear()+"-"+(ladate.getMonth()+1)+"-"+ladate.getDate();
     var idUser = getIdByPseudo(aut);
 
-    let sqlQuery = "INSERT INTO messages(date, content, id_user, id_room) VALUES ('" + strDate + "','" + contenu + "', " + idUser + ", 1)";
-    con.query(sqlQuery, (err, results) => {
+    let sqlQuery = "INSERT INTO messages(date, content, user_id, room_id) VALUES ('" + strDate + "','" + contenu + "', " + idUser + ", 1)";
+    con.query(sqlQuery, (err, result) => {
       if (err){
         return reject(err);
       }
-      return resolve(results.map(row => Object.assign({}, row)));
+      return resolve(result.insertId); 
     });
   })
 };
@@ -41,7 +41,7 @@ create = function (aut, contenu) {
  */
 select = function () {
   return new Promise(function(resolve, reject){
-    let sqlQuery = "SELECT content, users.pseudo FROM messages INNER JOIN users ON messages.id_user=users.user_id ORDER BY message_id DESC LIMIT 10; ";
+    let sqlQuery = "SELECT content, users.pseudo FROM messages INNER JOIN users ON messages.user_id=users.user_id ORDER BY message_id DESC LIMIT 10; ";
     con.query(sqlQuery, (err, results) => {
       if (err){
         return reject(err);
@@ -60,7 +60,7 @@ select = function () {
 selectByIdRoom = function (id) {
   return new Promise(function(resolve, reject){
     let mess = [];
-    let sqlQuery = "SELECT users.pseudo, content, id_room  FROM messages INNER JOIN users ON messages.id_user=users.user_id WHERE id_room =" + id + " ORDER BY message_id DESC LIMIT 10;";
+    let sqlQuery = "SELECT users.pseudo, content, room_id  FROM messages INNER JOIN users ON messages.user_id=users.user_id WHERE room_id =" + id + " ORDER BY message_id DESC LIMIT 10;";
     con.query(sqlQuery, (err, results) => {
       if (err){
         return reject(err);
@@ -83,7 +83,7 @@ updateMessageById = function (id, nouveauMessage)  {
     return new Promise(function(resolve, reject){
       var ladate= new Date();
       var strDate = ladate.getFullYear()+"-"+(ladate.getMonth()+1)+"-"+ladate.getDate();
-      let sqlQuery = "UPDATE messages SET date='"+ strDate +"', content='"+nouveauMessage+"', id_user=1, id_room=1 WHERE message_id="+id+";";
+      let sqlQuery = "UPDATE messages SET date='"+ strDate +"', content='"+nouveauMessage+"', user_id=1, room_id=1 WHERE message_id="+id+";";
       con.query(sqlQuery, (err, results) => {
         if (err){
           return reject(err);

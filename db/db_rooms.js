@@ -22,7 +22,6 @@ create = function (name, image, private) {
       image: image,
       private: private,
     };
-    console.log(data);
 
     let sqlQuery = "INSERT INTO rooms SET ?";
 
