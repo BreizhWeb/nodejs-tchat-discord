@@ -32,49 +32,30 @@ $(document).ready(function () {
               <input type="submit" value="Submit">
             </form>
           </div>
-          <div class="userWrapper">
-            <div class="users">
-              ${/*chan.users.map(u => `<div id="user-${u.room_id}">${convertToPlain(u)}</div>`).join('')*/
-          ''}
-            </div>
-          </div>
         </div>
       `)
+      $(`#chan-${chan.room_id}`).submit(function (e) {
+        e.preventDefault();
+        sendMsg(chan.room_id)
+      })
     }
     return chan.id;
   }
 
   function sendMsg(chanid) {
     socket.emit("send message", {
-      msg: $(`.messageForm input.message`).val(),
+      msg: $(`#chan-${chanid} input.message`).val(),
       chan: chanid
     },
       () => {
-        $(`.messageForm input.message`).val('')
+        $(`#chan-${chanid} input.message`).val('')
       }
     );
   }
 
   function switchChan(chan) {
     $(".chan").hide();
-    $(`#chan-${chan.room_id}`).show().submit(function (e) {
-      e.preventDefault();
-      sendMsg(chan.room_id)
-    })
-    /**
-     * Gestion des users connectés
-     *
-     * 
-    socket.on(`usernames${chan.id_room}`, function (usersdata) {
-      console.log(usersdata);
-      let html = "";
-      for (i = 0; i < usersdata.length; i++) {
-        html += "<div>" + convertToPlain(usersdata[i]) + "</div>";
-      }
-      htmlChan.find('.users').html(html);
-    })*/
-    $("#login").remove()
-    $("#mainWrapper").show()
+    $(`#chan-${chan.room_id}`).show()
   }
 
   function buildUI(user, chanid = 0) {
@@ -83,6 +64,8 @@ $(document).ready(function () {
       switchChan(user.chans.find(chan => chan.room_id == e.target.id.match(/[0-9]+/)))
     })
     switchChan(user.chans.find(chan => chan.room_id == chanid) || user.chans[0])
+    $("#login").remove()
+    $("#mainWrapper").show()
   }
 
   $("#createroom").on("click", function (e) {
