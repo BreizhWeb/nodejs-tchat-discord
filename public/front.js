@@ -68,6 +68,23 @@ $(document).ready(function () {
     $("#mainWrapper").show()
   }
 
+  $("#publicrooms").on("click", function (e) {
+    socket.emit("public rooms", "go", function (rooms) {
+      console.log(rooms);
+      $('#modal .modalcontent').html(`
+          <div id="publicrooms">
+              ${rooms.map(room=> `<div class="room-${room.room_id}">${room.name}</div>`).join('')}
+          </div>
+        `)
+    }
+    )
+    $('#modal').addClass('show')
+    $("#modal .close").on("click", function (e) {
+      $('#modal').removeClass('show')
+      $('#modal .modalcontent').html('')
+    })
+  })
+
   $("#createroom").on("click", function (e) {
     $('#modal').addClass('show')
     $('#modal .modalcontent').html(`
@@ -81,7 +98,6 @@ $(document).ready(function () {
     `)
     $('#createroomform').submit(function (e) {
       e.preventDefault()
-      console.log(e);
       socket.emit(
         "create room",
         {

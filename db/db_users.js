@@ -132,10 +132,18 @@ getUserData = function (id) {
           }
         })
       } else {
-        results.forEach(res => {
+        user.chans = results.map(res => {
           let item = Object.assign({}, res)
           user.user_id = item.user_id
           user.pseudo = item.pseudo
+          if (item.room_id) {
+            return {
+              room_id: item.room_id,
+              name: item.name,
+              image: item.image,
+              private: item.private
+            }
+          }
         })
       }
 

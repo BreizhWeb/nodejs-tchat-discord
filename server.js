@@ -46,6 +46,14 @@ io.sockets.on("connection", async (socket) => {
     }
   })
 
+  // Get all public rooms
+  socket.on("public rooms", async (data, callback) => {
+    console.log("publicrooms",data);
+    let rooms = await db.rooms.selectPublic();
+    console.log(rooms);
+    callback(rooms)
+  });
+
   // Send Message
   socket.on("send message", (data, callback) => {
     logger.eventLogger.log('info', `[${data.chan}]${socket.user.pseudo} : ${data.msg}`)
