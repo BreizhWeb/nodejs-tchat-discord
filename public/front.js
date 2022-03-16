@@ -13,18 +13,18 @@ $(document).ready(function () {
     return tempDivElement.textContent || tempDivElement.innerText || "";
   }
 
-  function newChan(chan) {
-    if (!$(`#btn-${chan.room_id}`).length) {
+  function newRoom(room) {
+    if (!$(`#btn-${room.room_id}`).length) {
       $("#btnRoomsList").append(`
-        <div id="btn-${chan.room_id}" class="btnRoom">
-          ${chan.name}
+        <div id="btn-${room.room_id}" class="btnRoom">
+          ${room.name}
         </div>
       `)
     }
-    if (!$(`#chan-${chan.room_id}`).length) {
-      $('#chans').append(`
-        <div class="chan" id="chan-${chan.room_id}">
-          <h2>${chan.name}</h2>
+    if (!$(`#room-${room.room_id}`).length) {
+      $('#rooms').append(`
+        <div class="room" id="room-${room.room_id}">
+          <h2>${room.name}</h2>
           <div class="chatWrapper">
             <div class="chatWindow"></div>
             <form class="messageForm">
@@ -34,40 +34,39 @@ $(document).ready(function () {
           </div>
         </div>
       `)
-      $(`#chan-${chan.room_id}`).submit(function (e) {
+      $(`#room-${room.room_id}`).submit(function (e) {
         e.preventDefault();
-        sendMsg(chan.room_id)
+        sendMsg(room.room_id)
       })
     }
-    return chan.id;
+    return room.id;
   }
 
-  function sendMsg(chanid) {
+  function sendMsg(roomid) {
     socket.emit("send message", {
-      msg: $(`#chan-${chanid} input.message`).val(),
-      chan: chanid
+      msg: $(`#room-${roomid} input.message`).val(),
+      room: roomid
     },
       () => {
-        $(`#chan-${chanid} input.message`).val('')
+        $(`#room-${roomid} input.message`).val('')
       }
     );
   }
 
-  function switchChan(chan) {
-    $(".chan").hide();
-    $(`#chan-${chan.room_id}`).show()
+  function switchRoom(room) {
+    $(".room").hide();
+    $(`#room-${room.room_id}`).show()
   }
 
-  function buildUI(user, chanid = 0) {
-    user.chans?.forEach(chan => newChan(chan))
+  function buildUI(user, roomid = 0) {
+    user.rooms?.forEach(room => newRoom(room))
     $(".btnRoom").on("click", function (e) {
-      switchChan(user.chans.find(chan => chan.room_id == e.target.id.match(/[0-9]+/)))
+      switchRoom(user.rooms.find(room => room.room_id == e.target.id.match(/[0-9]+/)))
     })
-    switchChan(user.chans.find(chan => chan.room_id == chanid) || user.chans[0])
+    switchRoom(user.rooms.find(room => room.room_id == roomid) || user.rooms[0])
     $("#login").remove()
     $("#mainWrapper").show()
   }
-
   $("#createroom").on("click", function (e) {
     $('#modal').addClass('show')
     $('#modal .modalcontent').html(`
@@ -102,7 +101,7 @@ $(document).ready(function () {
   })
 
   socket.on("new message", function (data, callback) {
-    $(`#chan-${data.room_id} .chatWindow`).append(`
+    $(`#room-${data.room_id} .chatWindow`).append(`
       <div class='message'>
         <strong>${convertToPlain(data.user)}</strong>: 
         ${convertToPlain(data.msg)}

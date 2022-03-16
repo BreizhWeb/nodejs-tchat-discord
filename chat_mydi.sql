@@ -75,8 +75,8 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`role_id`, `name`) VALUES
-(1, 'admin'),
-(2, 'modérateur');
+(0, 'admin'),
+(1, 'user');
 
 -- --------------------------------------------------------
 
@@ -119,8 +119,8 @@ CREATE TABLE `rooms_users` (
 --
 
 INSERT INTO `rooms_users` (`rooms_users_id`, `room_id`, `user_id`, `role_id`) VALUES
-(2, 2, 1, 1),
-(3, 2, 3, 2);
+(2, 2, 1, 0),
+(3, 2, 3, 1);
 
 -- --------------------------------------------------------
 

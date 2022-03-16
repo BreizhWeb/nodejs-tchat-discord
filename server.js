@@ -39,7 +39,6 @@ io.sockets.on("connection", async (socket) => {
     if (socket.user.user_id) {
       logger.eventLogger.log('info', `connected : ${socket.user.pseudo}`)
       multirooms.joinRooms(socket)
-      console.log(socket.user);
       callback(socket.user)
     } else {
       callback(false)
@@ -48,24 +47,24 @@ io.sockets.on("connection", async (socket) => {
 
   // Send Message
   socket.on("send message", (data, callback) => {
-    logger.eventLogger.log('info', `[${data.chan}]${socket.user.pseudo} : ${data.msg}`)
+    logger.eventLogger.log('info', `[${data.room}]${socket.user.pseudo} : ${data.msg}`)
     //TODO Role send message
 
-    io.to(`chan-${data.chan}`).emit('new message', {
+    io.to(`room-${data.room}`).emit('new message', {
       msg: data.msg,
-      room_id: data.chan,
+      room_id: data.room,
       user: socket.user.pseudo
     }, callback(true))
   })
 
   // Delete message
   socket.on("delete message", async (data, callback) => {
-    logger.eventLogger.log('info', `delete message [${data.chan}]${socket.user.pseudo} : ${data.msg}`)
+    logger.eventLogger.log('info', `delete message [${data.room}]${socket.user.pseudo} : ${data.msg}`)
     //TODO Role delete message
     
-    io.to(`chan-${data.chan}`).emit('delete message', {
+    io.to(`room-${data.room}`).emit('delete message', {
       msg: data.msg,
-      room_id: data.chan
+      room_id: data.room
     }, callback(true))
   })
 
@@ -83,7 +82,7 @@ io.sockets.on("connection", async (socket) => {
     // TODO Role delete room
     logger.eventLogger.log('info', `${socket.user.pseudo} : deleted room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
     
-    io.to(`chan-${data.room_id}`).emit('delete room', {
+    io.to(`room-${data.room_id}`).emit('delete room', {
       room_id: data.room_id
     }, callback(true))
   })
