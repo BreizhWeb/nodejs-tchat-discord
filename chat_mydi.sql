@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : dim. 13 mars 2022 à 16:18
+-- Généré le : jeu. 17 mars 2022 à 18:22
 -- Version du serveur : 10.4.22-MariaDB
 -- Version de PHP : 7.4.26
 
@@ -57,7 +57,21 @@ INSERT INTO `messages` (`message_id`, `date`, `content`, `user_id`, `room_id`) V
 (15, '2022-02-22', 'Yo les manos, bien ?', 2, 2),
 (16, '2022-02-22', 'Yes et toi ?', 3, 2),
 (17, '2022-02-22', 'Go Lol !', 1, 2),
-(18, '2022-02-22', 'Allez !', 3, 2);
+(18, '2022-02-22', 'Allez !', 3, 2),
+(20, '2022-03-18', 'bonsoir', 2, 2),
+(21, '2022-03-18', 'Bonsoir toi', 1, 2),
+(22, '2022-03-17', 'Nous allons tester la premiere room', 2, 1),
+(23, '2022-03-17', 'Bonsoir everyone', 3, 1),
+(24, '2022-03-17', 'Re bonjour', 2, 1),
+(25, '2022-03-17', 'Encore bonjour?', 1, 1),
+(26, '2022-03-18', 'Il est quelle heure ?', 3, 3),
+(27, '2022-03-19', 'Jsp', 2, 3),
+(28, '2022-03-19', 'Ba regarde ton tel', 2, 3),
+(29, '2022-03-19', 'Bien vu', 1, 3),
+(30, '2022-03-19', 'J\'ai un bug ', 3, 3),
+(31, '2022-03-19', 'ah non c\'est ok', 3, 3),
+(32, '2022-03-19', 'zaoelnjdsjgnfdm', 2, 3),
+(33, '2022-03-19', 'etpokrjiye', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -75,8 +89,9 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`role_id`, `name`) VALUES
-(0, 'admin'),
-(1, 'user');
+(0, 'user'),
+(1, 'admin'),
+(2, 'superadmin');
 
 -- --------------------------------------------------------
 
@@ -119,8 +134,15 @@ CREATE TABLE `rooms_users` (
 --
 
 INSERT INTO `rooms_users` (`rooms_users_id`, `room_id`, `user_id`, `role_id`) VALUES
+(5, 1, 1, 2),
+(6, 1, 2, 1),
+(7, 1, 3, 1),
 (2, 2, 1, 0),
-(3, 2, 3, 1);
+(4, 2, 2, 2),
+(3, 2, 3, 1),
+(8, 3, 1, 0),
+(9, 3, 2, 1),
+(10, 3, 3, 2);
 
 -- --------------------------------------------------------
 
@@ -192,13 +214,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT pour la table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `role_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `role_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `rooms`
@@ -210,7 +232,7 @@ ALTER TABLE `rooms`
 -- AUTO_INCREMENT pour la table `rooms_users`
 --
 ALTER TABLE `rooms_users`
-  MODIFY `rooms_users_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `rooms_users_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT pour la table `users`
