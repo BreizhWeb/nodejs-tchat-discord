@@ -4,6 +4,7 @@ const app = express();
 server = require("http").createServer(app);
 const io = require('socket.io')(server);
 const multirooms = require('./modules/multirooms.js')
+const control = require('./modules/control.js')
 const logger = require('./log/logger.js')
 const db = require('./db/db.js')
 
@@ -35,7 +36,7 @@ io.sockets.on("connection", async (socket) => {
 
   socket.on("new user", async function (name, callback) {
     socket.user = await db.users.getUserData(name)
-    // If user dont exist
+    // If user exist
     if (socket.user.user_id) {
       logger.eventLogger.log('info', `connected : ${socket.user.pseudo}`)
       multirooms.joinRooms(socket)
@@ -47,60 +48,69 @@ io.sockets.on("connection", async (socket) => {
 
   // Send Message
   socket.on("send message", (data, callback) => {
-    logger.eventLogger.log('info', `[${data.room}]${socket.user.pseudo} : ${data.msg}`)
-    //TODO Role send message
-
-    io.to(`room-${data.room}`).emit('new message', {
-      msg: data.msg,
-      room_id: data.room,
-      user: socket.user.pseudo
-    }, callback(true))
+    //TODO Role can send message ?
+    if (true) {
+      logger.eventLogger.log('info', `[${data.room}]${socket.user.pseudo} : ${data.msg}`)
+      io.to(`room-${data.room}`).emit('new message', {
+        msg: data.msg,
+        room_id: data.room,
+        user: socket.user.pseudo
+      }, callback(true))
+    }
   })
 
   // Delete message
   socket.on("delete message", async (data, callback) => {
-    logger.eventLogger.log('info', `delete message [${data.room}]${socket.user.pseudo} : ${data.msg}`)
-    //TODO Role delete message
-    
-    io.to(`room-${data.room}`).emit('delete message', {
-      msg: data.msg,
-      room_id: data.room
-    }, callback(true))
+    //TODO Role can delete message
+    if (true) {
+      logger.eventLogger.log('info', `delete message [${data.room}]${socket.user.pseudo} : ${data.msg}`)
+      io.to(`room-${data.room}`).emit('delete message', {
+        msg: data.msg,
+        room_id: data.room
+      }, callback(true))
+    }
   })
 
   // Create room
   socket.on("create room", async (data, callback) => {
-    // TODO Role create room
-    let room = await multirooms.createRoom(socket, data)
-    logger.eventLogger.log('info', `${socket.user.pseudo} : Created room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
-    callback(socket.user, room.room_id)
+    // TODO is valid user
+    if (true) {
+      let room = await multirooms.createRoom(socket, data)
+      logger.eventLogger.log('info', `${socket.user.pseudo} : Created room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
+      callback(socket.user, room.room_id)
+    }
   })
 
   // Delete room
   socket.on("delete room", async (data, callback) => {
-    let room = db.rooms.select(data.room_id)
-    // TODO Role delete room
-    logger.eventLogger.log('info', `${socket.user.pseudo} : deleted room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
-    
-    io.to(`room-${data.room_id}`).emit('delete room', {
-      room_id: data.room_id
-    }, callback(true))
+    // TODO Role can delete the room
+    if (true) {
+      let room = db.rooms.select(data.room_id)
+      logger.eventLogger.log('info', `${socket.user.pseudo} : deleted room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
+      io.to(`room-${data.room_id}`).emit('delete room', {
+        room_id: data.room_id
+      }, callback(true))
+    }
   })
 
   // Invite user
   socket.on("invite user", async (data, callback) => {
-    // TODO Role invite user
-    logger.eventLogger.log('info', `${socket.user.pseudo} : Invited user id:${data.user_id}, room id:${data.room_id}`)
-    // TODO emit to user new room
-    callback(socket.user, room.room_id) // ???
+    // TODO Role can invite user
+    if (true) {
+      logger.eventLogger.log('info', `${socket.user.pseudo} : Invited user id:${data.user_id}, room id:${data.room_id}`)
+      // TODO emit to user new room
+      callback(socket.user, room.room_id) // ???
+    }
   })
 
   // Kick user
   socket.on("Kick user", async (data, callback) => {
     // TODO Role Kick user
-    logger.eventLogger.log('info', `${socket.user.pseudo} : Kicked user id:${data.user_id}, room id:${data.room_id}`)
-    // TODO emit to user new room
-    callback(socket.user, room.room_id) // ???
+    if (true) {
+      logger.eventLogger.log('info', `${socket.user.pseudo} : Kicked user id:${data.user_id} from room id:${data.room_id}`)
+      // TODO emit to user new room
+      callback(socket.user, room.room_id) // ???
+    }
   })
 
   //Disconnect
@@ -108,8 +118,11 @@ io.sockets.on("connection", async (socket) => {
     if (!socket.user?.pseudo) {
       return;
     }
-    logger.eventLogger.log('info', `disconnected : ${socket.user?.pseudo}`);
+    logger.eventLogger.log('info', `disconnected : ${socket.user?.pseudo}`)
+    
     multirooms.disconnect(socket.user, io.sockets)
   });
+
+  // TODO emit redirect to login on server disconnect
 })
 
