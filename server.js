@@ -22,6 +22,7 @@ server.listen(PORT, () => {
 
 cache.set();
 
+const users = [];
 io.sockets.on("connection", async (socket) => {
   logger.eventLogger.log('info', "Socket connected...")
   socket.emit('connection');
@@ -30,7 +31,9 @@ io.sockets.on("connection", async (socket) => {
   } catch (e) {
     console.log(e);
   }
-
+  socket.on('test', () => {
+    console.log(socket);
+  })
   socket.on("userlist", (data, callback) => {
     callback(socket.users.map(u => u.user_id + ":" + u.pseudo));
   });
@@ -42,6 +45,18 @@ io.sockets.on("connection", async (socket) => {
       logger.eventLogger.log('info', `connected : ${socket.user.pseudo}`)
       multirooms.joinRooms(socket)
       callback(socket.user)
+
+      // TODO ranger le merdier
+      for (let [id, socket] of io.of("/").sockets) {
+        users.push({
+          socket_id: id,
+          user: socket.user,
+        });
+      }
+      socket.emit("users", users)
+      console.log(users)
+
+
     } else {
       callback(false)
     }
@@ -50,6 +65,19 @@ io.sockets.on("connection", async (socket) => {
   // Send Message
   socket.on("send message", async (msgdata, callback) => {
     callback(control.sendMessage(io, socket.user, msgdata.room_id, msgdata.content))
+  })
+
+  // Send private message
+  socket.on("send private message", ({ user_id, content }, callback) => {
+    // TODO finish + front
+    let to = users.find(u => u.user.user_id == user_id)
+    if (to)
+      socket.to(to.socket_id).emit("private message", {
+        content,
+        from: socket.id,
+      })
+    else
+      callback(false)
   })
 
   // Delete message

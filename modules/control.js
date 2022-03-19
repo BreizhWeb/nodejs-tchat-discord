@@ -47,7 +47,7 @@ async function inviteUser(user_id, room_id, invited_user_id) {
   if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
     db.roles.create(room_id, invited_user_id, 0);
     cache.add(invited_user_id, room_id, 0);
-    // TODO emit to specific user
+    // TODO emit update to specific user
   } else {
     return false
   }
@@ -57,7 +57,8 @@ async function deleteUser(user_id, room_id, deleted_user_id) {
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteUser)) {
     db.roles.deleteUser(room_id, invited_user_id);
     cache.deleteUser(invited_user_id, room_id);
-    // TODO emit update to specific user
+    // TODO find right socket to push :
+    //socket.emit('delete room', room_id)
   } else {
     return false
   }

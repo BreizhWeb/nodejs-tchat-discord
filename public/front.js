@@ -1,4 +1,4 @@
-var deleteMessage, deleteRoom;
+var deleteMessage, deleteRoom, test;
 $(document).ready(() => {
   var socket = io.connect();
   socket.emit("userlist", 1, (data) => {
@@ -38,8 +38,12 @@ $(document).ready(() => {
     );
   }
 
-  deleteMessage = function (msg_id, room_id) {
+  deleteMessage = (msg_id, room_id) => {
     socket.emit("delete message", { msg_id, room_id });
+  }
+
+  test = () => {
+    socket.emit("test")
   }
 
   socket.on("delete message", (msg_id) => {
