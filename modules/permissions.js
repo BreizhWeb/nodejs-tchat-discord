@@ -2,7 +2,7 @@ const cacheData = require('./cacheData.js')
 
 const user = 0b100000
 const admin = 0b111111
-const role = [admin, user];
+const role = [user,admin];
 
 const control = {
   sendMessage: 0b100000,

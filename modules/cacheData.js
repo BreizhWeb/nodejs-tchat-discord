@@ -21,17 +21,17 @@ function update (user_id, room_id, role_id){
 }
 
 
-function deleteUserFrom (user_id, room_id, role_id){
-  let deleted = rooms_users.filter(element => element.user_id != user_id || element.room_id != room_id || element.role_id != role_id);
+function deleteUser (user_id, room_id){
+  let deleted = rooms_users.filter(element => element.user_id != user_id || element.room_id != room_id );
   rooms_users =  deleted;
 }
 
-function deleteRoomFrom (room_id){
+function deleteRoom(room_id){
   let deleted = rooms_users.filter(element => element.room_id != room_id);
   rooms_users =  deleted;
 }
 
-function listRoomUserFrom(room_id){
+function listRoomUser(room_id){
   return rooms_users.filter(element => element.room_id === room_id);
 }
 
@@ -40,7 +40,7 @@ module.exports = {
     set:set,
     add: add,
     update: update,
-    deleteUserFrom: deleteUserFrom,
-    deleteRoomFrom: deleteRoomFrom,
-    listRoomUserFrom: listRoomUserFrom
+    deleteUser: deleteUser,
+    deleteRoom: deleteRoom,
+    listRoomUser: listRoomUser
 }
