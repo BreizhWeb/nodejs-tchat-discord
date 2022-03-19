@@ -5,7 +5,7 @@ const admin = 0b111111
 const role = [admin, user];
 
 const control = {
-  seeChan: 0b100000,
+  sendMessage: 0b100000,
   deleteMessage: 0b010000,
   inviteUser: 0b001000,
   deleteUser: 0b000100,
@@ -17,23 +17,27 @@ const control = {
 
 // récupére les droit
 function getRightFromUser(user_id, room_id) {
-  role_id = cacheData.rooms_usersCache.filter(acc => acc.user_id == user_id && acc.room_id == room_id)[0].role_id
-  return (role[role_id])
+  room_user = cacheData.rooms_users.filter(acc => acc.user_id == user_id && acc.room_id == room_id)
+  return (room_user.length ? role[0].role_id : false);
 }
 
 // récupère les id des rooms d'un user via son id
-var getUserRoomsId = function (user_id) {
-  return cacheData.rooms_usersCache.filter(acc => acc.user_id==user_id)?.map(elt => elt.room_id)
+function getUserRoomsId(user_id) {
+  return cacheData.rooms_users.filter(acc => acc.user_id==user_id)
 }
 
 // get action
-function getActionRight(user, room, action) {
-    userRole =  getRightFromUser(user,room)
+function getActionRight(user_id, room_id, action) {
+    userRole =  getRightFromUser(user_id,room_id)
     return ((userRole & action ) == action)
   }
 
 module.exports = {
-    getActionRight,
-    getUserRoomsId,
-    control
+  user,
+  admin,
+  role,
+  control,
+  getRightFromUser,
+  getUserRoomsId,
+  getActionRight
 }

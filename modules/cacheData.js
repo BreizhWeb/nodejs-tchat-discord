@@ -7,7 +7,7 @@ async function set(){
   console.log(await rooms_users);
 }
 
-function addTo (user_id, room_id, role_id){
+function add (user_id, room_id, role_id){
   let added = rooms_users.push({user_id:user_id,room_id:room_id,role_id:role_id})
   rooms_users = added ;
 }
@@ -38,7 +38,7 @@ function listRoomUserFrom(room_id){
 module.exports = {
     rooms_users: rooms_users,
     set:set,
-    addTo: addTo,
+    add: add,
     update: update,
     deleteUserFrom: deleteUserFrom,
     deleteRoomFrom: deleteRoomFrom,
