@@ -20,24 +20,17 @@ server.listen(PORT, () => {
   console.log(`le serveur écoute sur le port ${PORT}`);
 });
 
-cache.set();
+cache.set()
 
-const users = [];
+const users = []
 io.sockets.on("connection", async (socket) => {
   logger.eventLogger.log('info', "Socket connected...")
-  socket.emit('connection');
-  try {
-    socket.users = await db.users.getUsers()
-  } catch (e) {
-    console.log(e);
-  }
+  socket.emit('connection')
   socket.on('test', () => {
     console.log(socket);
   })
-  socket.on("userlist", (data, callback) => {
-    callback(socket.users.map(u => u.user_id + ":" + u.pseudo));
-  });
 
+  // TODO : A refaire quand le login sera là
   socket.on("new user", async function (name, callback) {
     socket.user = await db.users.getUserData(name)
     // If user dont exist
@@ -115,6 +108,7 @@ io.sockets.on("connection", async (socket) => {
 
   //Disconnect
   socket.on("disconnect", function (data) {
+    // TODO 
     if (!socket.user?.pseudo) {
       return;
     }

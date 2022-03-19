@@ -5,21 +5,18 @@ const multirooms = require('./multirooms.js')
 const logger = require('../log/logger')
 
 async function createRoom(socket, data) {
-  let room = await db.rooms.create(data.name, data.image, data.private);
-  db.roles.create(room.room_id, socket.user.user_id, 0);
-  await cache.add(socket.user.user_id, room.room_id, 0);
-  multirooms.joinRooms(socket);
-  logger.eventLogger.log('info', `${socket.user.pseudo} : Created room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
-  return room;
-
-  // il faut corriger la fonction
-
+  let room = await db.rooms.create(data.name, data.image, data.private)
+  db.roles.create(room.room_id, socket.user.user_id, 0)
+  await cache.add(socket.user.user_id, room.room_id, 0)
+  multirooms.joinRooms(socket)
+  logger.eventLogger.log('info', `"action":"create room", "room_id":${room.room_id}, "user_id":${socket.user.user_id}`)
+  return room
 }
 
 async function sendMessage(io, user, room_id, content) {
   if (permission.getActionRight(user.user_id, room_id, permission.actions.sendMessage)) {
     let msg_id = await db.messages.create(user.user_id, room_id, content)
-    logger.eventLogger.log('info', `action:"send message", room_id:${room_id}, user_id:${user.user_id}, message_id:${msg_id}`)
+    logger.eventLogger.log('info', `"action":"send message", "room_id":${room_id}, "user_id":${user.user_id}, "message_id":${msg_id}`)
     await io.to(`room-${room_id}`).emit('new message', {
       content: content,
       msg_id: msg_id,
@@ -34,7 +31,7 @@ async function sendMessage(io, user, room_id, content) {
 
 function deleteMessage(io, user, room_id, msg_id) {
   if (permission.getActionRight(user.user_id, room_id, permission.actions.deleteMessage)) {
-    logger.eventLogger.log('info', `action:"delete message", room_id:${room_id}, user_id:${user.user_id}, message_id:${msg_id}`)
+    logger.eventLogger.log('info', `"action":"delete message", "room_id":${room_id}, "user_id":${user.user_id}, "message_id":${msg_id}`)
     db.messages.deleteMsg(msg_id)
     io.to(`room-${room_id}`).emit('delete message', msg_id)
     return true
@@ -67,7 +64,7 @@ async function deleteUser(user_id, room_id, deleted_user_id) {
 async function deleteRoom(io, user_id, room_id) {
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteRoom)) {
     let room = await db.rooms.select(room_id)
-    logger.eventLogger.log('info', `action: "delete room", room_id:${room.room_id}, name:"${room.name}", image:"${room.image}", private:${room.private}`)
+    logger.eventLogger.log('info', `"action": "delete room", "room_id":${room.room_id}, "name":"${room.name}", "image":"${room.image}", "private":${room.private}`)
     io.to(`room-${room_id}`).emit('delete room', room_id)
     db.roles.deleteByRoom(room_id);
     cache.deleteRoom(room_id);
