@@ -2,7 +2,7 @@ var cacheData = require('./cacheData.js')
 
 const user = 0b100000
 const admin = 0b111111
-const role = [user,admin];
+const role = [admin,user];
 
 const actions = {
   sendMessage: 0b100000,
@@ -18,19 +18,19 @@ const actions = {
 // récupére les droit
 function getRightFromUser(user_id, room_id) {
   room_user = cacheData.value.filter(acc => acc.user_id == user_id && acc.room_id == room_id)
-  return (room_user.length ? role[0].role_id : false);
+  return (room_user.length ? role[room_user[0].role_id] : false);
 }
 
 // récupère les id des rooms d'un user via son id
 function getUserRoomsId(user_id) {
-  return cacheData.value.filter(acc => acc.user_id==user_id)
+  return cacheData.value.filter(acc => acc.user_id == user_id)
 }
 
 // get action
 function getActionRight(user_id, room_id, action) {
-    userRole =  getRightFromUser(user_id,room_id)
-    return ((userRole & action ) == action)
-  }
+  userRole = getRightFromUser(user_id, room_id)
+  return ((userRole & action) == action)
+}
 
 module.exports = {
   user,

@@ -24,7 +24,7 @@ cache.set();
 
 io.sockets.on("connection", async (socket) => {
   logger.eventLogger.log('info', "Socket connected...")
-  io.emit('connection');
+  socket.emit('connection');
   try {
     socket.users = await db.users.getUsers()
   } catch (e) {
@@ -49,41 +49,24 @@ io.sockets.on("connection", async (socket) => {
 
   // Send Message
   socket.on("send message", async (msgdata, callback) => {
-    let msg_id = await db.messages.create(socket.user.user_id, msgdata.room_id, msgdata.content)
-    logger.eventLogger.log('info', `[${msgdata.room_id}]${socket.user.pseudo} : ${msgdata.content}`)
-    io.to(`room-${msgdata.room_id}`).emit('new message', {
-      content: msgdata.content,
-      msg_id: msg_id,
-      room_id: msgdata.room_id,
-      user: socket.user
-    })
-    callback(true)
+    callback(control.sendMessage(io, socket.user, msgdata.room_id, msgdata.content))
   })
 
   // Delete message
-  socket.on("delete message", async (data) => {
-    logger.eventLogger.log('info', `delete message [${data.msg_id}]${socket.user.pseudo}`)
-    //TODO Role delete message ??
-    db.messages.deleteMsg(data.msg_id)
-    io.to(`room-${data.room_id}`).emit('delete message', data.msg_id)
+  socket.on("delete message", async (msgdata) => {
+    control.deleteMessage(io, socket.user, msgdata.room_id, msgdata.msg_id)
   })
 
   // Create room
   socket.on("create room", async (data, callback) => {
-    // TODO Role create room
-    let room = await multirooms.createRoom(socket, data)
-    logger.eventLogger.log('info', `${socket.user.pseudo} : Created room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
+    let room = await control.createRoom(socket, data)
+    socket.user.rooms.push(room)
     callback(socket.user, room.room_id)
   })
 
   // Delete room
-  socket.on("delete room", async (data, callback) => {
-    let room = db.rooms.select(data.room_id)
-    // TODO Role delete room
-    logger.eventLogger.log('info', `${socket.user.pseudo} : deleted room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
-    io.to(`room-${data.room_id}`).emit('delete room', {
-      room_id: data.room_id
-    }, callback(true))
+  socket.on("delete room", async (room_id) => {
+    control.deleteRoom(io, socket.user.user_id, room_id)
   })
 
   // Invite user
