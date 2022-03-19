@@ -1,10 +1,10 @@
 const cacheData = require('./cacheData.js')
-
+const {rooms_users} = require('./cacheData.js')
 const user = 0b100000
 const admin = 0b111111
 const role = [user,admin];
 
-const control = {
+const actions = {
   sendMessage: 0b100000,
   deleteMessage: 0b010000,
   inviteUser: 0b001000,
@@ -13,11 +13,12 @@ const control = {
   changeRole: 0b000001
 }
 
+
 // USER
 
 // récupére les droit
-function getRightFromUser(user_id, room_id) {
-  room_user = cacheData.rooms_users.filter(acc => acc.user_id == user_id && acc.room_id == room_id)
+async function getRightFromUser(user_id, room_id) {
+  room_user = rooms_users.filter(acc => acc.user_id == user_id && acc.room_id == room_id)
   return (room_user.length ? role[0].role_id : false);
 }
 
@@ -36,7 +37,7 @@ module.exports = {
   user,
   admin,
   role,
-  control,
+  actions,
   getRightFromUser,
   getUserRoomsId,
   getActionRight

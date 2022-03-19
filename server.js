@@ -3,11 +3,11 @@ const express = require("express");
 const app = express();
 server = require("http").createServer(app);
 const io = require('socket.io')(server);
-const multirooms = require('./modules/multirooms.js')
-const logger = require('./log/logger.js')
-const db = require('./db/db.js')
-
-
+const multirooms = require('./modules/multirooms')
+const control = require('./modules/control')
+const logger = require('./log/logger')
+const db = require('./db/db')
+const cache = require('./modules/cacheData');
 
 app.use(express.static('public'))
 
@@ -19,6 +19,8 @@ const PORT = process.env.PORT;
 server.listen(PORT, () => {
   console.log(`le serveur écoute sur le port ${PORT}`);
 });
+
+cache.set();
 
 io.sockets.on("connection", async (socket) => {
   logger.eventLogger.log('info', "Socket connected...")
@@ -46,26 +48,24 @@ io.sockets.on("connection", async (socket) => {
   })
 
   // Send Message
-  socket.on("send message", (data, callback) => {
-    logger.eventLogger.log('info', `[${data.room}]${socket.user.pseudo} : ${data.msg}`)
-    //TODO Role send message
-
-    io.to(`room-${data.room}`).emit('new message', {
-      msg: data.msg,
-      room_id: data.room,
-      user: socket.user.pseudo
-    }, callback(true))
+  socket.on("send message", async (msgdata, callback) => {
+    let msg_id = await db.messages.create(socket.user.user_id, msgdata.room_id, msgdata.content)
+    logger.eventLogger.log('info', `[${msgdata.room_id}]${socket.user.pseudo} : ${msgdata.content}`)
+    io.to(`room-${msgdata.room_id}`).emit('new message', {
+      content: msgdata.content,
+      msg_id: msg_id,
+      room_id: msgdata.room_id,
+      user: socket.user
+    })
+    callback(true)
   })
 
   // Delete message
-  socket.on("delete message", async (data, callback) => {
-    logger.eventLogger.log('info', `delete message [${data.room}]${socket.user.pseudo} : ${data.msg}`)
-    //TODO Role delete message
-    
-    io.to(`room-${data.room}`).emit('delete message', {
-      msg: data.msg,
-      room_id: data.room
-    }, callback(true))
+  socket.on("delete message", async (data) => {
+    logger.eventLogger.log('info', `delete message [${data.msg_id}]${socket.user.pseudo}`)
+    //TODO Role delete message ??
+    db.messages.deleteMsg(data.msg_id)
+    io.to(`room-${data.room_id}`).emit('delete message', data.msg_id)
   })
 
   // Create room
@@ -81,7 +81,6 @@ io.sockets.on("connection", async (socket) => {
     let room = db.rooms.select(data.room_id)
     // TODO Role delete room
     logger.eventLogger.log('info', `${socket.user.pseudo} : deleted room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
-    
     io.to(`room-${data.room_id}`).emit('delete room', {
       room_id: data.room_id
     }, callback(true))
