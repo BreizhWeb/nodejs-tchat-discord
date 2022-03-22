@@ -4,16 +4,30 @@ const cache = require('./cacheData');
 const multirooms = require('./multirooms.js')
 const logger = require('../log/logger')
 
+async function createMp(socket, data) {
+  console.log(data,socket.user);
+  let room = await db.rooms.create(data.name + "-" + socket.user.pseudo, data.image, data.private)
+  db.roles.create(room.room_id, socket.user.user_id, 5)
+  await cache.add(socket.user.user_id, room.room_id, 5)
+  socket.user.rooms.push(room)
+  multirooms.joinRooms(socket)
+  logger.eventLogger.log('info', `"action":"create mp room", "room_id":${room.room_id}, "user_id":${socket.user.user_id}`)
+  inviteUser(socket.user.user_id, room.room_id, data.mp, 5)
+  return room
+}
+
 async function createRoom(socket, data) {
   let room = await db.rooms.create(data.name, data.image, data.private)
   db.roles.create(room.room_id, socket.user.user_id, 0)
   await cache.add(socket.user.user_id, room.room_id, 0)
+  socket.user.rooms.push(room)
   multirooms.joinRooms(socket)
   logger.eventLogger.log('info', `"action":"create room", "room_id":${room.room_id}, "user_id":${socket.user.user_id}`)
   return room
 }
 
 async function sendMessage(io, user, room_id, content) {
+  console.log(await cache.value);
   if (permission.getActionRight(user.user_id, room_id, permission.actions.sendMessage)) {
     let msg_id = await db.messages.create(user.user_id, room_id, content)
     logger.eventLogger.log('info', `"action":"send message", "room_id":${room_id}, "user_id":${user.user_id}, "message_id":${msg_id}`)
@@ -40,10 +54,10 @@ function deleteMessage(io, user, room_id, msg_id) {
   }
 }
 
-async function inviteUser(user_id, room_id, invited_user_id) {
+async function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) {
   if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
-    db.roles.create(room_id, invited_user_id, 0);
-    cache.add(invited_user_id, room_id, 0);
+    db.roles.create(room_id, invited_user_id, invited_user_role);
+    cache.add(invited_user_id, room_id, invited_user_role);
     // TODO emit update to specific user
   } else {
     return false
@@ -85,6 +99,7 @@ async function changeRole(user_id, room_id) {
 
 module.exports = {
   createRoom,
+  createMp,
   sendMessage,
   deleteMessage,
   inviteUser,

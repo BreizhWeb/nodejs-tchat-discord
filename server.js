@@ -80,8 +80,13 @@ io.sockets.on("connection", async (socket) => {
 
   // Create room
   socket.on("create room", async (data, callback) => {
-    let room = await control.createRoom(socket, data)
-    socket.user.rooms.push(room)
+    let room
+    if (data.mp) {
+      room = cache.value.find(r => r.role_id == 5 && r.room_id == cache.value.find(t => t.role_id == 5 && t.user_id == data.mp))
+      if(!room?.room_id)
+        room = await control.createMp(socket, data)
+    } else
+      room = await control.createRoom(socket, data)
     callback(socket.user, room.room_id)
   })
 
