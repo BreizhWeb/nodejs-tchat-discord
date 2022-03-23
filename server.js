@@ -20,21 +20,17 @@ server.listen(PORT, () => {
   console.log(`le serveur écoute sur le port ${PORT}`);
 });
 
-cache.set();
+cache.set()
 
+const users = []
 io.sockets.on("connection", async (socket) => {
   logger.eventLogger.log('info', "Socket connected...")
-  io.emit('connection');
-  try {
-    socket.users = await db.users.getUsers()
-  } catch (e) {
-    console.log(e);
-  }
+  socket.emit('connection')
+  socket.on('test', () => {
+    console.log(socket);
+  })
 
-  socket.on("userlist", (data, callback) => {
-    callback(socket.users.map(u => u.user_id + ":" + u.pseudo));
-  });
-
+  // TODO : A refaire quand le login sera là
   socket.on("new user", async function (name, callback) {
     socket.user = await db.users.getUserData(name)
     // If user dont exist
@@ -42,6 +38,18 @@ io.sockets.on("connection", async (socket) => {
       logger.eventLogger.log('info', `connected : ${socket.user.pseudo}`)
       multirooms.joinRooms(socket)
       callback(socket.user)
+
+      // TODO ranger le merdier
+      for (let [id, socket] of io.of("/").sockets) {
+        users.push({
+          socket_id: id,
+          user: socket.user,
+        });
+      }
+      socket.emit("users", users)
+      console.log(users)
+
+
     } else {
       callback(false)
     }
@@ -49,41 +57,42 @@ io.sockets.on("connection", async (socket) => {
 
   // Send Message
   socket.on("send message", async (msgdata, callback) => {
-    let msg_id = await db.messages.create(socket.user.user_id, msgdata.room_id, msgdata.content)
-    logger.eventLogger.log('info', `[${msgdata.room_id}]${socket.user.pseudo} : ${msgdata.content}`)
-    io.to(`room-${msgdata.room_id}`).emit('new message', {
-      content: msgdata.content,
-      msg_id: msg_id,
-      room_id: msgdata.room_id,
-      user: socket.user
-    })
-    callback(true)
+    callback(control.sendMessage(io, socket.user, msgdata.room_id, msgdata.content))
+  })
+
+  // Send private message
+  socket.on("send private message", ({ user_id, content }, callback) => {
+    // TODO finish + front
+    let to = users.find(u => u.user.user_id == user_id)
+    if (to)
+      socket.to(to.socket_id).emit("private message", {
+        content,
+        from: socket.id,
+      })
+    else
+      callback(false)
   })
 
   // Delete message
-  socket.on("delete message", async (data) => {
-    logger.eventLogger.log('info', `delete message [${data.msg_id}]${socket.user.pseudo}`)
-    //TODO Role delete message ??
-    db.messages.deleteMsg(data.msg_id)
-    io.to(`room-${data.room_id}`).emit('delete message', data.msg_id)
+  socket.on("delete message", async (msgdata) => {
+    control.deleteMessage(io, socket.user, msgdata.room_id, msgdata.msg_id)
   })
 
   // Create room
   socket.on("create room", async (data, callback) => {
-    // TODO Role create room
-    let room = await multirooms.createRoom(socket, data)
-    logger.eventLogger.log('info', `${socket.user.pseudo} : Created room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
+    let room
+    if (data.mp) {
+      room = cache.value.find(r => r.role_id == 5 && r.room_id == cache.value.find(t => t.role_id == 5 && t.user_id == data.mp))
+      if(!room?.room_id)
+        room = await control.createMp(socket, data)
+    } else
+      room = await control.createRoom(socket, data)
     callback(socket.user, room.room_id)
   })
 
   // Delete room
-  socket.on("delete room", async (data, callback) => {
-    let room = db.rooms.select(data.room_id)
-    // TODO Role delete room
-    logger.eventLogger.log('info', `${socket.user.pseudo} : deleted room id:${room.room_id}, name:${room.name}, image:${room.image}, private:${room.private}`)
-    io.to(`room-${data.room_id}`).emit('delete room', {
-      room_id: data.room_id
-    }, callback(true))
+  socket.on("delete room", async (room_id) => {
+    control.deleteRoom(io, socket.user.user_id, room_id)
   })
 
   // Invite user
@@ -104,6 +113,7 @@ io.sockets.on("connection", async (socket) => {
 
   //Disconnect
   socket.on("disconnect", function (data) {
+    // TODO 
     if (!socket.user?.pseudo) {
       return;
     }

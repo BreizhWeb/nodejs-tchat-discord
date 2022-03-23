@@ -106,8 +106,7 @@ deleteMsg = function (id) {
       if (err) {
         return reject(err);
       }
-      console.log(result);
-      return resolve(Object.assign({}, result));
+      return resolve(result.affectedRows);
     });
   })
 

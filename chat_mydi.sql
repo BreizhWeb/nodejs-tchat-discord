@@ -90,7 +90,8 @@ CREATE TABLE `roles` (
 
 INSERT INTO `roles` (`role_id`, `name`) VALUES
 (0, 'admin'),
-(1, 'user');
+(1, 'user'),
+(5, 'mp');
 
 -- --------------------------------------------------------
 

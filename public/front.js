@@ -1,9 +1,22 @@
-var deleteMessage;
-$(document).ready(function () {
+var deleteMessage, deleteRoom, privateMessage, switchRoom, test;
+$(document).ready(() => {
   var socket = io.connect();
-  socket.emit("userlist", 1, function (data) {
+  socket.emit("userlist", 1, (data) => {
     $('.utilisateurs').append(JSON.stringify(data));
   });
+
+  socket.on("connection", () => {
+    $("#usernameForm").submit((e) => {
+      e.preventDefault()
+      let pseudo = $("#username").val()
+      if (pseudo) {
+        socket.emit("new user", pseudo, (data) => {
+          data ? buildRooms(data) : $("#error").html("Username is wrong")
+        })
+      }
+      $("#username").val("")
+    })
+  })
 
   function convertToPlain(html) {
     // Create a new div element
@@ -14,11 +27,107 @@ $(document).ready(function () {
     return tempDivElement.textContent || tempDivElement.innerText || "";
   }
 
+  function sendMsg(room_id) {
+    socket.emit("send message", {
+      content: $(`#room-${room_id} input.message`).val(),
+      room_id: room_id
+    },
+      () => {
+        $(`#room-${room_id} input.message`).val('')
+      }
+    );
+  }
+
+  deleteMessage = (msg_id, room_id) => {
+    socket.emit("delete message", { msg_id, room_id });
+  }
+
+  test = () => {
+    socket.emit("test")
+  }
+
+  socket.on("delete message", (msg_id) => {
+    $(`#msg-${msg_id}`).html(`
+      <em>Message effacé</em>
+    `)
+  })
+
+  socket.on("new message", (data) => {
+    $(`#room-${data.room_id} .chatWindow`).append(`
+      <div class='message' id="msg-${data.msg_id}">
+        <strong class="pseudo" onClick="privateMessage(${data.user.user_id},'${data.user.pseudo}')">${convertToPlain(data.user.pseudo)}</strong>: 
+        <span class="content">${convertToPlain(data.content)}</span>
+        <i onClick="deleteMessage(${data.msg_id},${data.room_id})">❌</i>
+      </div>
+    `)
+  })
+
+  privateMessage = (target_user_id, target_user_name) => {
+    createRoom(target_user_name, '', true, target_user_id)
+    // TODO check si la room est déjà là
+    // if ($(`#mp-${target_user_id}`).length)
+    //   switchRoom(target_user_id, true)
+    // else
+  }
+
+  function showModal(html) {
+    $('#modal').addClass('show')
+    $('#modal .modalcontent').html(html)
+  }
+
+  function hideModal() {
+    $('#modal').removeClass('show')
+    $('#modal .modalcontent').html('')
+  }
+
+  function createRoom(name = null, image = null, private = null, mp = false) {
+    socket.emit("create room", {
+      name: name ?? $('input[name=name]').val(),
+      image: image ?? $('input[name=image]').val(),
+      private: private ?? $('input[name=private]').val() == 'on' ? true : false,
+      mp: mp
+    }, (user, newroom_id) => {
+      console.log(user, newroom_id);
+      buildRooms(user, newroom_id)
+      hideModal()
+    })
+  }
+
+  $("#createroom").on("click", () => {
+    showModal(`
+        <form id="createroomform">
+          <label>Nom : <input type="text" name="name" /></label>
+          <label>Image url : <input type="text" name="image" /></label>
+          <label>Private : <input type="checkbox" name="private" /></label>
+          <input type="submit" value="Submit">
+          <span class="close">x</span>
+        </form >
+      `)
+    $("#modal .close").on("click", () => hideModal())
+    $('#createroomform').submit((e) => {
+      e.preventDefault()
+      createRoom()
+    })
+  })
+
+  switchRoom = (room_id) => {
+    $(".room").hide();
+    $(`#room-${room_id}`).show()
+  }
+
+  function buildRooms(user, room_id = 0) {
+    user.rooms?.forEach(room => newRoom(room))
+    switchRoom(user.rooms.find(room => room.room_id == room_id)?.room_id || user.rooms.at(0)?.room_id)
+    $("#login").remove()
+    $("#mainWrapper").show()
+  }
+
   function newRoom(room) {
     if (!$(`#btn-${room.room_id}`).length) {
       $("#btnRoomsList").append(`
         <div id="btn-${room.room_id}" class="btnRoom">
-          ${room.name}
+          <span class="name" onClick="switchRoom(${room.room_id})">${room.name}</span>
+          <span class="del" onClick="event.stopPropagation();deleteRoom(${room.room_id})">❌</span>
         </div>
       `)
     }
@@ -35,7 +144,7 @@ $(document).ready(function () {
           </div>
         </div>
       `)
-      $(`#room-${room.room_id}`).submit(function (e) {
+      $(`#room-${room.room_id}`).submit((e) => {
         e.preventDefault();
         sendMsg(room.room_id)
       })
@@ -43,93 +152,12 @@ $(document).ready(function () {
     return room.id;
   }
 
-  function sendMsg(room_id) {
-    socket.emit("send message", {
-      content: $(`#room-${room_id} input.message`).val(),
-      room_id: room_id
-    },
-      () => {
-        $(`#room-${room_id} input.message`).val('')
-      }
-    );
+  deleteRoom = function (room_id) {
+    socket.emit("delete room", room_id);
   }
 
-  function switchRoom(room) {
-    $(".room").hide();
-    $(`#room-${room.room_id}`).show()
-  }
-
-  function buildUI(user, room_id = 0) {
-    user.rooms?.forEach(room => newRoom(room))
-    $(".btnRoom").on("click", function (e) {
-      switchRoom(user.rooms.find(room => room.room_id == e.target.id.match(/[0-9]+/)))
-    })
-    switchRoom(user.rooms.find(room => room.room_id == room_id) || user.rooms.at(0))
-    $("#login").remove()
-    $("#mainWrapper").show()
-  }
-
-  deleteMessage = function (msg_id, room_id) {
-    socket.emit("delete message", {msg_id, room_id});
-  }
-
-  socket.on("delete message", function (msg_id) {
-    $(`#msg-${msg_id}`).html(`
-      <em>Message effacé</em>
-    `)
-  })
-
-  socket.on("new message", function (data) {
-    $(`#room-${data.room_id} .chatWindow`).append(`
-      <div class='message' id="msg-${data.msg_id}" onClick="deleteMessage(${data.msg_id},${data.room_id})">
-        <strong class="pseudo">${convertToPlain(data.user.pseudo)}</strong>: 
-        <span class="content">${convertToPlain(data.content)}</span>
-      </div>
-    `)
-  })
-
-  socket.on("connection", function (data) {
-    $("#usernameForm").submit(function (e) {
-      e.preventDefault()
-      let pseudo = $("#username").val()
-      if (pseudo) {
-        socket.emit("new user", pseudo, function (data) {
-          data ? buildUI(data) : $("#error").html("Username is wrong")
-        })
-      }
-      $("#username").val("")
-    })
-  })
-
-  $("#createroom").on("click", function (e) {
-    $('#modal').addClass('show')
-    $('#modal .modalcontent').html(`
-      <form id="createroomform">
-        <label>Nom : <input type="text" name="name" /></label>
-        <label>Image url : <input type="text" name="image" /></label>
-        <label>Private : <input type="checkbox" name="private" /></label>
-        <input type="submit" value="Submit">
-        <span class="close">x</span>
-      </form >
-    `)
-    $('#createroomform').submit(function (e) {
-      e.preventDefault()
-      socket.emit(
-        "create room",
-        {
-          name: $('input[name=name]').val(),
-          image: $('input[name=image]').val(),
-          private: $('input[name=private]').val() == 'on' ? true : false
-        },
-        function (user, newroom_id) {
-          buildUI(user, newroom_id)
-          $('#modal').removeClass('show')
-          $('#modal .modalcontent').html('')
-        }
-      )
-    })
-    $("#modal .close").on("click", function (e) {
-      $('#modal').removeClass('show')
-    })
+  socket.on("delete room", (room_id) => {
+    $(`#room-${room_id}`).remove()
+    $(`#btn-${room_id}`).remove()
   })
 })
