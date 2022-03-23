@@ -31,35 +31,60 @@ function sendMessage(io, user, room_id, content) {
     return false
   }
 }
-async function deleteMessage() {
-  if (permission.getActionRight(user.user_id, room_id, permission.actions.deleteMessage)) {
-
+async function deleteMessage(io, user_id, room_id, msg) {
+  if (permission.getActionRight(user_id, room_id, permission.actions.deleteMessage || msg.user_id == user.user_id)) {
+    // récupération de l'id du message qui va être supprimer
+    db.messages.deleteMsg(msg.msg_id);
+    // TODO FRONT
+    return true
+  }
+  else{
+    return false
   }
 
 }
 async function inviteUser(user_id, room_id, invited_user_id) {
   if (getActionRight(user_id, room_id, permission.actions.inviteUser)) {
     db.roles.create(room_id, invited_user_id, 0);
-    cache.add(invited_user_id, room_id, 0);
+    await cache.add(invited_user_id, room_id, 0);
+    // TODO FRONT
+    return true
+  }
+  else{
+    return false
   }
 }
 async function deleteUser(user_id, room_id, deleted_user_id) {
   if (getActionRight(user_id, room_id, permission.actions.deleteUser)) {
     db.roles.deleteUser(room_id, invited_user_id);
-    cache.deleteUser(invited_user_id, room_id);
+    await cache.deleteUser(invited_user_id, room_id);
+    // TODO FRONT
+    return true
+  }
+  else{
+    return false
   }
 }
 
 async function deleteRoom(user_id, room_id) {
   if (getActionRight(user_id, room_id, permission.actions.deleteRoom)) {
     db.roles.deleteRoom(room_id);
-    cache.deleteRoom(room_id);
+    await cache.deleteRoom(room_id);
+    // TODO FRONT
+    return true
+  }
+  else{
+    return false
   }
 }
 
 async function changeRole(user_id, room_id) {
   if (getActionRight(user, room, permission.actions.changeRole)) {
 
+    return true
+  }
+  else{
+    return false
   }
 }
 
