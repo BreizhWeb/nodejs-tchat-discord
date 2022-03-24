@@ -1,6 +1,9 @@
 var deleteMessage, deleteRoom, privateMessage, switchRoom, test;
 $(document).ready(() => {
   var socket = io.connect();
+  socket.onAny((event, ...args) => {
+    console.log(event, args);
+  });
   socket.emit("userlist", 1, (data) => {
     $('.utilisateurs').append(JSON.stringify(data));
   });
@@ -47,19 +50,24 @@ $(document).ready(() => {
   }
 
   socket.on("delete message", (msg_id) => {
+    console.log(msg_id);
     $(`#msg-${msg_id}`).html(`
       <em>Message effacé</em>
     `)
   })
 
-  socket.on("new message", (data) => {
-    $(`#room-${data.room_id} .chatWindow`).append(`
-      <div class='message' id="msg-${data.msg_id}">
-        <strong class="pseudo" onClick="privateMessage(${data.user.user_id},'${data.user.pseudo}')">${convertToPlain(data.user.pseudo)}</strong>: 
-        <span class="content">${convertToPlain(data.content)}</span>
-        <i onClick="deleteMessage(${data.msg_id},${data.room_id})">❌</i>
+  function createMessage(room_id, msg_id, content, user_id, pseudo) {
+    $(`#room-${room_id} .chatWindow`).append(`
+      <div class='message' id="msg-${msg_id}">
+        <strong class="pseudo" onClick="privateMessage(${user_id},'${pseudo}')">${convertToPlain(pseudo)}</strong>: 
+        <span class="content">${convertToPlain(content)}</span>
+        <i onClick="deleteMessage(${msg_id},${room_id})">❌</i>
       </div>
     `)
+  }
+
+  socket.on("new message", (data) => {
+    createMessage(data.room_id, data.msg_id, data.content, data.user.user_id, data.user.pseudo)
   })
 
   privateMessage = (target_user_id, target_user_name) => {
@@ -92,6 +100,11 @@ $(document).ready(() => {
       hideModal()
     })
   }
+
+  socket.on("update rooms", (user) => {
+    console.log('update rooms');
+    buildRooms(user)
+  })
 
   $("#createroom").on("click", () => {
     showModal(`
@@ -147,6 +160,9 @@ $(document).ready(() => {
       $(`#room-${room.room_id}`).submit((e) => {
         e.preventDefault();
         sendMsg(room.room_id)
+      })
+      socket.emit("get message", room.room_id, (messages) => {
+        messages.forEach(message => createMessage(message.room_id, message.message_id, message.content, message.user_id, message.pseudo))
       })
     }
     return room.id;

@@ -3,6 +3,7 @@ const express = require("express");
 const app = express();
 server = require("http").createServer(app);
 const io = require('socket.io')(server);
+const permission = require('./modules/permissions');
 const multirooms = require('./modules/multirooms')
 const control = require('./modules/control')
 const logger = require('./log/logger')
@@ -73,18 +74,31 @@ io.sockets.on("connection", async (socket) => {
       callback(false)
   })
 
+  // get Message
+  socket.on("get message", async (room_id, callback) => {
+    if (permission.getActionRight(socket.user.user_id, room_id, permission.actions.sendMessage)) {
+      let messages = await db.messages.selectByIdRoom(room_id)
+      console.log(messages.length);
+      callback(messages)
+    } else
+      callback([])
+  })
+
   // Delete message
   socket.on("delete message", async (msgdata) => {
-    control.deleteMessage(io, socket.user, msgdata.room_id, msgdata.msg_id)
+    console.log(msgdata);
+    control.deleteMessage(io, socket.user.user_id, msgdata.room_id, msgdata.msg_id)
   })
 
   // Create room
   socket.on("create room", async (data, callback) => {
     let room
     if (data.mp) {
-      room = cache.value.find(r => r.role_id == 5 && r.room_id == cache.value.find(t => t.role_id == 5 && t.user_id == data.mp))
-      if(!room?.room_id)
+      room = cache.value.find(r => r.role_id == 5 && r.room_id == cache.value.find(t => t.role_id == 5 && t.user_id == data.mp)?.room_id)
+      if (!room?.room_id) {
         room = await control.createMp(socket, data)
+        socket.to(`room-${room.room_id}`).emit("update rooms", await db.users.getUserData(data.mp))
+      }
     } else
       room = await control.createRoom(socket, data)
     callback(socket.user, room.room_id)
@@ -97,10 +111,17 @@ io.sockets.on("connection", async (socket) => {
 
   // Invite user
   socket.on("invite user", async (data, callback) => {
-    // TODO Role invite user
-    logger.eventLogger.log('info', `${socket.user.pseudo} : Invited user id:${data.user_id}, room id:${data.room_id}`)
-    // TODO emit to user new room
-    callback(socket.user, room.room_id) // ???
+    // TODO FRONT
+    if (control.inviteUser(socket.user.user_id, data.room_id, data.target_user_id)) {
+      logger.eventLogger.log('info', `${socket.user.pseudo} : Invited user id:${data.user_id}, room id:${data.room_id}`)
+      // Should be in control i guess...
+      let to = users.find(u => u.user.user_id == data.user_id)
+      if (to)
+        socket.to(to.socket_id).emit("update rooms")
+      // TODO create event update rooms on front to ask server for new rooms
+      callback(socket.user, room.room_id) // ???
+    } else
+      callback(false)
   })
 
   // Kick user

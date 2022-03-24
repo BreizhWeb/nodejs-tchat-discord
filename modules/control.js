@@ -5,7 +5,6 @@ const multirooms = require('./multirooms.js')
 const logger = require('../log/logger')
 
 async function createMp(socket, data) {
-  console.log(data,socket.user);
   let room = await db.rooms.create(data.name + "-" + socket.user.pseudo, data.image, data.private)
   db.roles.create(room.room_id, socket.user.user_id, 5)
   await cache.add(socket.user.user_id, room.room_id, 5)
@@ -27,7 +26,6 @@ async function createRoom(socket, data) {
 }
 
 async function sendMessage(io, user, room_id, content) {
-  console.log(await cache.value);
   if (permission.getActionRight(user.user_id, room_id, permission.actions.sendMessage)) {
     let msg_id = await db.messages.create(user.user_id, room_id, content)
     logger.eventLogger.log('info', `"action":"send message", "room_id":${room_id}, "user_id":${user.user_id}, "message_id":${msg_id}`)
@@ -42,18 +40,24 @@ async function sendMessage(io, user, room_id, content) {
     return false
   }
 }
-async function deleteMessage(io, user_id, room_id, msg) {
-  if (permission.getActionRight(user_id, room_id, permission.actions.deleteMessage || msg.user_id == user.user_id)) {
+
+async function deleteMessage(io, user_id, room_id, msg_id) {
+  if (permission.getActionRight(user_id, room_id, permission.actions.deleteMessage)) {
     // récupération de l'id du message qui va être supprimer
-    db.messages.deleteMsg(msg.msg_id);
-    // TODO FRONT
+    db.messages.deleteMsg(msg_id);
+    io.to(`room-${room_id}`).emit("delete message", msg_id)
     return true
-  }
-  else{
+  } else if(user_id == (await db.messages.selectById(msg_id))?.user_id) {
+    console.log("author true");
+    db.messages.deleteMsg(msg_id);
+    io.to(`room-${room_id}`).emit("delete message", msg_id)
+    return true
+  } else {
+    console.log("delete message false");
     return false
   }
-
 }
+
 async function inviteUser(user_id, room_id, invited_user_id) {
   if (getActionRight(user_id, room_id, permission.actions.inviteUser)) {
     db.roles.create(room_id, invited_user_id, 0);
@@ -61,7 +65,7 @@ async function inviteUser(user_id, room_id, invited_user_id) {
     // TODO FRONT
     return true
   }
-  else{
+  else {
     return false
   }
 }
@@ -83,29 +87,29 @@ async function deleteUser(user_id, room_id, deleted_user_id) {
     // TODO FRONT
     return true
   }
-  else{
+  else {
     return false
   }
 }
 
 async function deleteRoom(user_id, room_id) {
-  if (getActionRight(user_id, room_id, permission.actions.deleteRoom)) {
-    db.roles.deleteRoom(room_id);
+  if (permission.getActionRight(user_id, room_id, permission.actions.deleteRoom)) {
+    db.roles.deleteByRoom(room_id);
     await cache.deleteRoom(room_id);
     // TODO FRONT
     return true
   }
-  else{
+  else {
     return false
   }
 }
 
+// NO NEED
 async function changeRole(user_id, room_id) {
-  if (getActionRight(user, room, permission.actions.changeRole)) {
-
+  if (permission.getActionRight(user, room, permission.actions.changeRole)) {
     return true
   }
-  else{
+  else {
     return false
   }
 }

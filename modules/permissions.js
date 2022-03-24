@@ -32,7 +32,7 @@ function getActionRight(user_id, room_id, action) {
       return(true);
     }
     else{
-      userRole =  getRightFromUser(user_id,room_id)
+      userRole = getRightFromUser(user_id, room_id)
       return ((userRole & action ) == action)
     }
   }

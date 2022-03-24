@@ -21,7 +21,7 @@ create = function (idUser, room_id, contenu) {
     var ladate = new Date();
     var strDate = ladate.getFullYear() + "-" + (ladate.getMonth() + 1) + "-" + ladate.getDate();
 
-    let sqlQuery = "INSERT INTO messages(date, content, user_id, room_id) VALUES ('" + strDate + "','" + contenu + "', " + idUser + ", "+ room_id +")";
+    let sqlQuery = "INSERT INTO messages(date, content, user_id, room_id) VALUES ('" + strDate + "','" + contenu + "', " + idUser + ", " + room_id + ")";
     con.query(sqlQuery, (err, result) => {
       if (err) {
         return reject(err);
@@ -52,23 +52,40 @@ select = function () {
 };
 
 /**
- *  Get specific Messages by ID room
+ *  Get specific Message by ID 
  *
  * @return response()
  */
-selectByIdRoom = function (id) {
+selectById = function (id) {
   return new Promise(function (resolve, reject) {
-    let mess = [];
-    let sqlQuery = "SELECT users.pseudo, content, room_id  FROM messages INNER JOIN users ON messages.user_id=users.user_id WHERE room_id =" + id + " ORDER BY message_id DESC LIMIT 10;";
-    con.query(sqlQuery, (err, results) => {
+    let sqlQuery = "SELECT users.user_id, users.pseudo, message_id, content, room_id  FROM messages INNER JOIN users ON messages.user_id=users.user_id WHERE message_id =" + id + ";";
+    con.query(sqlQuery, (err, result) => {
       if (err) {
         return reject(err);
       }
 
-      return resolve(results.map(row => Object.assign({}, row)));
+      return resolve(Object.assign({}, result[0]));
     });
   })
 },
+
+  /**
+   *  Get specific Messages by ID room
+   *
+   * @return response()
+   */
+  selectByIdRoom = function (id) {
+    return new Promise(function (resolve, reject) {
+      let sqlQuery = "SELECT users.user_id, users.pseudo, message_id, content, room_id  FROM messages INNER JOIN users ON messages.user_id=users.user_id WHERE room_id =" + id + " ORDER BY message_id DESC LIMIT 10;";
+      con.query(sqlQuery, (err, results) => {
+        if (err) {
+          return reject(err);
+        }
+
+        return resolve(results.map(row => Object.assign({}, row)));
+      });
+    })
+  },
 
 
   //--------------------------------------------------UPDATE---------------------------------------------//
@@ -116,6 +133,7 @@ deleteMsg = function (id) {
 module.exports = {
   create: create,
   select: select,
+  selectById: selectById,
   selectByIdRoom: selectByIdRoom,
   updateMessageById: updateMessageById,
   deleteMsg: deleteMsg,
