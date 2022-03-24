@@ -90,7 +90,6 @@ getUserById = function (id) {
 
   return new Promise(function (resolve, reject) {
     let sqlQuery = "SELECT * FROM users WHERE user_id =" + id;
-    console.log(sqlQuery);
     con.query(sqlQuery, id, (err, results) => {
       if (err) {
         return reject(err);

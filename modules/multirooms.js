@@ -5,7 +5,6 @@ const db = require('../db/db.js')
  * @param {object} socket objet du socket utilisateur
  */
 var joinRooms = function (socket) {
-  console.log(socket.user.rooms);
   socket.user.rooms?.forEach(room => {
     socket.join(`room-${room.room_id}`)
   })

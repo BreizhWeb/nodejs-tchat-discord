@@ -29,7 +29,6 @@ create = function (name, image, private) {
       if (err){
         return reject(err);
       }
-      console.log('insert',await selectRoom(result.insertId));
       return resolve(await selectRoom(result.insertId));
     });
   })

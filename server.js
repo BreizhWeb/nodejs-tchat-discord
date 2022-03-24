@@ -78,7 +78,6 @@ io.sockets.on("connection", async (socket) => {
   socket.on("get message", async (room_id, callback) => {
     if (permission.getActionRight(socket.user.user_id, room_id, permission.actions.sendMessage)) {
       let messages = await db.messages.selectByIdRoom(room_id)
-      console.log(messages.length);
       callback(messages)
     } else
       callback([])
@@ -86,22 +85,27 @@ io.sockets.on("connection", async (socket) => {
 
   // Delete message
   socket.on("delete message", async (msgdata) => {
-    console.log(msgdata);
     control.deleteMessage(io, socket.user.user_id, msgdata.room_id, msgdata.msg_id)
   })
 
   // Create room
   socket.on("create room", async (data, callback) => {
     let room
+    console.log("create room:",data);
     if (data.mp) {
       room = cache.value.find(r => r.role_id == 5 && r.room_id == cache.value.find(t => t.role_id == 5 && t.user_id == data.mp)?.room_id)
-      if (!room?.room_id) {
+      if (typeof room === 'undefined') {
+        console.log("create");
         room = await control.createMp(socket, data)
         socket.to(`room-${room.room_id}`).emit("update rooms", await db.users.getUserData(data.mp))
+        callback(socket.user, room.room_id)
+      } else {
+        callback(false)
       }
-    } else
+    } else {
       room = await control.createRoom(socket, data)
-    callback(socket.user, room.room_id)
+      callback(socket.user, room.room_id)
+    }
   })
 
   // Delete room

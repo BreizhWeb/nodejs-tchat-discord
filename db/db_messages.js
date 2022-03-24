@@ -74,9 +74,9 @@ selectById = function (id) {
    *
    * @return response()
    */
-  selectByIdRoom = function (id) {
+  selectByIdRoom = function (id, page = 0) {
     return new Promise(function (resolve, reject) {
-      let sqlQuery = "SELECT users.user_id, users.pseudo, message_id, content, room_id  FROM messages INNER JOIN users ON messages.user_id=users.user_id WHERE room_id =" + id + " ORDER BY message_id DESC LIMIT 10;";
+      let sqlQuery = "SELECT users.user_id, users.pseudo, message_id, content, room_id  FROM messages INNER JOIN users ON messages.user_id=users.user_id WHERE room_id =" + id + " ORDER BY message_id DESC LIMIT "+page*50+", 50;";
       con.query(sqlQuery, (err, results) => {
         if (err) {
           return reject(err);

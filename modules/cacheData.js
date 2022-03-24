@@ -21,7 +21,6 @@ async function deleteRoom(room_id) {
 }
 
 function listRoomUser(room_id) {
-  console.log(rooms_users.value);
   return rooms_users.value.filter(element => element.room_id === room_id);
   // pas corrigé
 }

@@ -50,7 +50,6 @@ $(document).ready(() => {
   }
 
   socket.on("delete message", (msg_id) => {
-    console.log(msg_id);
     $(`#msg-${msg_id}`).html(`
       <em>Message effacé</em>
     `)
@@ -102,7 +101,6 @@ $(document).ready(() => {
   }
 
   socket.on("update rooms", (user) => {
-    console.log('update rooms');
     buildRooms(user)
   })
 
@@ -162,6 +160,7 @@ $(document).ready(() => {
         sendMsg(room.room_id)
       })
       socket.emit("get message", room.room_id, (messages) => {
+        messages.sort((a,b)=> a.message_id - b.message_id)
         messages.forEach(message => createMessage(message.room_id, message.message_id, message.content, message.user_id, message.pseudo))
       })
     }

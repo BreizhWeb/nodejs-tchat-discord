@@ -48,18 +48,18 @@ async function deleteMessage(io, user_id, room_id, msg_id) {
     io.to(`room-${room_id}`).emit("delete message", msg_id)
     return true
   } else if(user_id == (await db.messages.selectById(msg_id))?.user_id) {
-    console.log("author true");
     db.messages.deleteMsg(msg_id);
     io.to(`room-${room_id}`).emit("delete message", msg_id)
     return true
   } else {
-    console.log("delete message false");
     return false
   }
 }
 
 async function inviteUser(user_id, room_id, invited_user_id) {
-  if (getActionRight(user_id, room_id, permission.actions.inviteUser)) {
+  console.log(user_id, room_id, invited_user_id);
+  // TODO authorize invite for role id 5
+  if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
     db.roles.create(room_id, invited_user_id, 0);
     await cache.add(invited_user_id, room_id, 0);
     // TODO FRONT
