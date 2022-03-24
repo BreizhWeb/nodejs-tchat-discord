@@ -1,6 +1,11 @@
 var deleteMessage, deleteRoom, privateMessage, switchRoom, test;
 $(document).ready(() => {
   var socket = io.connect();
+
+  test = (test) => {
+    socket.emit("test", test)
+  }
+
   socket.onAny((event, ...args) => {
     console.log(event, args);
   });
@@ -43,10 +48,6 @@ $(document).ready(() => {
 
   deleteMessage = (msg_id, room_id) => {
     socket.emit("delete message", { msg_id, room_id });
-  }
-
-  test = () => {
-    socket.emit("test")
   }
 
   socket.on("delete message", (msg_id) => {
@@ -94,26 +95,27 @@ $(document).ready(() => {
       private: private ?? $('input[name=private]').val() == 'on' ? true : false,
       mp: mp
     }, (user, newroom_id) => {
-      console.log(user, newroom_id);
-      buildRooms(user, newroom_id)
+      if(user)
+        buildRooms(user, newroom_id)
       hideModal()
     })
   }
 
   socket.on("update rooms", (user) => {
+    console.log(user);
     buildRooms(user)
   })
 
   $("#createroom").on("click", () => {
     showModal(`
-        <form id="createroomform">
-          <label>Nom : <input type="text" name="name" /></label>
-          <label>Image url : <input type="text" name="image" /></label>
-          <label>Private : <input type="checkbox" name="private" /></label>
-          <input type="submit" value="Submit">
-          <span class="close">x</span>
-        </form >
-      `)
+      <form id="createroomform">
+        <label>Nom : <input type="text" name="name" /></label>
+        <label>Image url : <input type="text" name="image" /></label>
+        <label>Private : <input type="checkbox" name="private" /></label>
+        <input type="submit" value="Submit">
+        <span class="close">x</span>
+      </form >
+    `)
     $("#modal .close").on("click", () => hideModal())
     $('#createroomform').submit((e) => {
       e.preventDefault()
@@ -146,6 +148,10 @@ $(document).ready(() => {
       $('#rooms').append(`
         <div class="room" id="room-${room.room_id}">
           <h2>${room.name}</h2>
+          <form class="invite">
+            <input type="text" size="10" class="userid" placeholder="user id">
+            <input type="submit" value="Inviter">
+          </form>
           <div class="chatWrapper">
             <div class="chatWindow"></div>
             <form class="messageForm">
@@ -155,7 +161,14 @@ $(document).ready(() => {
           </div>
         </div>
       `)
-      $(`#room-${room.room_id}`).submit((e) => {
+      $(`#room-${room.room_id} .invite`).submit((e) => {
+        e.preventDefault();
+        socket.emit("invite user", {
+          target_user_id: $(`#room-${room.room_id} input.userid`).val(),
+          room_id: room.room_id
+        })
+      })
+      $(`#room-${room.room_id} .messageForm`).submit((e) => {
         e.preventDefault();
         sendMsg(room.room_id)
       })

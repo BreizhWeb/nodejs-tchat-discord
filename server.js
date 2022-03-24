@@ -23,7 +23,7 @@ server.listen(PORT, () => {
 
 cache.set()
 
-const users = []
+let users = []
 io.sockets.on("connection", async (socket) => {
   logger.eventLogger.log('info', "Socket connected...")
   socket.emit('connection')
@@ -35,19 +35,21 @@ io.sockets.on("connection", async (socket) => {
   socket.on("new user", async function (name, callback) {
     socket.user = await db.users.getUserData(name)
     // If user dont exist
-    if (socket.user.user_id) {
+    if (typeof socket.user != 'undefined') {
       logger.eventLogger.log('info', `connected : ${socket.user.pseudo}`)
       multirooms.joinRooms(socket)
       callback(socket.user)
 
       // TODO ranger le merdier
+      users = []
       for (let [id, socket] of io.of("/").sockets) {
-        users.push({
-          socket_id: id,
-          user: socket.user,
-        });
+        if (typeof socket.user != 'undefined')
+          users.push({
+            socket_id: id,
+            user: socket.user,
+          });
       }
-      socket.emit("users", users)
+      io.emit("users", users)
       console.log(users)
 
 
@@ -88,16 +90,19 @@ io.sockets.on("connection", async (socket) => {
     control.deleteMessage(io, socket.user.user_id, msgdata.room_id, msgdata.msg_id)
   })
 
+
+  socket.on("test", async (user_id) => {
+    io.to(users.find(u=>u.user.user_id == user_id)?.socket_id).emit("update rooms", await db.users.getUserData(user_id))
+  })
+
   // Create room
   socket.on("create room", async (data, callback) => {
     let room
-    console.log("create room:",data);
     if (data.mp) {
       room = cache.value.find(r => r.role_id == 5 && r.room_id == cache.value.find(t => t.role_id == 5 && t.user_id == data.mp)?.room_id)
       if (typeof room === 'undefined') {
-        console.log("create");
+        console.log("create room:", data);
         room = await control.createMp(socket, data)
-        socket.to(`room-${room.room_id}`).emit("update rooms", await db.users.getUserData(data.mp))
         callback(socket.user, room.room_id)
       } else {
         callback(false)
@@ -114,16 +119,19 @@ io.sockets.on("connection", async (socket) => {
   })
 
   // Invite user
-  socket.on("invite user", async (data, callback) => {
-    // TODO FRONT
-    if (control.inviteUser(socket.user.user_id, data.room_id, data.target_user_id)) {
-      logger.eventLogger.log('info', `${socket.user.pseudo} : Invited user id:${data.user_id}, room id:${data.room_id}`)
+  socket.on("invite user", async ({ target_user_id, room_id }) => {
+    if (control.inviteUser(socket.user.user_id, room_id, target_user_id)) {
+      logger.eventLogger.log('info', `${socket.user.pseudo} : Invited user id:${target_user_id}, room id:${room_id}`)
       // Should be in control i guess...
-      let to = users.find(u => u.user.user_id == data.user_id)
-      if (to)
-        socket.to(to.socket_id).emit("update rooms")
-      // TODO create event update rooms on front to ask server for new rooms
-      callback(socket.user, room.room_id) // ???
+      db.users.getUserData(target_user_id).then((target_user) => {
+        console.log(target_user);
+        // TODO make target user join room
+        //multirooms.joinRooms(target_user)
+        let to = users.find(u => u.user.user_id == target_user_id)
+        if (to)
+          io.to(to.socket_id).emit("update rooms", target_user)
+      })
+      //callback(socket.user, data.room_id) // ???
     } else
       callback(false)
   })

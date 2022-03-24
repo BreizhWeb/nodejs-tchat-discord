@@ -2,7 +2,8 @@ const permission = require('./permissions');
 const db = require('../db/db');
 const cache = require('./cacheData');
 const multirooms = require('./multirooms.js')
-const logger = require('../log/logger')
+const logger = require('../log/logger');
+const { io } = require('socket.io-client');
 
 async function createMp(socket, data) {
   let room = await db.rooms.create(data.name + "-" + socket.user.pseudo, data.image, data.private)
@@ -29,7 +30,7 @@ async function sendMessage(io, user, room_id, content) {
   if (permission.getActionRight(user.user_id, room_id, permission.actions.sendMessage)) {
     let msg_id = await db.messages.create(user.user_id, room_id, content)
     logger.eventLogger.log('info', `"action":"send message", "room_id":${room_id}, "user_id":${user.user_id}, "message_id":${msg_id}`)
-    await io.to(`room-${room_id}`).emit('new message', {
+    io.to(`room-${room_id}`).emit('new message', {
       content: content,
       msg_id: msg_id,
       room_id: room_id,
@@ -56,7 +57,7 @@ async function deleteMessage(io, user_id, room_id, msg_id) {
   }
 }
 
-async function inviteUser(user_id, room_id, invited_user_id) {
+/*async function inviteUser(user_id, room_id, invited_user_id) {
   console.log(user_id, room_id, invited_user_id);
   // TODO authorize invite for role id 5
   if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
@@ -68,13 +69,13 @@ async function inviteUser(user_id, room_id, invited_user_id) {
   else {
     return false
   }
-}
+}*/
 
 async function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) {
   if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
     db.roles.create(room_id, invited_user_id, invited_user_role);
     cache.add(invited_user_id, room_id, invited_user_role);
-    // TODO emit update to specific user
+    // TODO join room
   } else {
     return false
   }
