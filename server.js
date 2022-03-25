@@ -101,7 +101,6 @@ io.sockets.on("connection", async (socket) => {
     if (data.mp) {
       room = cache.value.find(r => r.role_id == 5 && r.room_id == cache.value.find(t => t.role_id == 5 && t.user_id == data.mp)?.room_id)
       if (typeof room === 'undefined') {
-        console.log("create room:", data);
         room = await control.createMp(socket, data)
         callback(socket.user, room.room_id)
       } else {

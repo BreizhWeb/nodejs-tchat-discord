@@ -96,7 +96,6 @@ async function deleteUser(user_id, room_id, deleted_user_id) {
 }
 
 async function deleteRoom(user_id, room_id) {
-  console.log("delete",permission.getActionRight(user_id, room_id, permission.actions.deleteRoom));
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteRoom)) {
     db.roles.deleteByRoom(room_id);
     await cache.deleteRoom(room_id);

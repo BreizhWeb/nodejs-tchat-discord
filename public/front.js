@@ -128,7 +128,6 @@ $(document).ready(() => {
   }
 
   function buildRooms(user, room_id = 0) {
-    console.log("user:",user);
     user.rooms?.forEach(room => newRoom(room))
     switchRoom(user.rooms.find(room => room.room_id == room_id)?.room_id || user.rooms[0]?.room_id)
     $("#login").remove()
@@ -136,7 +135,6 @@ $(document).ready(() => {
   }
 
   function newRoom(room) {
-    console.log("new room:",room);
     if (!$(`#btn-${room.room_id}`).length) {
       $("#btnRoomsList").append(`
         <div id="btn-${room.room_id}" class="btnRoom">
