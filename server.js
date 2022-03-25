@@ -92,7 +92,7 @@ io.sockets.on("connection", async (socket) => {
 
 
   socket.on("test", async (user_id) => {
-    io.to(users.find(u=>u.user.user_id == user_id)?.socket_id).emit("update rooms", await db.users.getUserData(user_id))
+    io.to(users.find(u => u.user.user_id == user_id)?.socket_id).emit("update rooms", await db.users.getUserData(user_id))
   })
 
   // Create room
@@ -115,7 +115,15 @@ io.sockets.on("connection", async (socket) => {
 
   // Delete room
   socket.on("delete room", async (room_id) => {
-    control.deleteRoom(io, socket.user.user_id, room_id)
+    if (await control.deleteRoom(socket.user.user_id, room_id))
+      io.to(`room-${room_id}`).emit("delete room", room_id)
+  })
+
+  // Join rooms
+  socket.on("join rooms", async () => {
+    socket.user = await db.users.getUserData(socket.user.user_id)
+    multirooms.joinRooms(socket)
+    socket.emit("update rooms", socket.user)
   })
 
   // Invite user
@@ -123,17 +131,10 @@ io.sockets.on("connection", async (socket) => {
     if (control.inviteUser(socket.user.user_id, room_id, target_user_id)) {
       logger.eventLogger.log('info', `${socket.user.pseudo} : Invited user id:${target_user_id}, room id:${room_id}`)
       // Should be in control i guess...
-      db.users.getUserData(target_user_id).then((target_user) => {
-        console.log(target_user);
-        // TODO make target user join room
-        //multirooms.joinRooms(target_user)
-        let to = users.find(u => u.user.user_id == target_user_id)
-        if (to)
-          io.to(to.socket_id).emit("update rooms", target_user)
-      })
-      //callback(socket.user, data.room_id) // ???
-    } else
-      callback(false)
+      let to = users.find(u => u.user.user_id == target_user_id)
+      if (to)
+        io.to(to.socket_id).emit("join rooms")
+    }
   })
 
   // Kick user

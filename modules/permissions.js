@@ -18,7 +18,9 @@ const actions = {
 
 // récupére les droit
 function getRightFromUser(user_id, room_id) {
+  console.log("cache",cacheData);
   room_user = cacheData.value.filter(acc => acc.user_id == user_id && acc.room_id == room_id)
+  console.log(user_id, room_id,room_user);
   return (room_user.length ? role[room_user[0].role_id] : false);
 }
 
@@ -34,6 +36,7 @@ function getActionRight(user_id, room_id, action) {
     }
     else{
       userRole = getRightFromUser(user_id, room_id)
+      console.log(userRole);
       return ((userRole & action ) == action)
     }
   }

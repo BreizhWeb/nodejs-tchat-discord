@@ -71,11 +71,13 @@ async function deleteMessage(io, user_id, room_id, msg_id) {
   }
 }*/
 
-async function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) {
+function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) {
+  if (cache.value.find(r => r.room_id == room_id && r.user_id == invited_user_id))
+    return false
   if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
     db.roles.create(room_id, invited_user_id, invited_user_role);
     cache.add(invited_user_id, room_id, invited_user_role);
-    // TODO join room
+    return true
   } else {
     return false
   }
@@ -94,10 +96,10 @@ async function deleteUser(user_id, room_id, deleted_user_id) {
 }
 
 async function deleteRoom(user_id, room_id) {
+  console.log("delete",permission.getActionRight(user_id, room_id, permission.actions.deleteRoom));
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteRoom)) {
     db.roles.deleteByRoom(room_id);
     await cache.deleteRoom(room_id);
-    // TODO FRONT
     return true
   }
   else {
