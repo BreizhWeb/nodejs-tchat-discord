@@ -1,0 +1,214 @@
+/* GLOBAL */
+
+:root {
+  /* background colors */
+  --color1:#F0F0F0;
+  --color2:#F1F1F1;
+  --color3:#F2F2F2;
+
+  --color4:#EEEEEE;
+  --color4:#E0E0E0;
+
+  /* text colors */
+  --textColor1:#010101;
+  --textColor2:#6A6A6A;
+
+  /* parameters */
+  --headerHeight:60px;
+  --chatTitleHeight:50px;
+
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* MAIN LAYOUT */
+#header{
+  width: 100%;
+  height:var(--headerHeight);
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  background-color:var(--color1);
+}
+
+#main{
+  height:calc(100vh - var(--headerHeight));
+  width: 100%;
+  display:flex;
+}
+
+#listRooms{
+  height: 100%;
+  background-color:var(--color1);
+  flex:2;
+  position: relative;
+}
+
+#room{
+  height: 100%;
+  flex:9;
+  display:flex;
+}
+
+#chat{
+  position: relative;
+  min-height: 100%;
+  flex:8;
+  background-color:var(--color3);
+  display: flex;
+  flex-direction: column;
+}
+
+#listUsers{
+position: relative;
+min-height: 100%;
+background-color:var(--color2);
+flex:2;
+}
+
+/* HEADER */
+#header .containerTitle{
+
+}
+#header h1{
+
+}
+
+/* LIST ROOM */
+#listRooms .container-onglets{
+  display: flex;
+  width: 100%;
+
+}
+#listRooms .container-onglets .onglets{
+  flex-grow: 1;
+  border-right: var(--border);
+  border-bottom:var(--border);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding:15px 0px;
+  cursor: pointer;
+
+}
+
+#listRooms .contenu{
+  position:absolute;
+  top:50px;
+  left:0px;
+  opacity: 0;
+
+}
+
+
+#listRooms .room{
+  width: 100%;
+  display:flex;
+  border-bottom: var(--border);
+  padding: 10px 20px;
+  cursor: pointer;
+
+}
+
+
+.active {
+    background-color: var(--color4);
+    transition: all 0.3s ease;
+}
+
+.active-contenu {
+    animation: fade 0.5s forwards;
+}
+@keyframes fade {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+/* CHAT */
+#chat #chatTitle{
+  display:flex;
+  align-items: center;
+  position:absolute;
+  top:0;
+  left:0;
+  width: 100%;
+  background-color:var(--color4);
+  height:var(--chatTitleHeight);
+
+}
+#chat h2{
+  padding-left: 30px;
+}
+
+#chat #messages{
+  min-height: calc(100% - var(--chatTitleHeight));
+  margin-top:var(--chatTitleHeight);
+}
+#chat .message{
+  color:var(--textColor);
+  padding:40px;
+}
+
+#chat .message .headerMessage{
+  display: flex;
+  margin-bottom: 10px;
+}
+
+#chat .message .headerMessage .date{
+  padding-left:10px;
+  color:var(--textColor2);
+}
+
+#chat #messageForm{
+  position:absolute;
+  width: 80%;
+  left: 50%;
+  transform: translate(-50%);
+  bottom:20px;
+  background-color:var(--color4);
+  display:flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+#chat #messageInput{
+  background-color:var(--color1);
+  width:70%;
+  height: 30px;
+  margin:10px;
+  border:none;
+
+
+}
+
+#chat #messageSubmit{
+  display: none;
+}
+
+/* LIST USERS */
+#listUsers .admin,#listUsers .connected,#listUsers .disconnected{
+  padding-left:10px;
+  padding-top:10px;
+}
+
+#listUsers .user{
+  display:flex;
+  padding:10px 0px 10px 20px;
+
+}
+#listUsers h3{
+  padding:10px 0px;
+}
+
+#listUsers .user i{
+  padding-left: 10px;
+}
