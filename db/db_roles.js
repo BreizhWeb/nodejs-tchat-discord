@@ -150,13 +150,13 @@ const con = mysql.createConnection({
       return new Promise(function(resolve, reject){
         let sqlQuery = "DELETE FROM rooms_users WHERE room_id=" + id + "";
     
-          con.query(sqlQuery, (err, results) => {
+          con.query(sqlQuery, (err, result) => {
           if (err){
             return reject(err);
           }
-          return resolve(results.map(row => Object.assign({}, row)));
+          return resolve(result.affectedRows);
         });
-      })
+      });
     }
 
 module.exports = {

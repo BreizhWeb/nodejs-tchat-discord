@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : dim. 13 mars 2022 à 16:18
+-- Généré le : sam. 19 mars 2022 à 13:35
 -- Version du serveur : 10.4.22-MariaDB
 -- Version de PHP : 7.4.26
 
@@ -57,7 +57,21 @@ INSERT INTO `messages` (`message_id`, `date`, `content`, `user_id`, `room_id`) V
 (15, '2022-02-22', 'Yo les manos, bien ?', 2, 2),
 (16, '2022-02-22', 'Yes et toi ?', 3, 2),
 (17, '2022-02-22', 'Go Lol !', 1, 2),
-(18, '2022-02-22', 'Allez !', 3, 2);
+(18, '2022-02-22', 'Allez !', 3, 2),
+(20, '2022-03-18', 'bonsoir', 2, 2),
+(21, '2022-03-18', 'Bonsoir toi', 1, 2),
+(22, '2022-03-17', 'Nous allons tester la premiere room', 2, 1),
+(23, '2022-03-17', 'Bonsoir everyone', 3, 1),
+(24, '2022-03-17', 'Re bonjour', 2, 1),
+(25, '2022-03-17', 'Encore bonjour?', 1, 1),
+(26, '2022-03-18', 'Il est quelle heure ?', 3, 3),
+(27, '2022-03-19', 'Jsp', 2, 3),
+(28, '2022-03-19', 'Ba regarde ton tel', 2, 3),
+(29, '2022-03-19', 'Bien vu', 1, 3),
+(30, '2022-03-19', 'J\'ai un bug ', 3, 3),
+(31, '2022-03-19', 'ah non c\'est ok', 3, 3),
+(32, '2022-03-19', 'zaoelnjdsjgnfdm', 2, 3),
+(33, '2022-03-19', 'etpokrjiye', 1, 3);
 
 -- --------------------------------------------------------
 
@@ -75,8 +89,9 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`role_id`, `name`) VALUES
-(1, 'admin'),
-(2, 'modérateur');
+(0, 'admin'),
+(1, 'user'),
+(5, 'mp');
 
 -- --------------------------------------------------------
 
@@ -86,16 +101,16 @@ INSERT INTO `roles` (`role_id`, `name`) VALUES
 
 CREATE TABLE `rooms` (
   `room_id` int(12) NOT NULL,
-  `Name` varchar(64) NOT NULL,
-  `Image` varchar(64) NOT NULL,
-  `Private` tinyint(1) DEFAULT NULL
+  `name` varchar(64) NOT NULL,
+  `image` varchar(64) NOT NULL,
+  `private` tinyint(1) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 --
 -- Déchargement des données de la table `rooms`
 --
 
-INSERT INTO `rooms` (`room_id`, `Name`, `Image`, `Private`) VALUES
+INSERT INTO `rooms` (`room_id`, `name`, `image`, `private`) VALUES
 (1, 'Test room', '', 0),
 (2, 'Team LoL', '', 0),
 (3, 'Room', '', 1),
@@ -108,7 +123,6 @@ INSERT INTO `rooms` (`room_id`, `Name`, `Image`, `Private`) VALUES
 --
 
 CREATE TABLE `rooms_users` (
-  `rooms_users_id` int(12) NOT NULL,
   `room_id` int(12) NOT NULL,
   `user_id` int(12) NOT NULL,
   `role_id` int(12) NOT NULL
@@ -118,9 +132,20 @@ CREATE TABLE `rooms_users` (
 -- Déchargement des données de la table `rooms_users`
 --
 
-INSERT INTO `rooms_users` (`rooms_users_id`, `room_id`, `user_id`, `role_id`) VALUES
-(2, 2, 1, 1),
-(3, 2, 3, 2);
+INSERT INTO `rooms_users` (`room_id`, `user_id`, `role_id`) VALUES
+(1, 0, 0),
+(1, 1, 1),
+(1, 2, 1),
+(1, 3, 1),
+(2, 0, 0),
+(2, 1, 0),
+(2, 2, 1),
+(2, 3, 1),
+(3, 0, 0),
+(3, 1, 0),
+(3, 2, 1),
+(3, 3, 1),
+(4, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -139,6 +164,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `pseudo`, `password`) VALUES
+(0, 'superadmin', 'admin'),
 (1, 'Rico', 'blabla'),
 (2, 'Koffi', 'yoyo'),
 (3, 'Artur', 'yeye'),
@@ -173,7 +199,6 @@ ALTER TABLE `rooms`
 -- Index pour la table `rooms_users`
 --
 ALTER TABLE `rooms_users`
-  ADD PRIMARY KEY (`rooms_users_id`),
   ADD KEY `id_room` (`room_id`,`user_id`,`role_id`),
   ADD KEY `id_role` (`role_id`),
   ADD KEY `id_user` (`user_id`);
@@ -192,13 +217,13 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT pour la table `messages`
 --
 ALTER TABLE `messages`
-  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
+  MODIFY `message_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
 
 --
 -- AUTO_INCREMENT pour la table `roles`
 --
 ALTER TABLE `roles`
-  MODIFY `role_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `role_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT pour la table `rooms`
@@ -207,16 +232,10 @@ ALTER TABLE `rooms`
   MODIFY `room_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
--- AUTO_INCREMENT pour la table `rooms_users`
---
-ALTER TABLE `rooms_users`
-  MODIFY `rooms_users_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-
---
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `user_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- Contraintes pour les tables déchargées
