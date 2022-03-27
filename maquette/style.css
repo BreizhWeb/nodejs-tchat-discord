@@ -7,7 +7,7 @@
   --color3:#F2F2F2;
 
   --color4:#EEEEEE;
-  --color4:#E0E0E0;
+  --color5:#E0E0E0;
 
   /* text colors */
   --textColor1:#010101;
@@ -42,10 +42,13 @@
 }
 
 #listRooms{
-  height: 100%;
+  min-height: 100%;
   background-color:var(--color1);
-  flex:2;
+  flex:3;
   position: relative;
+  display: flex;
+  flex-direction: column;
+
 }
 
 #room{
@@ -64,10 +67,15 @@
 }
 
 #listUsers{
-position: relative;
-min-height: 100%;
-background-color:var(--color2);
-flex:2;
+  position: relative;
+  min-height: 100%;
+  background-color:var(--color2);
+  flex:2;
+}
+
+.scrollable{
+  overflow-y: scroll;
+  height: 100%;
 }
 
 /* HEADER */
@@ -82,12 +90,14 @@ flex:2;
 #listRooms .container-onglets{
   display: flex;
   width: 100%;
+  position: sticky;
+  top: 0;
+  left: 0;
+  height:50px;
 
 }
 #listRooms .container-onglets .onglets{
   flex-grow: 1;
-  border-right: var(--border);
-  border-bottom:var(--border);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -96,9 +106,13 @@ flex:2;
 
 }
 
+#listRooms .container-list{
+  position:relative;
+}
+
 #listRooms .contenu{
   position:absolute;
-  top:50px;
+  top:0px;
   left:0px;
   opacity: 0;
 
@@ -132,25 +146,80 @@ flex:2;
     }
 }
 
+#listRooms .scrollable {
+  padding-bottom:90px;
+}
+
+#listRooms #addRoom{
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  padding: 10px;
+  background-color:var(--color4);
+  display:flex;
+  flex-direction: column;
+}
+#listRooms .formTitle {
+  display:flex;
+  align-items: center;
+  padding:0;
+  margin-bottom: 7px;
+}
+
+#listRooms .formTitle h3{
+  padding:0;
+}
+#listRooms .formTitle i{
+  margin:0px 10px;
+}
+
+#listRooms #addRoomForm {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  align-self: center;
+}
+
+#listRooms #addRoomInput{
+  flex:1;
+  background-color:var(--color1);
+  height: 20px;
+  border:none;
+  margin-right:10px;
+}
+
+#listRooms #addRoomSubmit{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+  width: 20px;
+}
+
+
 /* CHAT */
 #chat #chatTitle{
   display:flex;
   align-items: center;
-  position:absolute;
+  position:sticky;
   top:0;
   left:0;
   width: 100%;
   background-color:var(--color4);
-  height:var(--chatTitleHeight);
+  height:50px;
 
 }
 #chat h2{
   padding-left: 30px;
 }
+#chat .scrollable {
+  padding-bottom:70px;
+}
 
 #chat #messages{
-  min-height: calc(100% - var(--chatTitleHeight));
-  margin-top:var(--chatTitleHeight);
+  min-height: calc(100% - 50px);
 }
 #chat .message{
   color:var(--textColor);
@@ -195,6 +264,10 @@ flex:2;
 }
 
 /* LIST USERS */
+#listUsers .scrollable {
+  padding-bottom:90px;
+}
+
 #listUsers .admin,#listUsers .connected,#listUsers .disconnected{
   padding-left:10px;
   padding-top:10px;
@@ -211,4 +284,52 @@ flex:2;
 
 #listUsers .user i{
   padding-left: 10px;
+}
+
+#listUsers #addUser{
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  padding: 10px;
+  background-color:var(--color4);
+  display:flex;
+  flex-direction: column;
+}
+#listUsers .formTitle {
+  display:flex;
+  align-items: center;
+  padding:0;
+  margin-bottom: 7px;
+}
+
+#listUsers .formTitle h3{
+  padding:0;
+}
+#listUsers .formTitle i{
+  margin:0px 10px;
+}
+
+#listUsers #addUserForm {
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  width: 80%;
+  align-self: center;
+}
+
+#listUsers #addUserInput{
+  flex:1;
+  background-color:var(--color1);
+  height: 20px;
+  border:none;
+  margin-right:10px;
+}
+
+#listUsers #addUserSubmit{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  height: 20px;
+  width: 20px;
 }
