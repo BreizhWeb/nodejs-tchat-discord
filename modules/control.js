@@ -48,7 +48,7 @@ async function deleteMessage(io, user_id, room_id, msg_id) {
     db.messages.deleteMsg(msg_id);
     io.to(`room-${room_id}`).emit("delete message", msg_id)
     return true
-  } else if(user_id == (await db.messages.selectById(msg_id))?.user_id) {
+  } else if (user_id == (await db.messages.selectById(msg_id))?.user_id) {
     db.messages.deleteMsg(msg_id);
     io.to(`room-${room_id}`).emit("delete message", msg_id)
     return true
@@ -83,10 +83,10 @@ function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) {
   }
 }
 
-async function deleteUser(user_id, room_id, deleted_user_id) {
+function deleteUser(user_id, room_id, deleted_user_id) {
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteUser)) {
-    db.roles.deleteUser(room_id, invited_user_id);
-    await cache.deleteUser(invited_user_id, room_id);
+    db.roles.deleteUserFromRoom(deleted_user_id, room_id);
+    cache.deleteUser(deleted_user_id, room_id);
     // TODO FRONT
     return true
   }

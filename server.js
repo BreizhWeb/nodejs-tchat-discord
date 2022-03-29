@@ -27,6 +27,9 @@ let users = []
 io.sockets.on("connection", async (socket) => {
   logger.eventLogger.log('info', "Socket connected...")
   socket.emit('connection')
+  socket.onAny((event, ...args) => {
+    console.log(event, args);
+  });
   socket.on('test', () => {
     console.log(socket);
   })
@@ -137,11 +140,14 @@ io.sockets.on("connection", async (socket) => {
   })
 
   // Kick user
-  socket.on("Kick user", async (data, callback) => {
-    // TODO Role Kick user
-    logger.eventLogger.log('info', `${socket.user.pseudo} : Kicked user id:${data.user_id}, room id:${data.room_id}`)
-    // TODO emit to user new room
-    callback(socket.user, room.room_id) // ???
+  socket.on("delete user", async ({ room_id, deleted_user_id }) => {
+    if (control.deleteUser(socket.user.user_id, room_id, deleted_user_id)) {
+      logger.eventLogger.log('info', `${socket.user.pseudo} : Kicked user id:${deleted_user_id}, room id:${room_id}`)
+      // TODO emit to room
+      let to = users.find(u => u.user.user_id == deleted_user_id)
+      if (to)
+        io.to(to.socket_id).emit("join rooms")
+    }
   })
 
   //Disconnect

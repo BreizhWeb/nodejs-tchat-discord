@@ -1,4 +1,4 @@
-var deleteMessage, deleteRoom, privateMessage, switchRoom, test;
+var deleteMessage, deleteRoom, privateMessage, switchRoom, deleteUser, test;
 $(document).ready(() => {
   var socket = io.connect();
 
@@ -44,6 +44,10 @@ $(document).ready(() => {
         $(`#room-${room_id} input.message`).val('')
       }
     );
+  }
+
+  deleteUser = (deleted_user_id, room_id) => {
+    socket.emit("delete user", { deleted_user_id, room_id });
   }
 
   deleteMessage = (msg_id, room_id) => {
@@ -95,7 +99,7 @@ $(document).ready(() => {
       private: private ?? $('input[name=private]').val() == 'on' ? true : false,
       mp: mp
     }, (user, newroom_id) => {
-      if(user)
+      if (user)
         buildRooms(user, newroom_id)
       hideModal()
     })
@@ -172,7 +176,7 @@ $(document).ready(() => {
         sendMsg(room.room_id)
       })
       socket.emit("get message", room.room_id, (messages) => {
-        messages.sort((a,b)=> a.message_id - b.message_id)
+        messages.sort((a, b) => a.message_id - b.message_id)
         messages.forEach(message => createMessage(message.room_id, message.message_id, message.content, message.user_id, message.pseudo))
       })
     }
