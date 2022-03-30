@@ -1,46 +1,38 @@
-const {selectAll} = require("../db/db_roles");
+const { selectAll } = require("../db/db_roles");
 
-var rooms_users;
-
-async function set(){
-  rooms_users = selectAll();
-  console.log(await rooms_users);
+async function set() {
+  rooms_users.value = await selectAll();
 }
 
-function addTo (user_id, room_id, role_id){
-  let added = rooms_users.push({user_id:user_id,room_id:room_id,role_id:role_id})
-  rooms_users = added ;
+async function add(user_id, room_id, role_id) {
+  await rooms_users.value.push({ room_id: room_id, user_id: user_id, role_id: role_id });
 }
 
-function update (user_id, room_id, role_id){
-  let updated =rooms_users.find(element => element.user_id == user_id && element.room_id == room_id)
-  if (typeof search === 'undefined') {
-    updated.role_id = role_id;
-  }
-  rooms_users = updated;
+async function update(user_id, room_id, role_id) {
+  rooms_users.value.find(element => element.user_id == user_id && element.room_id == room_id).role_id = await role_id;
 }
 
-
-function deleteUserFrom (user_id, room_id, role_id){
-  let deleted = rooms_users.filter(element => element.user_id != user_id || element.room_id != room_id || element.role_id != role_id);
-  rooms_users =  deleted;
+async function deleteUser(user_id, room_id) {
+  rooms_users.value = await rooms_users.value.filter(element => element.user_id != user_id || element.room_id != room_id);
 }
 
-function deleteRoomFrom (room_id){
-  let deleted = rooms_users.filter(element => element.room_id != room_id);
-  rooms_users =  deleted;
+async function deleteRoom(room_id) {
+  rooms_users.value = await rooms_users.value.filter(element => element.room_id != room_id);
 }
 
-function listRoomUserFrom(room_id){
-  return rooms_users.filter(element => element.room_id === room_id);
+function listRoomUser(room_id) {
+  return rooms_users.value.filter(element => element.room_id === room_id);
+  // pas corrigé
 }
 
-module.exports = {
-    rooms_users: rooms_users,
-    set:set,
-    addTo: addTo,
-    update: update,
-    deleteUserFrom: deleteUserFrom,
-    deleteRoomFrom: deleteRoomFrom,
-    listRoomUserFrom: listRoomUserFrom
+var rooms_users = module.exports = {
+  value: [],
+  set: set,
+  add: add,
+  update: update,
+  deleteUser: deleteUser,
+  deleteRoom: deleteRoom,
+  listRoomUser: listRoomUser
 }
+
+// TODO RAJOUTER LES COMMENTAIRES + VERIFICATION DES VARIABLES ( exemple tableau nul etc)

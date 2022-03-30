@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le : jeu. 17 mars 2022 à 18:22
+-- Généré le : sam. 19 mars 2022 à 13:35
 -- Version du serveur : 10.4.22-MariaDB
 -- Version de PHP : 7.4.26
 
@@ -89,9 +89,9 @@ CREATE TABLE `roles` (
 --
 
 INSERT INTO `roles` (`role_id`, `name`) VALUES
-(0, 'user'),
-(1, 'admin'),
-(2, 'superadmin');
+(0, 'admin'),
+(1, 'user'),
+(5, 'mp');
 
 -- --------------------------------------------------------
 
@@ -123,7 +123,6 @@ INSERT INTO `rooms` (`room_id`, `name`, `image`, `private`) VALUES
 --
 
 CREATE TABLE `rooms_users` (
-  `rooms_users_id` int(12) NOT NULL,
   `room_id` int(12) NOT NULL,
   `user_id` int(12) NOT NULL,
   `role_id` int(12) NOT NULL
@@ -133,16 +132,20 @@ CREATE TABLE `rooms_users` (
 -- Déchargement des données de la table `rooms_users`
 --
 
-INSERT INTO `rooms_users` (`rooms_users_id`, `room_id`, `user_id`, `role_id`) VALUES
-(5, 1, 1, 2),
-(6, 1, 2, 1),
-(7, 1, 3, 1),
-(2, 2, 1, 0),
-(4, 2, 2, 2),
-(3, 2, 3, 1),
-(8, 3, 1, 0),
-(9, 3, 2, 1),
-(10, 3, 3, 2);
+INSERT INTO `rooms_users` (`room_id`, `user_id`, `role_id`) VALUES
+(1, 0, 0),
+(1, 1, 1),
+(1, 2, 1),
+(1, 3, 1),
+(2, 0, 0),
+(2, 1, 0),
+(2, 2, 1),
+(2, 3, 1),
+(3, 0, 0),
+(3, 1, 0),
+(3, 2, 1),
+(3, 3, 1),
+(4, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -161,6 +164,7 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`user_id`, `pseudo`, `password`) VALUES
+(0, 'superadmin', 'admin'),
 (1, 'Rico', 'blabla'),
 (2, 'Koffi', 'yoyo'),
 (3, 'Artur', 'yeye'),
@@ -195,7 +199,6 @@ ALTER TABLE `rooms`
 -- Index pour la table `rooms_users`
 --
 ALTER TABLE `rooms_users`
-  ADD PRIMARY KEY (`rooms_users_id`),
   ADD KEY `id_room` (`room_id`,`user_id`,`role_id`),
   ADD KEY `id_role` (`role_id`),
   ADD KEY `id_user` (`user_id`);
@@ -229,16 +232,10 @@ ALTER TABLE `rooms`
   MODIFY `room_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=60;
 
 --
--- AUTO_INCREMENT pour la table `rooms_users`
---
-ALTER TABLE `rooms_users`
-  MODIFY `rooms_users_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
-
---
 -- AUTO_INCREMENT pour la table `users`
 --
 ALTER TABLE `users`
-  MODIFY `user_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=47;
+  MODIFY `user_id` int(12) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=48;
 
 --
 -- Contraintes pour les tables déchargées

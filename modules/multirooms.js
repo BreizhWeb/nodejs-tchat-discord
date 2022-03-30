@@ -6,7 +6,8 @@ const db = require('../db/db.js')
  */
 var joinRooms = function (socket) {
   socket.user.rooms?.forEach(room => {
-    socket.join(`room-${room.room_id}`)
+    if(room.room_id)
+      socket.join(`room-${room.room_id}`)
   })
 }
 /**

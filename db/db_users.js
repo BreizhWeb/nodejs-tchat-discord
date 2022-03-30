@@ -90,7 +90,6 @@ getUserById = function (id) {
 
   return new Promise(function (resolve, reject) {
     let sqlQuery = "SELECT * FROM users WHERE user_id =" + id;
-    console.log(sqlQuery);
     con.query(sqlQuery, id, (err, results) => {
       if (err) {
         return reject(err);
@@ -108,7 +107,7 @@ getUserById = function (id) {
 getUserData = function (id) {
 
   return new Promise(function (resolve, reject) {
-    let sqlQuery = `SELECT * FROM users 
+    let sqlQuery = `SELECT users.user_id, users.pseudo, rooms.*, rooms_users.role_id FROM users 
     LEFT JOIN rooms_users ON rooms_users.user_id = users.user_id 
     LEFT JOIN rooms ON rooms.room_id = rooms_users.room_id
     WHERE users.user_id =` + id;
@@ -116,36 +115,20 @@ getUserData = function (id) {
       if (err) {
         return reject(err);
       }
-      let user = {}
-      if (results.length > 1) {
-        user.rooms = results.map(res => {
-          let item = Object.assign({}, res)
-          if (!user.user_id) user.user_id = item.user_id
-          if (!user.pseudo) user.pseudo = item.pseudo
-          if (item.room_id) {
-            return {
-              room_id: item.room_id,
-              name: item.name,
-              image: item.image,
-              private: item.private
-            }
-          }
-        })
-      } else {
-        user.rooms = results.map(res => {
-          let item = Object.assign({}, res)
-          if (!user.user_id) user.user_id = item.user_id
-          if (!user.pseudo) user.pseudo = item.pseudo
-          if (item.room_id) {
-            return {
-              room_id: item.room_id,
-              name: item.name,
-              image: item.image,
-              private: item.private
-            }
-          }
-        })
-      }
+      let user = {rooms: []}
+      results.forEach(res => {
+        let item = Object.assign({}, res)
+        if (!user.user_id) user.user_id = item.user_id
+        if (!user.pseudo) user.pseudo = item.pseudo
+        if (item.room_id != null) {
+          user.rooms.push({
+            room_id: item.room_id,
+            name: item.name,
+            image: item.image,
+            private: item.private
+          })
+        }
+      })
 
       return resolve(user);
     });
