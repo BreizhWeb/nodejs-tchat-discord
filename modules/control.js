@@ -57,19 +57,16 @@ async function deleteMessage(io, user_id, room_id, msg_id) {
   }
 }
 
-/*async function inviteUser(user_id, room_id, invited_user_id) {
-  console.log(user_id, room_id, invited_user_id);
-  // TODO authorize invite for role id 5
-  if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
-    db.roles.create(room_id, invited_user_id, 0);
-    await cache.add(invited_user_id, room_id, 0);
-    // TODO FRONT
+async function joinRoom(user_id, room_id) {
+  let room = await db.rooms.select(room_id)
+  if (!room.private) {
+    db.roles.create(room_id, user_id, 1);
+    cache.add(user_id, room_id, 1);
     return true
-  }
-  else {
+  } else {
     return false
   }
-}*/
+}
 
 function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) {
   if (cache.value.find(r => r.room_id == room_id && r.user_id == invited_user_id))
@@ -123,6 +120,7 @@ module.exports = {
   sendMessage,
   deleteMessage,
   inviteUser,
+  joinRoom,
   deleteUser,
   deleteRoom,
   changeRole,

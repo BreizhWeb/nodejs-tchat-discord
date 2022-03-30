@@ -121,11 +121,27 @@ io.sockets.on("connection", async (socket) => {
       io.to(`room-${room_id}`).emit("delete room", room_id)
   })
 
-  // Join rooms
-  socket.on("join rooms", async () => {
+  // update rooms
+  socket.on("update rooms", async () => {
     socket.user = await db.users.getUserData(socket.user.user_id)
     multirooms.joinRooms(socket)
     socket.emit("update rooms", socket.user)
+  })
+
+  //Public rooms
+  socket.on("public rooms", async (callback) => {
+    let publicrooms = await db.rooms.selectPublic();
+    console.table(publicrooms)
+    callback(publicrooms)
+  })
+
+  //Join room
+  socket.on("join room", async (room_id) => {
+    if (await control.joinRoom(socket.user.user_id, room_id)) {
+      socket.user = await db.users.getUserData(socket.user.user_id)
+      multirooms.joinRooms(socket)
+      socket.emit("update rooms", socket.user)
+    }
   })
 
   // Invite user
@@ -135,7 +151,7 @@ io.sockets.on("connection", async (socket) => {
       // Should be in control i guess...
       let to = users.find(u => u.user.user_id == target_user_id)
       if (to)
-        io.to(to.socket_id).emit("join rooms")
+        io.to(to.socket_id).emit("update rooms")
     }
   })
 
@@ -146,7 +162,7 @@ io.sockets.on("connection", async (socket) => {
       // TODO emit to room
       let to = users.find(u => u.user.user_id == deleted_user_id)
       if (to)
-        io.to(to.socket_id).emit("join rooms")
+        io.to(to.socket_id).emit("update rooms")
     }
   })
 

@@ -1,4 +1,4 @@
-var deleteMessage, deleteRoom, privateMessage, switchRoom, deleteUser, test;
+var deleteMessage, deleteRoom, privateMessage, switchRoom, deleteUser, joinRoom, test;
 $(document).ready(() => {
   var socket = io.connect();
 
@@ -85,6 +85,7 @@ $(document).ready(() => {
   function showModal(html) {
     $('#modal').addClass('show')
     $('#modal .modalcontent').html(html)
+    $("#modal .close").on("click", () => hideModal())
   }
 
   function hideModal() {
@@ -96,7 +97,7 @@ $(document).ready(() => {
     socket.emit("create room", {
       name: name ?? $('input[name=name]').val(),
       image: image ?? $('input[name=image]').val(),
-      private: private ?? $('input[name=private]').val() == 'on' ? true : false,
+      private: private ?? $('input[name=private]').is(':checked') ? true : false,
       mp: mp
     }, (user, newroom_id) => {
       if (user)
@@ -109,6 +110,30 @@ $(document).ready(() => {
     buildRooms(user)
   })
 
+  $(`#publicrooms`).on('click', () => {
+    showModal(`
+      <div id="publicrooms">
+        <h2>Rooms publiques</h2>
+        <ul class="list">
+        </ul>
+      </div>
+    `)
+    socket.emit("public rooms", (rooms) => {
+      console.table(rooms)
+      rooms.forEach((room) => {
+        $(`#publicrooms .list`).prepend(`<li onClick="joinRoom(${room.room_id})">${room.name}</li>`)
+      })
+    })
+  })
+
+  socket.on("join room", () => {
+    socket.emit("update rooms")
+  })
+
+  joinRoom = (room_id) => {
+    socket.emit("join room", room_id)
+  }
+
   $("#createroom").on("click", () => {
     showModal(`
       <form id="createroomform">
@@ -116,7 +141,6 @@ $(document).ready(() => {
         <label>Image url : <input type="text" name="image" /></label>
         <label>Private : <input type="checkbox" name="private" /></label>
         <input type="submit" value="Submit">
-        <span class="close">x</span>
       </form >
     `)
     $("#modal .close").on("click", () => hideModal())
@@ -186,10 +210,6 @@ $(document).ready(() => {
   deleteRoom = (room_id) => {
     socket.emit("delete room", room_id);
   }
-
-  socket.on("join rooms", () => {
-    socket.emit("join rooms")
-  })
 
   socket.on("delete room", (room_id) => {
     $(`#room-${room_id}`).remove()
