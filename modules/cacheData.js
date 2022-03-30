@@ -1,46 +1,46 @@
 const {selectAll} = require("../db/db_roles");
 
-var rooms_usersCache;
+var rooms_users;
 
-async function setCache(){
-  rooms_usersCache = selectAll();
-  console.log(await rooms_usersCache);
+async function set(){
+  rooms_users = selectAll();
+  console.log(await rooms_users);
 }
 
-function addToCache (user_id, room_id, role_id){
-  let added = rooms_usersCache.push({user_id:user_id,room_id:room_id,role_id:role_id})
-  rooms_usersCache = added ;
+function addTo (user_id, room_id, role_id){
+  let added = rooms_users.push({user_id:user_id,room_id:room_id,role_id:role_id})
+  rooms_users = added ;
 }
 
-function updateCache (user_id, room_id, role_id){
-  let updated =rooms_usersCache.find(element => element.user_id == user_id && element.room_id == room_id)
+function update (user_id, room_id, role_id){
+  let updated =rooms_users.find(element => element.user_id == user_id && element.room_id == room_id)
   if (typeof search === 'undefined') {
     updated.role_id = role_id;
   }
-  rooms_usersCache = updated;
+  rooms_users = updated;
 }
 
 
-function deleteUserFromCache (user_id, room_id, role_id){
-  let deleted = rooms_usersCache.filter(element => element.user_id != user_id || element.room_id != room_id || element.role_id != role_id);
-  rooms_usersCache =  deleted;
+function deleteUserFrom (user_id, room_id, role_id){
+  let deleted = rooms_users.filter(element => element.user_id != user_id || element.room_id != room_id || element.role_id != role_id);
+  rooms_users =  deleted;
 }
 
-function deleteRoomFromCache (room_id){
-  let deleted = rooms_usersCache.filter(element => element.room_id != room_id);
-  rooms_usersCache =  deleted;
+function deleteRoomFrom (room_id){
+  let deleted = rooms_users.filter(element => element.room_id != room_id);
+  rooms_users =  deleted;
 }
 
-function listRoomUserFromCache(room_id){
-  return rooms_usersCache.filter(element => element.room_id === room_id);
+function listRoomUserFrom(room_id){
+  return rooms_users.filter(element => element.room_id === room_id);
 }
 
 module.exports = {
-    rooms_usersCache: rooms_usersCache,
-    setCache:setCache,
-    addToCache: addToCache,
-    updateCache: updateCache,
-    deleteUserFromCache: deleteUserFromCache,
-    deleteRoomFromCache: deleteRoomFromCache,
-    listRoomUserFromCache: listRoomUserFromCache
+    rooms_users: rooms_users,
+    set:set,
+    addTo: addTo,
+    update: update,
+    deleteUserFrom: deleteUserFrom,
+    deleteRoomFrom: deleteRoomFrom,
+    listRoomUserFrom: listRoomUserFrom
 }
