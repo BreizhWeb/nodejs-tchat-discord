@@ -54,8 +54,6 @@ io.sockets.on("connection", async (socket) => {
       }
       io.emit("users", users)
       console.log(users)
-
-
     } else {
       callback(false)
     }
@@ -131,7 +129,6 @@ io.sockets.on("connection", async (socket) => {
   //Public rooms
   socket.on("public rooms", async (callback) => {
     let publicrooms = await db.rooms.selectPublic();
-    console.table(publicrooms)
     callback(publicrooms)
   })
 

@@ -31,8 +31,7 @@ function getUserRoomsId(user_id) {
 function getActionRight(user_id, room_id, action) {
     if(user_id == 0 ){
       return(true);
-    }
-    else{
+    }else{
       userRole = getRightFromUser(user_id, room_id)
       return ((userRole & action ) == action)
     }

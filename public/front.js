@@ -119,7 +119,6 @@ $(document).ready(() => {
       </div>
     `)
     socket.emit("public rooms", (rooms) => {
-      console.table(rooms)
       rooms.forEach((room) => {
         $(`#publicrooms .list`).prepend(`<li onClick="joinRoom(${room.room_id})">${room.name}</li>`)
       })
