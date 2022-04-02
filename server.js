@@ -25,13 +25,13 @@ cache.set()
 
 let users = []
 io.sockets.on("connection", async (socket) => {
+
   logger.eventLogger.log('info', "Socket connected...")
+
   socket.emit('connection')
+
   socket.onAny((event, ...args) => {
     console.log(event, args);
-  });
-  socket.on('test', () => {
-    console.log(socket);
   })
 
   // TODO : A refaire quand le login sera là
@@ -59,13 +59,8 @@ io.sockets.on("connection", async (socket) => {
     }
   })
 
-  // Send Message
-  socket.on("send message", async (msgdata, callback) => {
-    callback(control.sendMessage(io, socket.user, msgdata.room_id, msgdata.content))
-  })
-
   // Send private message
-  socket.on("send private message", ({ user_id, content }, callback) => {
+  /*socket.on("send private message", ({ user_id, content }, callback) => {
     // TODO finish + front
     let to = users.find(u => u.user.user_id == user_id)
     if (to)
@@ -75,9 +70,18 @@ io.sockets.on("connection", async (socket) => {
       })
     else
       callback(false)
+  })*/
+
+  /**
+   * Send Message
+   */
+  socket.on("send message", async (msgdata, callback) => {
+    callback(control.sendMessage(io, socket.user, msgdata.room_id, msgdata.content))
   })
 
-  // get Message
+  /**
+   * get Message
+   */
   socket.on("get message", async (room_id, callback) => {
     if (permission.getActionRight(socket.user.user_id, room_id, permission.actions.sendMessage)) {
       let messages = await db.messages.selectByIdRoom(room_id)
@@ -86,17 +90,16 @@ io.sockets.on("connection", async (socket) => {
       callback([])
   })
 
-  // Delete message
+  /**
+   * Delete message
+   */
   socket.on("delete message", async (msgdata) => {
     control.deleteMessage(io, socket.user.user_id, msgdata.room_id, msgdata.msg_id)
   })
 
-
-  socket.on("test", async (user_id) => {
-    io.to(users.find(u => u.user.user_id == user_id)?.socket_id).emit("update rooms", await db.users.getUserData(user_id))
-  })
-
-  // Create room
+  /**
+   * Create room
+   */
   socket.on("create room", async (data, callback) => {
     let room
     if (data.mp) {
@@ -113,35 +116,49 @@ io.sockets.on("connection", async (socket) => {
     }
   })
 
-  // Delete room
+  /**
+   * Delete room
+   */
   socket.on("delete room", async (room_id) => {
     if (await control.deleteRoom(socket.user.user_id, room_id))
       io.to(`room-${room_id}`).emit("delete room", room_id)
   })
 
-  // update rooms
+  /**
+   * Update rooms
+   */
   socket.on("update rooms", async () => {
-    socket.user = await db.users.getUserData(socket.user.user_id)
-    multirooms.joinRooms(socket)
-    socket.emit("update rooms", socket.user)
+    db.users.getUserData(socket.user.user_id).then((user) => {
+      socket.user = user
+      multirooms.joinRooms(socket)
+      socket.emit("update rooms", socket.user)
+    })
   })
 
-  //Public rooms
+  /**
+   * Public rooms
+   */
   socket.on("public rooms", async (callback) => {
     let publicrooms = await db.rooms.selectPublic();
     callback(publicrooms)
   })
 
-  //Join room
+  /**
+   * Join room
+   */
   socket.on("join room", async (room_id) => {
     if (await control.joinRoom(socket.user.user_id, room_id)) {
-      socket.user = await db.users.getUserData(socket.user.user_id)
-      multirooms.joinRooms(socket)
-      socket.emit("update rooms", socket.user)
+      db.users.getUserData(socket.user.user_id).then((user) => {
+        socket.user = user
+        multirooms.joinRooms(socket)
+        socket.emit("update rooms", socket.user)
+      })
     }
   })
 
-  // Invite user
+  /**
+   * Invite user
+   */
   socket.on("invite user", async ({ target_user_id, room_id }) => {
     if (control.inviteUser(socket.user.user_id, room_id, target_user_id)) {
       logger.eventLogger.log('info', `${socket.user.pseudo} : Invited user id:${target_user_id}, room id:${room_id}`)
@@ -152,7 +169,9 @@ io.sockets.on("connection", async (socket) => {
     }
   })
 
-  // Kick user
+  /**
+   * Kick user
+   */
   socket.on("delete user", async ({ room_id, deleted_user_id }) => {
     if (control.deleteUser(socket.user.user_id, room_id, deleted_user_id)) {
       logger.eventLogger.log('info', `${socket.user.pseudo} : Kicked user id:${deleted_user_id}, room id:${room_id}`)
@@ -163,7 +182,9 @@ io.sockets.on("connection", async (socket) => {
     }
   })
 
-  //Disconnect
+  /**
+   * Disconnect
+   */
   socket.on("disconnect", function (data) {
     // TODO 
     if (!socket.user?.pseudo) {
