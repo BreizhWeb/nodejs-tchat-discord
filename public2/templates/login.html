@@ -1,0 +1,19 @@
+<div id="login">
+  <h2>Chat IO</h2>
+  <p>Create username:</p>
+  <div id="error"></div>
+  <form id="usernameForm">
+    <input type="text" size="35" id="username">
+    <input type="submit" value="Submit">
+  </form>
+  <div class="utilisateurs"></div>
+</div>
+<script>
+
+    $(document).ready(function(){
+      $("#usernameForm").submit((e) => {
+        e.preventDefault()
+        loadTemplate('rooms');
+      })
+    });
+</script>

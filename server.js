@@ -5,11 +5,9 @@ server = require("http").createServer(app);
 const io = require('socket.io')(server);
 const multirooms = require('./modules/multirooms')
 
-app.use(express.static('public'))
+app.use(express.static('public')) // modifier ici pour passer de public à public 2
 
-app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/public/index.html");
-})
+
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => {
@@ -21,4 +19,3 @@ io.sockets.on("connection", async (socket) => {
 
   multirooms.listen(io, socket);
 })
-
