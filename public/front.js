@@ -1,13 +1,17 @@
+/**
+ * Réalisé par Ronan,
+ */
+
 var deleteMessage, deleteRoom, privateMessage, switchRoom, deleteUser, joinRoom, test;
 $(document).ready(() => {
   var socket = io.connect();
 
   /**
-   * Debug
+   * Debug pour denis
    */
-  socket.onAny((event, ...args) => {
+  /*socket.onAny((event, ...args) => {
     console.log(event, args);
-  });
+  });*/
 
   /**
    * Recoi la liste des utilisateurs
@@ -24,10 +28,10 @@ $(document).ready(() => {
   socket.on("connection", () => {
     $("#usernameForm").submit((e) => {
       e.preventDefault()
-      let pseudo = $("#username").val()
-      if (pseudo) {
-        socket.emit("new user", pseudo, (data) => {
-          data ? buildRooms(data) : $("#error").html("Username is wrong")
+      let user_id = $("#username").val()
+      if (user_id) {
+        socket.emit("new user", user_id, (user) => {
+          user ? buildRooms(user) : $("#error").html("Username is wrong")
         })
       }
       $("#username").val("")
@@ -112,15 +116,15 @@ $(document).ready(() => {
    * @param user_id * l'id de l'auteur
    * @param pseudo  * le pseudo de l'auteur
    */
-  socket.on("new message", ({room_id, msg_id, content, user_id, pseudo}) => {
-    createMessage(room_id, msg_id, content, user_id, pseudo)
+  socket.on("new message", ({room_id, msg_id, content, user}) => {
+    createMessage(room_id, msg_id, content, user.user_id, user.pseudo)
   })
 
   /**
    * Lance la création d'une room pour l'user ciblé
    */
   privateMessage = (target_user_id, target_user_name) => {
-    createRoom(target_user_name, '', true, target_user_id)
+    createMp(target_user_name, '', true, target_user_id)
     // TODO check si la room est déjà là
     // if ($(`#mp-${target_user_id}`).length)
     //   switchRoom(target_user_id, true)
@@ -150,17 +154,31 @@ $(document).ready(() => {
    * @param name 
    * @param image 
    * @param private 
-   * @param mp * bool si c'est la création d'une room de message privé
    */
-  function createRoom(name = null, image = null, private = null, mp = false) {
+  function createRoom(name = null, image = null, private = null) {
     socket.emit("create room", {
       name: name ?? $('input[name=name]').val(),
       image: image ?? $('input[name=image]').val(),
       private: private ?? $('input[name=private]').is(':checked') ? true : false,
-      mp: mp
-    }, (user, newroom_id) => {
-      if (user)
-        buildRooms(user, newroom_id)
+    }, () => {
+      hideModal()
+    })
+  }
+
+  /**
+   * Emet un event au server pour créer une mp room avec callback pour refresh l'ui
+   * @param name 
+   * @param image 
+   * @param private 
+   * @param target_user_id
+   */
+  function createMp(name = null, image = null, private = null, target_user_id = false) {
+    socket.emit("create mp", {
+      name: name ?? $('input[name=name]').val(),
+      image: image ?? $('input[name=image]').val(),
+      private: private ?? $('input[name=private]').is(':checked') ? true : false,
+      target_user_id: target_user_id
+    }, () => {
       hideModal()
     })
   }

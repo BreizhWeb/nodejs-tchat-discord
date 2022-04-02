@@ -1,3 +1,6 @@
+/**
+ * Réalisé par : Ronan, Julien
+ */
 const permission = require('./permissions');
 const db = require('../db/db');
 const cache = require('./cacheData');
@@ -9,10 +12,8 @@ async function createMp(socket, data) {
   let room = await db.rooms.create(data.name + "-" + socket.user.pseudo, data.image, data.private)
   db.roles.create(room.room_id, socket.user.user_id, 5)
   await cache.add(socket.user.user_id, room.room_id, 5)
-  socket.user.rooms.push(room)
-  multirooms.joinRooms(socket)
   logger.eventLogger.log('info', `"action":"create mp room", "room_id":${room.room_id}, "user_id":${socket.user.user_id}`)
-  inviteUser(socket.user.user_id, room.room_id, data.mp, 5)
+  inviteUser(socket.user.user_id, room.room_id, data.target_user_id, 5)
   return room
 }
 
@@ -20,8 +21,6 @@ async function createRoom(socket, data) {
   let room = await db.rooms.create(data.name, data.image, data.private)
   db.roles.create(room.room_id, socket.user.user_id, 0)
   await cache.add(socket.user.user_id, room.room_id, 0)
-  socket.user.rooms.push(room)
-  multirooms.joinRooms(socket)
   logger.eventLogger.log('info', `"action":"create room", "room_id":${room.room_id}, "user_id":${socket.user.user_id}`)
   return room
 }
