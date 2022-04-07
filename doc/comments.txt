@@ -7,3 +7,5 @@ npm install mysql
 npm install dotenv --save
 npm install body-parser
 npm install winston
+
+npm install cookie-parser

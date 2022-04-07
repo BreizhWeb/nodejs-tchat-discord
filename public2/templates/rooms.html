@@ -178,10 +178,38 @@
 </div>
 
 <script>
-    $(document).ready(function(){
-      $("#disconnect").submit((e) => {
-        e.preventDefault()
-        loadTemplate('login');
-      })
-    });
+    $(function (){
+
+                function getCookie(name) {
+                  const value = `; ${document.cookie}`;
+                  const parts = value.split(`; ${name}=`);
+                  if (parts.length === 2) return parts.pop().split(';').shift();
+                }
+
+                if (getCookie("tokenIv") != undefined && getCookie("tokenContent") != undefined) {
+                    hTokenIv = getCookie("tokenIv");
+                    hTokenContent = getCookie("tokenContent");
+                    $.post("./verifToken",
+                    {
+                      tokenIv: hTokenIv,
+                      tokenContent: hTokenContent
+                    },
+                    function(data,status){
+                        if (status=="success") {
+                            if (data.error == "true") {
+                                loadTemplate('login');
+                            }
+                        }
+                    });
+                } else {
+                  loadTemplate('login');
+                }
+
+                $("#disconnect").click(function() {
+                  document.cookie = "tokenIv=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                  document.cookie = "tokenContent=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+                  loadTemplate('login');
+                });
+
+            });
 </script>

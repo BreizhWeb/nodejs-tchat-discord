@@ -1,10 +1,27 @@
-<div id="login">
-  <h2>Chat IO</h2>
-  <p>Create username:</p>
-  <div id="error"></div>
-  <form id="usernameForm">
-    <input type="text" size="35" id="username">
-    <input type="submit" value="Submit">
-  </form>
-  <div class="utilisateurs"></div>
-</div>
+<div id="container">
+        <div id="register">
+            <h2>Chat IO</h2>
+            <p>Register :</p>
+            <div id="error"></div>
+            <form id="rForm">
+                <input type="text" size="35" id="rUsername" name="rUsername">
+                mdp :
+                <input type="password" size="35" id="rPassword" name="rPassword" style="outline:none;">
+                confimer mdp :
+                <input type="password" size="35" id="rPassword2" name="rPassword2" style="outline:none;">
+                <input type="button" value="Register" id="rSubmit" disabled="true">
+            </form>
+            <p>Login : </p>
+            <form id="lForm">
+                <input type="text" size="35" id="lUsername" name="lUsername">
+                <input type="password" size="35" id="lPassword" name="lPassword">
+                <input type="button" value="Login" id="lSubmit" disabled="true">
+            </form>
+        </div>
+        <div id="userWrapper">
+            <div id="users"></div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        
+    </script>
