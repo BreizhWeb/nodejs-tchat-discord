@@ -44,7 +44,6 @@ app.post("/login",async (req,res)=>{
         if (passwordC == password) {
             var token = req.body.username+"#####"+passwordC+"#####"+Date.now().toString()+"#####17cm";
             hToken = encrypt(token);
-            console.log(hToken.content);
             res.cookie("tokenIv",hToken.iv,{maxAge: 600000});
             res.cookie("tokenContent",hToken.content,{maxAge: 600000});
             io.sockets.on("connection", async (socket) => {
@@ -67,11 +66,9 @@ app.post("/verifToken",async (req,res)=>{
     if (req.body.tokenIv!=undefined && req.body.tokenContent!=undefined) {
         var hash = {iv:req.body.tokenIv,content:req.body.tokenContent};
         var tokenSplit = decrypt(hash).split("#####");
-        console.log(tokenSplit);
         var id = (await db.users.getIdByPseudo(tokenSplit[0]));
         var password = (await db.users.getUserById(id)).password;
         if (tokenSplit[1]==password && parseInt(tokenSplit[2])+600000>=Date.now() && tokenSplit[3]=="17cm") {
-            console.log("PASERREUR");
             io.sockets.on("connection", async (socket) => {
               multirooms.listen(io, socket);
             })
