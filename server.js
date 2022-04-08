@@ -5,7 +5,7 @@ server = require("http").createServer(app);
 const io = require('socket.io')(server);
 const multirooms = require('./modules/multirooms')
 
-app.use(express.static('public')) // modifier ici pour passer de public à public 2
+app.use(express.static('public2')) // modifier ici pour passer de public à public 2
 
 
 

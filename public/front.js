@@ -86,7 +86,7 @@ $(document).ready(() => {
    */
   socket.on("delete message", (msg_id) => {
     $(`#msg-${msg_id}`).html(`
-      <em>Message effacé</em>
+      <p class="delete">Message effacé</p>
     `)
   })
 
@@ -101,9 +101,11 @@ $(document).ready(() => {
   function createMessage(room_id, msg_id, content, user_id, pseudo) {
     $(`#room-${room_id} .chatWindow`).append(`
       <div class='message' id="msg-${msg_id}">
-        <strong class="pseudo" onClick="privateMessage(${user_id},'${pseudo}')">${convertToPlain(pseudo)}</strong>: 
+        <strong class="pseudo" onClick="privateMessage(${user_id},'${pseudo}')">${convertToPlain(pseudo)}</strong>
+        <br>
         <span class="content">${convertToPlain(content)}</span>
-        <i onClick="deleteMessage(${msg_id},${room_id})">❌</i>
+        <button class="deleteMsg" onClick="deleteMessage(${msg_id},${room_id})"><i class="fas fa-times-circle"></i></button>
+        <hr class="msgSpacer">
       </div>
     `)
   }
@@ -262,55 +264,7 @@ $(document).ready(() => {
     $("#mainWrapper").show()
   }
 
-  /**
-   * Créer l'ui d'une room si elle n'existe pas
-   * @param room * l'objet de la room
-   * @returns room_id
-   */
-  function newRoom({room_id, name}) {
-    if (!$(`#btn-${room_id}`).length) {
-      $("#btnRoomsList").append(`
-        <div id="btn-${room_id}" class="btnRoom">
-          <span class="name" onClick="switchRoom(${room_id})">${name}</span>
-          <span class="del" onClick="event.stopPropagation();deleteRoom(${room_id})">❌</span>
-        </div>
-      `)
-    }
-    if (!$(`#room-${room_id}`).length) {
-      $('#rooms').append(`
-        <div class="room" id="room-${room_id}">
-          <h2>${name}</h2>
-          <form class="invite">
-            <input type="text" size="10" class="userid" placeholder="user id">
-            <input type="submit" value="Inviter">
-          </form>
-          <div class="chatWrapper">
-            <div class="chatWindow"></div>
-            <form class="messageForm">
-              <input type="text" size="35" class="message" placeholder="Say something...">
-              <input type="submit" value="Submit">
-            </form>
-          </div>
-        </div>
-      `)
-      $(`#room-${room_id} .invite`).submit((e) => {
-        e.preventDefault();
-        socket.emit("invite user", {
-          target_user_id: $(`#room-${room_id} input.userid`).val(),
-          room_id: room_id
-        })
-      })
-      $(`#room-${room_id} .messageForm`).submit((e) => {
-        e.preventDefault();
-        sendMsg(room_id)
-      })
-      socket.emit("get message", room_id, (messages) => {
-        messages.sort((a, b) => a.message_id - b.message_id)
-        messages.forEach(message => createMessage(message.room_id, message.message_id, message.content, message.user_id, message.pseudo))
-      })
-    }
-    return room_id;
-  }
+
 
   /**
    * Envoi l'event pour delete la room correspondant à l'id
@@ -327,3 +281,10 @@ $(document).ready(() => {
     $(`#btn-${room_id}`).remove()
   })
 })
+
+function buttonRoom() {
+  var allButtons = document.querySelectorAll('.myBtn');
+  console.log(allButtons);
+}
+
+buttonRoom();

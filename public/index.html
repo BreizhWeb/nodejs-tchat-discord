@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en"> 
 
 <head>
   <meta charset="UTF-8">
   <title>Client CHAT</title>
   <link href="./style.css" rel="stylesheet">
+  <script defer src="https://use.fontawesome.com/releases/v5.15.4/js/all.js" integrity="sha384-rOA1PnstxnOBLzCLMcre8ybwbTmemjzdNlILg8O7z1lUkLXozs4DHonlDtnE7fpc" crossorigin="anonymous"></script>
 </head>
 
 <body>
@@ -21,13 +22,17 @@
     </div>
 
     <div id="mainWrapper">
-      <div id="chatRooms">
-        <h3>Room</h3>
+      <div class="mainContent">
+        <div class="roomMenu">
+          <div id="btnRoomsList"></div>
+          <div id="createroom">Nouveau channel <i class="fas fa-plus-circle"></i></div>
+        </div>
+        <div id="publicrooms">Public rooms</div>
+        <div id="rooms"></div>
+        <div class="userMenu">
+          <p>qsdfsdqdsfsqdfd</p>
+        </div>
       </div>
-      <div id="btnRoomsList"></div>
-      <div id="createroom">Créer une room</div>
-      <div id="publicrooms">Public rooms</div>
-      <div id="rooms"></div>
     </div>
   </div>
   <div id="modal">

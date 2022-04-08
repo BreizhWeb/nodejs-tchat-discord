@@ -59,11 +59,25 @@ var listen = function (io, socket) {
     }
   })
 
+  socket.on("getRoom", async (room_id, callback) => {
+    let room = await db.rooms.select(room_id);
+    let listMessages = await db.messages.selectByIdRoom(room_id);
+    callback(room, listMessages);
+  })
+
   /**
    * Send Message
    */
-  socket.on("send message", async (msgdata, callback) => {
-    callback(control.sendMessage(io, socket.user, msgdata.room_id, msgdata.content))
+  socket.on("sendMessage", async ({room_id, content}) => {
+    let message_id = control.sendMessage(2, room_id, content)
+    if(message_id){
+      io.to(`messages`).emit('new message', {
+        content: content,
+        message_id: message_id,
+        room_id: room_id,
+        user: socket.user
+      })
+    }
   })
 
   /**
@@ -80,8 +94,9 @@ var listen = function (io, socket) {
   /**
    * Delete message
    */
-  socket.on("delete message", async (msgdata) => {
-    control.deleteMessage(io, socket.user.user_id, msgdata.room_id, msgdata.msg_id)
+  socket.on("delete message", async ({room_id, message_id}) => {
+    if(control.deleteMessage(2, room_id, message_id))
+      io.to(`room-${room_id}`).emit("delete message", message_id)
   })
 
   /**

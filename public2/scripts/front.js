@@ -281,30 +281,16 @@ $(document).ready(() => {
    */
   function newRoom({room_id, name}) {
     if (!$(`#btn-${room_id}`).length) {
-      $("#btnRoomsList").append(`
-        <div id="btn-${room_id}" class="btnRoom">
-          <span class="name" onClick="switchRoom(${room_id})">${name}</span>
-          <span class="del" onClick="event.stopPropagation();deleteRoom(${room_id})">❌</span>
+      $("#roomsBtn").append(`
+        <div id="btn-${room_id}" class="room">
+          <button class="name" onClick="switchRoom(${room_id})">${name}</button>
+          <button class="del" onClick="event.stopPropagation();deleteRoom(${room_id})">❌</button>
+          <p>${name}</p>
         </div>
       `)
     }
+
     if (!$(`#room-${room_id}`).length) {
-      $('#rooms').append(`
-        <div class="room" id="room-${room_id}">
-          <h2>${name}</h2>
-          <form class="invite">
-            <input type="text" size="10" class="userid" placeholder="user id">
-            <input type="submit" value="Inviter">
-          </form>
-          <div class="chatWrapper">
-            <div class="chatWindow"></div>
-            <form class="messageForm">
-              <input type="text" size="35" class="message" placeholder="Say something...">
-              <input type="submit" value="Submit">
-            </form>
-          </div>
-        </div>
-      `)
       $(`#room-${room_id} .invite`).submit((e) => {
         e.preventDefault();
         socket.emit("invite user", {

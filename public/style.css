@@ -1,4 +1,4 @@
-body {
+/* body {
   background: #f9f9f9;
 }
 
@@ -90,4 +90,242 @@ input {
   flex-direction: column;
   align-content: center;
   justify-content: center;
+} */
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background: #f9f9f9;
+}
+
+#container {
+  margin: 0 auto;
+}
+
+#chatWindow {
+  height: 300px;
+}
+
+#mainWrapper {
+  display: none;
+}
+
+#chatWrapper {
+  float: left;
+  border: 1px #ccc solid;
+  border-radius: 10px;
+  background: #f4f4f4;
+  padding: 10px;
+}
+
+#userWrapper {
+  display: none;
+  float: left;
+  border: 1px #ccc solid;
+  border-radius: 10px;
+  background: #f4f4f4;
+  padding: 10px;
+  margin-left: 20px;
+  width: 150px;
+  max-height: 200px;
+}
+
+#namesWrapper {
+  float: left;
+  border: 1px #ccc solid;
+  border-radius: 10px;
+  background: #f4f4f4;
+  padding: 10px;
+  margin-left: 20px;
+}
+
+input {
+  height: 30px;
+  border: solid 1px #ccc;
+}
+
+#modal {
+  background: #00000055;
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  display: none;
+}
+
+#modal .modalcontent {
+  background: #fff;
+  border: 1px solid #000;
+  position: relative;
+}
+
+#modal form {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+}
+
+#modal .close {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+#modal label {
+  display: flex;
+  justify-content: space-between;
+}
+
+#modal.show {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: center;
+  justify-content: center;
+}
+
+.messageForm {
+  position: absolute;
+  display: block;
+  bottom: 1em;
+  width: 70vw;
+  margin: 0 auto;
+  padding: 0 1em;
+}
+
+.messageForm input[type=text] {
+  width: 100%;
+  height: 35px;
+  border-radius: 17.5px;
+  background-color: rgba(69, 75, 100, .35);
+  padding: 0 3em;
+  outline: none;
+  color: #fff;
+  font-size: 16px;
+}
+
+.messageForm input[type=text]::placeholder {
+  color: rgba(69, 75, 100, .35);
+}
+
+.messageForm input[type=submit] {
+  position: absolute;
+  right: 0;
+  top: 0px;
+  cursor: pointer;
+  background-image: url("../assets/plus.png");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 29px;
+  height: 29px;
+  border: none;
+  background-color: inherit;
+  margin: 3px 3em;
+}
+
+.mainContent {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.room {
+  overflow-y: scroll;
+  width: 70vw;
+  height: 92vh;
+}
+
+.chatWindow {
+  padding: 0 5em;
+}
+
+.roomMenu, .userMenu {
+  background-color: #454B64;
+  height: 100vh;
+  width: 15vw;
+  color: #fff;
+}
+
+.userMenu {
+  text-align: right;
+}
+
+.pseudo {
+  font-size: 18px;
+}
+
+.pseudo, .content, .delete {
+  color: #959CB7;
+}
+
+.delete {
+  margin-bottom: 1.5em;
+  font-style: italic;
+}
+
+.msgSpacer {
+  width: 50%;
+  margin: 1.5em auto;
+  height: 2px;
+  background-color: rgba(69, 75, 100, .3);
+  border: none;
+  border-radius: 50%;
+}
+
+#createroom {
+  position: absolute;
+  background-color: #313546;
+  bottom: 0;
+  width: 15vw;
+  cursor: pointer; 
+  text-align: center;
+  padding: 1.25em 0;
+  font-weight: 900;
+}
+
+.btnRoom {
+  padding: 1em;
+}
+
+.active {
+  background-color: #959CB7;
+}
+
+.btnRoom .name {
+  cursor: pointer;
+  background-color: inherit;
+  color: #fff;
+  border: none;
+  font-weight: 900;
+}
+
+.deleteMsg {
+  float: right;
+  background-color: inherit;
+  border: none;
+  color: #959CB7;
+  font-size: 24px;
+  cursor: pointer;
+  transition: all 128ms linear;
+}
+
+.deleteMsg:hover {
+  color: #313546;
+}
+
+.del {
+  float: right;
+  cursor: pointer;
+}
+
+#publicrooms {
+  position: absolute;
 }

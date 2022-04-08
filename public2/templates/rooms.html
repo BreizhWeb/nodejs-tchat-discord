@@ -1,5 +1,3 @@
-
-
 <!-- HEADER -->
 <div id="header">
   <div class="containerTitle">
@@ -22,32 +20,27 @@
       <div class="onglets">Private Rooms</div>
       <div class="onglets">Private Messages</div>
     </div>
+
     <div class="container-list scrollable">
-      <div class="contenu active-contenu">
-        <div class="room">
-          <p>Nom Server public</p>
-        </div>
-        <div class="room">
-          <p>Nom Server public</p>
-        </div>
-      </div>
-      <div class="contenu">
-        <div class="room">
+      <div id="roomsBtn" class="contenu active-contenu"></div>
+      <!-- <div class="contenu">
+        <div class="private">
           <p>Nom Server privé</p>
         </div>
-        <div class="room">
+        <div class="private">
           <p>Nom Server privé</p>
         </div>
-      </div>
-      <div class="contenu">
+      </div> -->
+      <!-- <div class="contenu">
         <div class="room">
           <p>Nom d'un personne</p>
         </div>
         <div class="room">
           <p>Nom d'un personne</p>
         </div>
-      </div>
+      </div> -->
     </div>
+
     <div id="addRoom">
       <div class="formTitle">
         <i class="fa-solid fa-people-roof"></i>
@@ -67,56 +60,10 @@
     <!-- CHAT-->
     <div id="chat">
       <div id="chatTitle">
-        <h2>ROOM TITLE</h2>
+       <!-- <h2>ROOM TITLE</h2>-->
       </div>
       <div class="scrollable">
-        <div id="messages">
-          <div class="message">
-            <div class="headerMessage">
-              <p class="user">Nom user</p>
-              <p class="date">20/03/2022</p>
-            </div>
-            <p class="content">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-              accumsan purus et ante scelerisque, ac dapibus leo tristique.
-              Sed vestibulum id neque eu molestie. Donec semper sed purus ut
-              imperdiet. Ut quis tortor lacinia, eleifend libero quis,
-              rhoncus nisl. Suspendisse ut condimentum est. Nam faucibus
-              metus sed nisl molestie interdum. Vestibulum varius risus eget
-              condimentum fermentum.
-            </p>
-          </div>
-          <div class="message">
-            <div class="headerMessage">
-              <p class="user">Nom user</p>
-              <p class="date">20/03/2022</p>
-            </div>
-            <p class="content">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-              accumsan purus et ante scelerisque, ac dapibus leo tristique.
-              Sed vestibulum id neque eu molestie. Donec semper sed purus ut
-              imperdiet. Ut quis tortor lacinia, eleifend libero quis,
-              rhoncus nisl. Suspendisse ut condimentum est. Nam faucibus
-              metus sed nisl molestie interdum. Vestibulum varius risus eget
-              condimentum fermentum.
-            </p>
-          </div>
-          <div class="message">
-            <div class="headerMessage">
-              <p class="user">Nom user</p>
-              <p class="date">20/03/2022</p>
-            </div>
-            <p class="content">
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec
-              accumsan purus et ante scelerisque, ac dapibus leo tristique.
-              Sed vestibulum id neque eu molestie. Donec semper sed purus ut
-              imperdiet. Ut quis tortor lacinia, eleifend libero quis,
-              rhoncus nisl. Suspendisse ut condimentum est. Nam faucibus
-              metus sed nisl molestie interdum. Vestibulum varius risus eget
-              condimentum fermentum.
-            </p>
-          </div>
-        </div>
+        <div id="messages"></div>
       </div>
       <form id="messageForm">
         <input id="messageInput" type="text" placeholder="Send a message" />
@@ -127,14 +74,27 @@
     <!-- LIST USERS-->
     <div id="listUsers">
       <div class="scrollable">
-        <div class="admin">
+
+        <div class="connected">
+          <h3>Utilisateurs</h3>
+          <div class="user">
+            <p>Nom user</p>
+            <i class="fa-solid fa-message"></i>
+            <i class="fa-solid fa-ban"></i>
+          </div>
+        </div>
+
+        <!-- <div class="admin">
           <h3>ADMINISTRATEURS</h3>
           <div class="user">
             <p>Nom user</p>
             <i class="fa-solid fa-message"></i>
           </div>
-        </div>
-        <div class="connected">
+        </div> -->
+
+
+
+        <!-- <div class="connected">
           <h3>EN LIGNE</h3>
           <div class="user">
             <p>Nom user</p>
@@ -146,7 +106,8 @@
             <i class="fa-solid fa-message"></i>
             <i class="fa-solid fa-ban"></i>
           </div>
-        </div>
+        </div> -->
+<!-- 
         <div class="disconnected">
           <h3>HORS LIGNE</h3>
           <div class="user">
@@ -159,7 +120,8 @@
             <i class="fa-solid fa-message"></i>
             <i class="fa-solid fa-ban"></i>
           </div>
-        </div>
+        </div> -->
+
       </div>
       <div id="addUser">
         <div class="formTitle">

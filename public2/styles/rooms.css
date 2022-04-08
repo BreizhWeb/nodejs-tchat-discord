@@ -144,9 +144,9 @@ button {
 }
 
 /* HEADER */
-#header .containerTitle {}
+/* #header .containerTitle {}
 
-#header h1 {}
+#header h1 {} */
 
 /* LIST ROOM */
 #listRooms .container-onglets {
@@ -450,4 +450,18 @@ button {
   align-items: center;
   height: 20px;
   width: 20px;
+}
+
+.delete-btn {
+  position: relative;
+  float: right;
+  top: -43.5px;
+  background-color: inherit;
+  cursor: pointer;
+  font-size: 22px;
+  transition: all linear 128ms;
+}
+
+.delete-btn:hover {
+  opacity: .5;
 }

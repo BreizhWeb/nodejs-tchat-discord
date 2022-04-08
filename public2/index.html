@@ -1,39 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <meta charset="utf-8" />
-  <title>NotDISCORD</title>
-  <link
-    href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap"
-    rel="stylesheet"
-  />
-  <link
-    href="https://fonts.googleapis.com/css2?family=Barlow:wght@300&display=swap"
-    rel="stylesheet"
-  />
-
-  <script
-    src="https://kit.fontawesome.com/09d856038a.js"
-    crossorigin="anonymous"
-  ></script>
-  <link id="pageCss" rel="stylesheet"  />
-
-</head>
+  <head>
+    <meta charset="utf-8" />
+    <title>NotDISCORD</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@200;400&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300&display=swap" rel="stylesheet"/>
+    <script src="https://kit.fontawesome.com/09d856038a.js" crossorigin="anonymous"></script>
+    <link id="pageCss" rel="stylesheet"/>
+  </head>
 
   <body>
-    <div id="screenContainer">
-
-    </div>
+    <div id="screenContainer"></div>
   </body>
-
 
   <script src="./ressources/jquery-latest.min.js"></script>
   <script src="https://cdn.socket.io/4.4.1/socket.io.min.js" integrity="sha384-fKnu0iswBIqkjxrhQCTZ7qlLHOFEgNkRmK2vaO/LbTZSXdJfAu6ewRBdwHPhBo/H" crossorigin="anonymous"></script>
-  <script src="./scripts/front.js"></script>
+  <script src="./scripts/rooms.js"></script>
   <script>
     $(document).ready(function(){
-      loadTemplate('login');
+      loadTemplate('rooms');
+      loadRoom(2);
     });
   </script>
 </html>

@@ -25,31 +25,22 @@ async function createRoom(socket, data) {
   return room
 }
 
-async function sendMessage(io, user, room_id, content) {
-  if (permission.getActionRight(user.user_id, room_id, permission.actions.sendMessage)) {
-    let msg_id = await db.messages.create(user.user_id, room_id, content)
-    logger.eventLogger.log('info', `"action":"send message", "room_id":${room_id}, "user_id":${user.user_id}, "message_id":${msg_id}`)
-    io.to(`room-${room_id}`).emit('new message', {
-      content: content,
-      msg_id: msg_id,
-      room_id: room_id,
-      user: user
-    })
-    return true
+async function sendMessage(user_id, room_id, content) {
+  if (permission.getActionRight(user_id, room_id, permission.actions.sendMessage)) {
+    let msg_id = await db.messages.create(user_id, room_id, content)
+    logger.eventLogger.log('info', `"action":"send message", "room_id":${room_id}, "user_id":${user_id}, "message_id":${msg_id}`)
+    return msg_id
   } else {
     return false
   }
 }
 
-async function deleteMessage(io, user_id, room_id, msg_id) {
+async function deleteMessage(user_id, room_id, msg_id) {
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteMessage)) {
-    // récupération de l'id du message qui va être supprimer
     db.messages.deleteMsg(msg_id);
-    io.to(`room-${room_id}`).emit("delete message", msg_id)
     return true
   } else if (user_id == (await db.messages.selectById(msg_id))?.user_id) {
     db.messages.deleteMsg(msg_id);
-    io.to(`room-${room_id}`).emit("delete message", msg_id)
     return true
   } else {
     return false
