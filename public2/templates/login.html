@@ -1,21 +1,26 @@
 <div id="container">
         <div id="register">
-            <h2>Chat IO</h2>
-            <p>Register :</p>
+            <h1>NotDISCORD</h1>
+            <h2>Inscription :</h2>
             <div id="error"></div>
             <form id="rForm">
+                <p>Pseudo :</p>
+                <p class="soustitre">minimum 2 caractères</p>
                 <input type="text" size="35" id="rUsername" name="rUsername">
-                mdp :
+                <p>Mot de passe :</p>
+                <p class="soustitre">minimum 8 caractères</p>
                 <input type="password" size="35" id="rPassword" name="rPassword" style="outline:none;">
-                confimer mdp :
+                <p>Confirmer mot de passe :</p>
                 <input type="password" size="35" id="rPassword2" name="rPassword2" style="outline:none;">
-                <input type="button" value="Register" id="rSubmit" disabled="true">
+                <input type="button" value="S'INSCRIRE" id="rSubmit" disabled="true">
             </form>
-            <p>Login : </p>
+            <h2>Connexion : </h2>
             <form id="lForm">
+                <p>Pseudo :</p>
                 <input type="text" size="35" id="lUsername" name="lUsername">
+                <p>Mot de passe :</p>
                 <input type="password" size="35" id="lPassword" name="lPassword">
-                <input type="button" value="Login" id="lSubmit" disabled="true">
+                <input type="button" value="SE CONNECTER" id="lSubmit" disabled="true">
             </form>
         </div>
         <div id="userWrapper">
@@ -23,5 +28,150 @@
         </div>
     </div>
     <script type="text/javascript">
-        
+        $(document).ready(function() {
+
+            function getCookie(name) {
+              const value = `; ${document.cookie}`;
+              const parts = value.split(`; ${name}=`);
+              if (parts.length === 2) return parts.pop().split(';').shift();
+            }
+
+            if (getCookie("tokenIv") != undefined && getCookie("tokenContent") != undefined) {
+                hTokenIv = getCookie("tokenIv");
+                hTokenContent = getCookie("tokenContent");
+                $.post("./verifToken",
+                {
+                  tokenIv: hTokenIv,
+                  tokenContent: hTokenContent
+                },
+                function(data,status){
+                    if (status=="success") {
+                        if (data.error != "true") {
+                            loadTemplate('rooms');
+                        }
+                    }
+                });
+            }
+
+            //round 2
+            var $registerForm = $("#registerForm");
+            var $users = $("#users");
+            var $username = $("#username");
+            var $password = $("#password");
+            var $error = $("#error");
+
+            var rPassword = document.getElementById("rPassword");
+            var rPassword2 = document.getElementById("rPassword2");
+            var rUsername = document.getElementById("rUsername");
+            var rSubmit = document.getElementById("rSubmit");
+
+            var lPassword = document.getElementById("lPassword");
+            var lUsername = document.getElementById("lUsername");
+            var lSubmit = document.getElementById("lSubmit");
+
+            $("#rSubmit").click(function() {
+                $.post("./register",
+                {
+                  username: rUsername.value,
+                  password: rPassword.value
+                },
+                function(data,status){
+                    if (status=="success") {
+                        if (data.error == "true") {
+                            alert("Votre username est déjà utilisé");
+                        } else {
+                            alert("Vous êtes bien inscrit "+data.username+", vous pouvez vous connecter");
+                            window.scrollTo(0,document.body.scrollHeight);
+                        }
+                    }
+                });
+            });
+
+            $("#lSubmit").click(function() {
+                $.post("./login",
+                {
+                  username: lUsername.value,
+                  password: lPassword.value
+                },
+                function(data,status){
+                    if (status=="success") {
+                        if (data.error == "true") {
+                            alert("Vos identifiants ne correspondent pas");
+                        } else {
+                            alert("Merci, vous allez être connecté");
+                            loadTemplate('rooms');
+                        }
+                    }
+                });
+            });
+
+            function rCheck () {
+                if (rPassword.value.length >= 8 && rPassword.value == rPassword2.value && rUsername.value.length >= 2) {
+                    rSubmit.disabled = false;
+                }
+            }
+            $("#rPassword2").keyup(function() {
+                console.log("jetape");
+                if (this.value != rPassword.value) {
+                    rSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                rCheck();
+            });
+
+            $("#rPassword").keyup(function() {
+                if (this.value.length < 8) {
+                    rSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                if (rPassword2.value != rPassword.value) {
+                    rSubmit.disabled = true;
+                    rPassword2.style.border = "1px solid red";
+                } else {
+                    rPassword2.style.border = "1px solid green";
+                }
+                rCheck();
+            });
+
+            $("#rUsername").keyup(function() {
+                if (this.value.length < 2) {
+                    rSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                rCheck();
+            });
+
+            function lCheck () {
+                if (lPassword.value.length >= 8 && lUsername.value.length >= 2) {
+                    lSubmit.disabled = false;
+                }
+            }
+
+            $("#lPassword").keyup(function() {
+                if (this.value.length < 8) {
+                    lSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                lCheck();
+            });
+
+            $("#lUsername").keyup(function() {
+                if (this.value.length < 2) {
+                    lSubmit.disabled = true;
+                    this.style.border = "1px solid red";
+                } else {
+                    this.style.border = "1px solid green";
+                }
+                lCheck();
+            });
+
+        });
     </script>
