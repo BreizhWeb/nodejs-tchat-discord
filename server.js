@@ -39,7 +39,8 @@ app.post("/login",async (req,res)=>{
     if ((await db.users.getIdByPseudo(req.body.username)) == undefined) {
         res.json({error:"true"});
     } else {
-        var password = (await db.users.getUserById((await db.users.getIdByPseudo(req.body.username)))).password;
+        var id = (await db.users.getIdByPseudo(req.body.username));
+        var password = (await db.users.getUserById(id)).password;
         var passwordC = md5sum.update(req.body.password).digest('hex');
         if (passwordC == password) {
             var token = req.body.username+"#####"+passwordC+"#####"+Date.now().toString()+"#####17cm";
@@ -49,7 +50,8 @@ app.post("/login",async (req,res)=>{
             io.sockets.on("connection", async (socket) => {
               multirooms.listen(io, socket);
             })
-            res.json({error:"false"});
+            console.log(id);
+            res.json({id:id,error:"false"});
         } else {
             res.json({error:"true"});
         }
@@ -72,7 +74,8 @@ app.post("/verifToken",async (req,res)=>{
             io.sockets.on("connection", async (socket) => {
               multirooms.listen(io, socket);
             })
-            res.json({error:"false"});
+            console.log(id);
+            res.json({id:id,error:"false"});
         } else {
             res.json({error:"true"});
         }

@@ -1,9 +1,9 @@
 <div id="container">
-        <div id="register">
+        <div id="forms">
             <h1>NotDISCORD</h1>
-            <h2>Inscription :</h2>
             <div id="error"></div>
             <form id="rForm">
+                <h2>Inscription :</h2>
                 <p>Pseudo :</p>
                 <p class="soustitre">minimum 2 caractères</p>
                 <input type="text" size="35" id="rUsername" name="rUsername">
@@ -14,8 +14,8 @@
                 <input type="password" size="35" id="rPassword2" name="rPassword2" style="outline:none;">
                 <input type="button" value="S'INSCRIRE" id="rSubmit" disabled="true">
             </form>
-            <h2>Connexion : </h2>
             <form id="lForm">
+                <h2>Connexion : </h2>
                 <p>Pseudo :</p>
                 <input type="text" size="35" id="lUsername" name="lUsername">
                 <p>Mot de passe :</p>
@@ -32,7 +32,7 @@
 
             function getCookie(name) {
               const value = `; ${document.cookie}`;
-              const parts = value.split(`; ${name}=`);
+              const parts = value.split(`; ${name}²=`);
               if (parts.length === 2) return parts.pop().split(';').shift();
             }
 
@@ -47,6 +47,7 @@
                 function(data,status){
                     if (status=="success") {
                         if (data.error != "true") {
+                            console.log(data.id);
                             loadTemplate('rooms');
                         }
                     }
@@ -81,7 +82,7 @@
                             alert("Votre username est déjà utilisé");
                         } else {
                             alert("Vous êtes bien inscrit "+data.username+", vous pouvez vous connecter");
-                            window.scrollTo(0,document.body.scrollHeight);
+                            //window.scrollTo(0,document.body.scrollHeight);
                         }
                     }
                 });
@@ -98,6 +99,7 @@
                         if (data.error == "true") {
                             alert("Vos identifiants ne correspondent pas");
                         } else {
+                            console.log(data.id);
                             alert("Merci, vous allez être connecté");
                             loadTemplate('rooms');
                         }
