@@ -19,10 +19,11 @@ app.use(cookieParser());
 app.use(express.urlencoded({ extended:false }));
 app.use(express.static('public')) // modifier ici pour passer de public à public 2
 
-async function test(){
-  await nodeCache.set();
-}
-test();
+// Initialise le cache et le resynchronise avec la base de donnée toutes les 10 minutes
+nodeCache.set();
+setInterval(() => {
+    nodeCache.set();
+}, 600000);
 
 
 const PORT = process.env.PORT;
