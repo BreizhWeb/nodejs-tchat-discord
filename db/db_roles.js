@@ -12,7 +12,7 @@ const con = mysql.createConnection({
 
 /**
  * Create new Rooms_Users
- * 
+ *
  * @return response()
  */
 create = function (room_id, user_id, role_id) {
@@ -95,18 +95,23 @@ selectAll = function () {
   })
 };
 
+/**
+ * Get All Rooms_Users with join
+ *
+ * @return response()
+ */
 selectAllWithJoin = function () {
-    return new Promise(function(resolve, reject){
-      let sqlQuery = "SELECT u.user_id, u.pseudo, r.room_id, r.name, ru.role_id FROM  rooms_users AS ru INNER JOIN rooms AS r ON r.room_id = ru.room_id INNER JOIN users AS u ON u.user_id = ru.user_id;"
+  return new Promise(function(resolve, reject){
+    let sqlQuery = "SELECT u.user_id, u.pseudo, r.room_id, r.name, r.private, ru.role_id FROM  rooms_users AS ru INNER JOIN rooms AS r ON r.room_id = ru.room_id INNER JOIN users AS u ON u.user_id = ru.user_id;"
 
-      con.query(sqlQuery, (err, results) => {
-        if (err){
-          return reject(err);
-        }
-        return resolve(results.map(row => Object.assign({user:{user_id:row.user_id,user_name:row.pseudo},room:{room_id:row.room_id,room_name:row.name},role_id:row.role_id})));
-      });
-    })
-  };
+    con.query(sqlQuery, (err, results) => {
+      if (err){
+        return reject(err);
+      }
+      return resolve(results.map(row => Object.assign({}, row)));
+    });
+  })
+};
 
 //--------------------------------------------------UPDATE---------------------------------------------//
 
