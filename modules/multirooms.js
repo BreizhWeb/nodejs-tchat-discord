@@ -5,7 +5,6 @@ const db = require('../db/db.js')
 const control = require('./control')
 const logger = require('../log/logger')
 const permission = require('./permissions');
-const cache = require('./cacheData');
 const nodeCache = require('./nodeCache');
 /**
  * Boucle sur tous les rooms de l'utilisateur
@@ -96,8 +95,9 @@ var listen = function (io, socket) {
 
   /**
    * Create MP room
+   * fonctionné avec l'ancien cache 
    */
-  socket.on("create mp", async ({ name, image, private, target_user_id }, callback) => {
+ /* socket.on("create mp", async ({ name, image, private, target_user_id }, callback) => {
     room = cache.value.find(r => r.role_id == 2 && r.room_id == cache.value.find(t => t.role_id == 2 && t.user_id == target_user_id)?.room_id)
     if (typeof room === 'undefined') {
       control.createMp(socket, { name, image, private, target_user_id }).then((room) => {
@@ -113,7 +113,7 @@ var listen = function (io, socket) {
       callback(false)
     }
   })
-
+  */
   /**
    * Delete room
    */
