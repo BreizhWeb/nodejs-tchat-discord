@@ -1,11 +1,12 @@
 /**
- * Réalisé par : Ronan, 
+ * Réalisé par : Ronan,
  */
 const db = require('../db/db.js')
 const control = require('./control')
 const logger = require('../log/logger')
 const permission = require('./permissions');
 const cache = require('./cacheData');
+const nodeCache = require('./nodeCache');
 /**
  * Boucle sur tous les rooms de l'utilisateur
  * Rejoins les rooms de tous les rooms
@@ -19,12 +20,9 @@ var joinRooms = function (socket) {
 }
 
 var listen = function (io, socket) {
-
   logger.eventLogger.log('info', "Socket connected...")
-
   socket.emit('connection')
   let users = []
-  cache.set()
 
 
   /**
@@ -100,7 +98,7 @@ var listen = function (io, socket) {
    * Create MP room
    */
   socket.on("create mp", async ({ name, image, private, target_user_id }, callback) => {
-    room = cache.value.find(r => r.role_id == 5 && r.room_id == cache.value.find(t => t.role_id == 5 && t.user_id == target_user_id)?.room_id)
+    room = cache.value.find(r => r.role_id == 2 && r.room_id == cache.value.find(t => t.role_id == 2 && t.user_id == target_user_id)?.room_id)
     if (typeof room === 'undefined') {
       control.createMp(socket, { name, image, private, target_user_id }).then((room) => {
         socket.user.rooms.push(room)
@@ -128,8 +126,8 @@ var listen = function (io, socket) {
    * Update rooms
    */
   socket.on("update rooms", async () => {
-    db.users.getUserData(socket.user.user_id).then((user) => {
-      socket.user = user
+    nodeCache.getRoomsFromUser(socket.user.user_id).then((rooms) => {
+      socket.user.rooms = rooms
       joinRooms(socket)
       socket.emit("update rooms", socket.user)
     })
@@ -147,9 +145,9 @@ var listen = function (io, socket) {
    * Join room
    */
   socket.on("join room", async (room_id) => {
-    if (await control.joinRoom(socket.user.user_id, room_id)) {
-      db.users.getUserData(socket.user.user_id).then((user) => {
-        socket.user = user
+    if (await control.joinRoom(socket.user.user_id, room_id, socket.user.pseudo)) {
+      nodeCache.getRoomsFromUser(socket.user.user_id).then((rooms) => {
+        socket.user.rooms = rooms
         joinRooms(socket)
         socket.emit("update rooms", socket.user)
       })
@@ -186,7 +184,7 @@ var listen = function (io, socket) {
    * Disconnect
    */
   socket.on("disconnect", function (data) {
-    // TODO 
+    // TODO
     if (!socket.user?.pseudo) {
       return;
     }

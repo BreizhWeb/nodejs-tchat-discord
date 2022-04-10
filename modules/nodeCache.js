@@ -21,34 +21,79 @@ async function deleteUserFromRoom(user_id,room_id){
   let filter = await user_id.toString() + '/' + room_id.toString() + '/';
   let targetKey= await data.keys().filter(key => key.startsWith(filter));
   await data.del(targetKey);
+  if(targetKey.length){
+    await data.del(targetKeys);
+    return(true);
+  }
+  else{
+    return(false)
+  }
 
 }
 
 async function deleteRoom(room_id){
   let filter = await '/' + room_id.toString() + '/';
   let targetKeys = await data.keys().filter(key => key.includes(filter));
-  await data.del(targetKeys);
+  if(targetKeys.length){
+    await data.del(targetKeys);
+    return(true);
+  }
+  else{
+    return(false);
+  }
 
 }
 
 async function getRoomsFromUser(user_id){
   let filter = await user_id.toString() + '/';
   let targetKeys = await data.keys().filter(key => key.startsWith(filter));
-  return Object.values(data.mget(targetKeys));
+  if(targetKeys.length){
+    return Object.values(data.mget(targetKeys));
+  }
+  else{
+    return({});
+  }
 }
 
 async function getUsersFromRoom(room_id){
   let filter = await '/' + room_id.toString() + '/';
   let targetKeys = await data.keys().filter(key => key.includes(filter));
-  return Object.values(data.mget(targetKeys));
+  if(targetKeys.length){
+    return Object.values(data.mget(targetKeys));
+  }
+  else{
+    return({});
+  }
 }
 
 
 async function getUserRoleFromRoom(user_id,room_id){
   let filter = await user_id.toString() + '/' + room_id.toString() + '/';
   let targetKey= await data.keys().filter(key => key.startsWith(filter));
-  return await data.get(targetKey[0]).role_id;
+  if(targetKey.length){
+    return await data.get(targetKey[0]).role_id;
+  }
+  else{
+    return({});
+  }
+}
 
+async function getRoomInfo(room_id){
+  let filter = await '/' + room_id.toString() + '/';
+  let targetKeys = await data.keys().filter(key => key.includes(filter));
+  if(targetKeys.length){
+    let result = await data.get(targetKeys[0]);
+    return ({room_id:result.room_id ,name:result.name,private:result.private});
+  }
+  else{
+    return({});
+  }
+}
+
+async function userAlreadyInRoom(user_id,room_id){
+  let filter = await user_id.toString() + '/' + room_id.toString() + '/';
+  let targetKey= await data.keys().filter(key => key.startsWith(filter));
+  return(targetKey.length ? true : false);
 }
 
 
@@ -60,5 +105,7 @@ module.exports = {
   deleteRoom:deleteRoom,
   getRoomsFromUser:getRoomsFromUser,
   getUsersFromRoom:getUsersFromRoom,
-  getUserRoleFromRoom:getUserRoleFromRoom
+  getUserRoleFromRoom:getUserRoleFromRoom,
+  getRoomInfo:getRoomInfo,
+  userAlreadyInRoom:userAlreadyInRoom
 }

@@ -8,18 +8,31 @@ const crypto = require('crypto');
 const { encrypt, decrypt } = require('./modules/crypto');
 const db = require('./db/db.js')
 var cookieParser = require('cookie-parser');
+const nodeCache= require('./modules/nodeCache');
+const acc = require('./modules/permissions');
+
+
 
 let usernames = [];
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended:false }));
-app.use(express.static('public2')) // modifier ici pour passer de public à public 2
+app.use(express.static('public')) // modifier ici pour passer de public à public 2
+
+async function test(){
+  await nodeCache.set();
+}
+test();
+
 
 const PORT = process.env.PORT;
 server.listen(PORT, () => {
   console.log(`le serveur écoute sur le port ${PORT}`);
 });
 
+io.sockets.on("connection", async (socket) => {
+    multirooms.listen(io, socket);
+  })
 app.post("/register",async (req,res)=>{
     const md5sum = crypto.createHash('md5');
     var existe = (await db.users.getIdByPseudo(req.body.username));

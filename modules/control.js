@@ -10,12 +10,12 @@ const { io } = require('socket.io-client');
 
 async function createMp(socket, data) {
   let room = await db.rooms.create(data.name + "-" + socket.user.pseudo, data.image, data.private)
-  db.roles.create(room.room_id, socket.user.user_id, 5)
-  await nodeCache.add(socket.user.user_id,socket.user.pseudo,room.room_id,room.name,room.private,5)
+  db.roles.create(room.room_id, socket.user.user_id, 2)
+  await nodeCache.add(socket.user.user_id,socket.user.pseudo,room.room_id,room.name,room.private,2)
 
 
   logger.eventLogger.log('info', `"action":"create mp room", "room_id":${room.room_id}, "user_id":${socket.user.user_id}`)
-  inviteUser(socket.user.user_id, room.room_id, data.target_user_id, 5)
+  inviteUser(socket.user.user_id, room.room_id, data.target_user_id, 2)
   return room
 }
 
@@ -70,11 +70,13 @@ async function joinRoom(user_id, room_id , pseudo) { // rajouté le pseudo dans 
 }
 
 function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) { //
-  if (cache.value.find(r => r.room_id == room_id && r.user_id == invited_user_id))
+  if (nodeCache.userAlreadyInRoom(room_id,invited_user_id))
     return false
   if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
     db.roles.create(room_id, invited_user_id, invited_user_role);
-    cache.add(invited_user_id, room_id, invited_user_role);
+    pseudo = db.users.getUserData().pseudo;
+    room=nodeCache.getRoomInfo(room_id);
+    nodeCache.add(invited_user_id, pseudo, room_id, room.name, room.private, invited_user_role);
     return true
   } else {
     return false
@@ -85,7 +87,6 @@ function deleteUser(user_id, room_id, deleted_user_id) {
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteUser)) {
     db.roles.deleteUserFromRoom(deleted_user_id, room_id);
     nodeCache.deleteUserFromRoom(deleted_user_id,room_id)
-    // TODO FRONT
     return true
   }
   else {
@@ -96,7 +97,7 @@ function deleteUser(user_id, room_id, deleted_user_id) {
 async function deleteRoom(user_id, room_id) {
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteRoom)) {
     db.roles.deleteByRoom(room_id);
-    await cache.deleteRoom(room_id);
+    await nodeCache.deleteRoom(room_id);
     return true
   }
   else {

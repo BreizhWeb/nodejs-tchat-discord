@@ -3,7 +3,7 @@ const nodeCache= require('./nodeCache');
 const user = 0b100000
 const admin = 0b111111
 const mp = 0b101000
-const role = [admin,user,null,null,null,mp];
+const role = [admin,user,mp];
 
 const actions = {
   sendMessage: 0b100000,
