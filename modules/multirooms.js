@@ -95,7 +95,9 @@ var listen = function (io, socket) {
 
   /**
    * Create MP room
-   * fonctionné avec l'ancien cache 
+   * fonctionnait avec l'ancien cache 
+   * cache.value.find(r => r.role_id == 2 && r.room_id == cache.value.find(t => t.role_id == 2 && t.user_id == target_user_id)?.room_id)
+   * l'implémentation n'existe pas avec nodeCache
    */
  /* socket.on("create mp", async ({ name, image, private, target_user_id }, callback) => {
     room = cache.value.find(r => r.role_id == 2 && r.room_id == cache.value.find(t => t.role_id == 2 && t.user_id == target_user_id)?.room_id)
