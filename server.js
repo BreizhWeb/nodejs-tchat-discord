@@ -17,6 +17,9 @@ let usernames = [];
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended:false }));
+/*
+Les fonctionnalités de login/cookie/sécurité ont été implémentées sur PUBLIC2
+*/
 app.use(express.static('public')) // modifier ici pour passer de public à public 2
 
 // Initialise le cache et le resynchronise avec la base de donnée toutes les 10 minutes
