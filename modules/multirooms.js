@@ -5,7 +5,6 @@ const db = require('../db/db.js')
 const control = require('./control')
 const logger = require('../log/logger')
 const permission = require('./permissions');
-const cache = require('./cacheData');
 const nodeCache = require('./nodeCache');
 /**
  * Boucle sur tous les rooms de l'utilisateur
