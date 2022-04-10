@@ -1,3 +1,5 @@
+//(fait par le groupe login/token/sécurité)
+
 const crypto = require('crypto');
 
 const algorithm = 'aes-256-ctr';

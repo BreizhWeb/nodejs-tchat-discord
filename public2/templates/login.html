@@ -28,14 +28,19 @@
         </div>
     </div>
     <script type="text/javascript">
+
+        //(fait par le groupe login/token/sécurité)
+
         $(document).ready(function() {
 
+            //Fonction récupérant le cookie qui nous intéresse pour savoir si l'utilisateur est connecté
             function getCookie(name) {
               const value = `; ${document.cookie}`;
               const parts = value.split(`; ${name}²=`);
               if (parts.length === 2) return parts.pop().split(';').shift();
             }
 
+            //vérification du cookie si existant et appel en back à la méthode vérifiant l'authenticité du token
             if (getCookie("tokenIv") != undefined && getCookie("tokenContent") != undefined) {
                 hTokenIv = getCookie("tokenIv");
                 hTokenContent = getCookie("tokenContent");
@@ -70,6 +75,7 @@
             var lUsername = document.getElementById("lUsername");
             var lSubmit = document.getElementById("lSubmit");
 
+            //Appel à la fonction d'inscription en back et retour en fonction de la réussite ou non
             $("#rSubmit").click(function() {
                 $.post("./register",
                 {
@@ -88,6 +94,7 @@
                 });
             });
 
+            //Appel de la fonction de connexion en back, redirection si la connexion est possible et valide
             $("#lSubmit").click(function() {
                 $.post("./login",
                 {
@@ -112,6 +119,11 @@
                     rSubmit.disabled = false;
                 }
             }
+
+            /*
+                Fonctions permettant de vérifier que le contenu des champs du formulaire est valide
+            */
+
             $("#rPassword2").keyup(function() {
                 console.log("jetape");
                 if (this.value != rPassword.value) {
