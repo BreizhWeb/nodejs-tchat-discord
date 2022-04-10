@@ -1,4 +1,4 @@
-var cacheData = require('./cacheData.js')
+const nodeCache= require('./nodeCache');
 
 const user = 0b100000
 const admin = 0b111111
@@ -17,15 +17,11 @@ const actions = {
 // USER
 
 // récupére les droit
-function getRightFromUser(user_id, room_id) {
-  room_user = cacheData.value.filter(acc => acc.user_id == user_id && acc.room_id == room_id)
-  return (room_user.length ? role[room_user[0].role_id] : false);
+async function getRightFromUser(user_id, room_id) {
+  let role_id = await nodeCache.getUserRoleFromRoom(user_id,room_id);
+  return (role_id ? role[role_id] : false);
 }
 
-// récupère les id des rooms d'un user via son id
-function getUserRoomsId(user_id) {
-  return cacheData.value.filter(acc => acc.user_id == user_id)
-}
 
 // get action
 function getActionRight(user_id, room_id, action) {
@@ -43,6 +39,5 @@ module.exports = {
   role,
   actions,
   getRightFromUser,
-  getUserRoomsId,
   getActionRight
 }

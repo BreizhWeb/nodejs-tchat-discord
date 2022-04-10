@@ -1,9 +1,9 @@
 /**
  * Réalisé par : Ronan, Julien
  */
+const nodeCache= require('./nodeCache');
 const permission = require('./permissions');
 const db = require('../db/db');
-const cache = require('./cacheData');
 const multirooms = require('./multirooms.js')
 const logger = require('../log/logger');
 const { io } = require('socket.io-client');
@@ -11,7 +11,9 @@ const { io } = require('socket.io-client');
 async function createMp(socket, data) {
   let room = await db.rooms.create(data.name + "-" + socket.user.pseudo, data.image, data.private)
   db.roles.create(room.room_id, socket.user.user_id, 5)
-  await cache.add(socket.user.user_id, room.room_id, 5)
+  await nodeCache.add(socket.user.user_id,socket.user.pseudo,room.room_id,room.name,room.private,5)
+
+
   logger.eventLogger.log('info', `"action":"create mp room", "room_id":${room.room_id}, "user_id":${socket.user.user_id}`)
   inviteUser(socket.user.user_id, room.room_id, data.target_user_id, 5)
   return room
@@ -20,7 +22,7 @@ async function createMp(socket, data) {
 async function createRoom(socket, data) {
   let room = await db.rooms.create(data.name, data.image, data.private)
   db.roles.create(room.room_id, socket.user.user_id, 0)
-  await cache.add(socket.user.user_id, room.room_id, 0)
+  await nodeCache.add(socket.user.user_id,socket.user.pseudo,room.room_id,room.name,room.private,0)
   logger.eventLogger.log('info', `"action":"create room", "room_id":${room.room_id}, "user_id":${socket.user.user_id}`)
   return room
 }
@@ -56,18 +58,18 @@ async function deleteMessage(io, user_id, room_id, msg_id) {
   }
 }
 
-async function joinRoom(user_id, room_id) {
+async function joinRoom(user_id, room_id , pseudo) { // rajouté le pseudo dans le front
   let room = await db.rooms.select(room_id)
   if (!room.private) {
     db.roles.create(room_id, user_id, 1);
-    cache.add(user_id, room_id, 1);
+    await nodeCache.add(user_id,pseudo,room.room_id,room.name,room.private,1)
     return true
   } else {
     return false
   }
 }
 
-function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) {
+function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) { //
   if (cache.value.find(r => r.room_id == room_id && r.user_id == invited_user_id))
     return false
   if (permission.getActionRight(user_id, room_id, permission.actions.inviteUser)) {
@@ -82,7 +84,7 @@ function inviteUser(user_id, room_id, invited_user_id, invited_user_role = 1) {
 function deleteUser(user_id, room_id, deleted_user_id) {
   if (permission.getActionRight(user_id, room_id, permission.actions.deleteUser)) {
     db.roles.deleteUserFromRoom(deleted_user_id, room_id);
-    cache.deleteUser(deleted_user_id, room_id);
+    nodeCache.deleteUserFromRoom(deleted_user_id,room_id)
     // TODO FRONT
     return true
   }
@@ -102,16 +104,6 @@ async function deleteRoom(user_id, room_id) {
   }
 }
 
-// NO NEED
-async function changeRole(user_id, room_id) {
-  if (permission.getActionRight(user, room, permission.actions.changeRole)) {
-    return true
-  }
-  else {
-    return false
-  }
-}
-
 
 module.exports = {
   createRoom,
@@ -121,6 +113,5 @@ module.exports = {
   inviteUser,
   joinRoom,
   deleteUser,
-  deleteRoom,
-  changeRole,
+  deleteRoom
 }
