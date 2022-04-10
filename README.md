@@ -1,3 +1,4 @@
+// Groupe 2, module Role User
 # Multi-room chat web application
 
 ## Description

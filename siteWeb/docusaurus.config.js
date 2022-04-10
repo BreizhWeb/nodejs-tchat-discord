@@ -47,7 +47,7 @@ const config = {
             type: 'doc',
             docId: 'intro',
             position: 'left',
-            label: 'Doc',
+            label: 'Documentation',
           },
           {
             href: 'https://github.com/facebook/docusaurus',
@@ -63,7 +63,7 @@ const config = {
             title: 'Docs',
             items: [
               {
-                label: 'Doc',
+                label: 'Documentation',
                 to: '/docs/intro',
               },
             ],
